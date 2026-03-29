@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Filament\Facades\Filament;
+use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+class FilamentServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
@@ -15,8 +15,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Filament::registerRenderHook(
-            'panels::content.start',
-            fn (): string => view('custom.form-watcher')->render()
+            'panels::body.end',
+            fn () => view('filament.components.save-button-watcher')
         );
     }
 }

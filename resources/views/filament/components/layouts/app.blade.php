@@ -8,4 +8,7 @@
             }
         });
     </script>
+
+    @include('filament.components.save-button-watcher')
+
 </x-filament::layouts.app>

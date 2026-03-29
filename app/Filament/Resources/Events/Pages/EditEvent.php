@@ -4,30 +4,51 @@ namespace App\Filament\Resources\Events\Pages;
 
 use App\Enums\EventStatus;
 use App\Filament\Resources\Events\EventResource;
-use Filament\Actions\Action;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
+use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Toggle;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EventCancelledNotification;
 
 class EditEvent extends EditRecord
 {
     protected static string $resource = EventResource::class;
 
     /**
-     * 🔹 КНОПКИ УГОРІ (СКАСУВАТИ + ПЕРЕНЕСТИ)
+     * 🔥 SAVE / CANCEL
+     */
+    protected function getFormActions(): array
+    {
+        return [
+            Actions\Action::make('save')
+                ->label('Зберегти зміни')
+                ->submit('save')
+                ->extraAttributes([
+                    'id' => 'save-btn',
+                    'class' => 'transition-all duration-300'
+                ]),
+
+            Actions\Action::make('cancel')
+                ->label('Скасувати')
+                ->url($this->getResource()::getUrl('index')),
+        ];
+    }
+
+    /**
+     * 🔥 HEADER ACTIONS
      */
     protected function getHeaderActions(): array
     {
         return [
 
             /**
-             * ❌ СКАСУВАТИ ІВЕНТ
+             * ❌ СКАСУВАТИ
              */
-            Action::make('cancel_event')
+            Actions\Action::make('cancel_event')
                 ->label('Скасувати івент')
                 ->color('danger')
-
                 ->visible(fn () => $this->record->status !== EventStatus::Cancelled)
 
                 ->form([
@@ -36,132 +57,78 @@ class EditEvent extends EditRecord
                         ->required(),
 
                     Toggle::make('is_public')
-                        ->label('Показати причину на сайті')
-                        ->default(false),
+                        ->label('Показати причину на сайті'),
 
                     Toggle::make('notify_users')
-                        ->label('Сповістити учасників')
-                        ->default(false),
+                        ->label('Сповістити учасників'),
                 ])
 
                 ->action(function (array $data) {
 
-                    $this->record->update([
+                    $event = $this->record;
+
+                    if ($event->status === EventStatus::Cancelled) {
+                        return;
+                    }
+
+                    $event->update([
                         'status' => EventStatus::Cancelled,
                         'cancel_reason' => $data['reason'],
                         'cancel_public' => $data['is_public'] ?? false,
                         'cancelled_at' => now(),
                     ]);
 
-                    // 📧 Email
-                    if (!empty($data['notify_users'])) {
-                        foreach ($this->record->registrations as $registration) {
+                    if (!empty($data['notify_users']) && $event->registration_type === 'form') {
+                        foreach ($event->registrations as $registration) {
                             if ($registration->email) {
-                                \Mail::to($registration->email)
-                                    ->send(new \App\Mail\EventCancelledNotification(
-                                        $registration,
-                                        $this->record
-                                    ));
+                                Mail::to($registration->email)
+                                    ->send(new EventCancelledNotification($registration, $event));
                             }
                         }
                     }
-
-                    // 🔄 оновлення форми
-                    $this->record->refresh();
-
-                    $this->form->fill([
-                        'title' => $this->record->title,
-                        'description' => $this->record->description,
-                        'event_date' => $this->record->event_date,
-                        'status' => $this->record->status->value,
-                        'notify_email' => $this->record->notify_email,
-                        'has_registration_button' => $this->record->has_registration_button,
-                        'registration_type' => $this->record->registration_type,
-                        'max_participants' => $this->record->max_participants,
-                    ]);
                 }),
 
             /**
-             * 🔄 ПЕРЕНЕСТИ ІВЕНТ
+             * 🔁 ПЕРЕНЕСЕННЯ
              */
-            Action::make('reschedule_event')
+            Actions\Action::make('reschedule_event')
                 ->label('Перенести івент')
                 ->color('warning')
                 ->icon('heroicon-o-calendar-days')
 
-                ->visible(fn () => $this->record->status !== EventStatus::Cancelled)
-
                 ->form([
                     DateTimePicker::make('new_date')
                         ->label('Нова дата')
-                        ->seconds(false)
-                        ->native(false)
+                        ->required()
+                        ->default(fn () => $this->record->event_date)
                         ->displayFormat('d.m.Y H:i')
-                        ->format('Y-m-d H:i:s')
-                        ->locale('uk')
-                        ->required(),
+                        ->seconds(false),
 
                     Textarea::make('reason')
                         ->label('Причина перенесення')
                         ->required(),
 
                     Toggle::make('is_public')
-                        ->label('Показати причину на сайті')
-                        ->default(false),
+                        ->label('Показати причину на сайті'),
 
                     Toggle::make('notify_users')
-                        ->label('Сповістити учасників')
-                        ->default(false),
+                        ->label('Сповістити учасників'),
                 ])
+
+                ->modalSubmitActionLabel('Перенести')
+                ->modalCancelActionLabel('Скасувати')
 
                 ->action(function (array $data) {
 
-                    /**
-                     * 🔥 ЗБЕРІГАЄМО СТАРУ ДАТУ
-                     */
-                    $oldDate = $this->record->event_date;
+                    $formData = $this->form->getState();
 
-                    /**
-                     * 🔥 ОНОВЛЮЄМО ІВЕНТ (БЕЗ ЗМІНИ СТАТУСУ)
-                     */
-                    $this->record->update([
-                        'event_date' => $data['new_date'],
-                        'old_event_date' => $oldDate,
-                        'reschedule_reason' => $data['reason'],
-                        'reschedule_public' => $data['is_public'] ?? false,
-                        'rescheduled_at' => now(),
-                    ]);
+                    $formData['event_date'] = $data['new_date'];
 
-                    // 📧 Email
-                    if (!empty($data['notify_users'])) {
-                        foreach ($this->record->registrations as $registration) {
-                            if ($registration->email) {
-                                \Mail::to($registration->email)
-                                    ->send(new \App\Mail\EventRescheduledNotification(
-                                        $registration,
-                                        $this->record
-                                    ));
-                            }
-                        }
-                    }
+                    $this->form->fill($formData);
 
-                    /**
-                     * 🔄 ОНОВЛЕННЯ ФОРМИ (щоб не ламалась)
-                     */
-                    $this->record->refresh();
-
-                    $this->form->fill([
-                        'title' => $this->record->title,
-                        'description' => $this->record->description,
-                        'event_date' => $this->record->event_date,
-                        'status' => $this->record->status->value,
-                        'notify_email' => $this->record->notify_email,
-                        'has_registration_button' => $this->record->has_registration_button,
-                        'registration_type' => $this->record->registration_type,
-                        'max_participants' => $this->record->max_participants,
-                    ]);
+                    // 🔥 тригер для JS
+                    $this->dispatchBrowserEvent('form-changed');
                 }),
-
         ];
     }
 }
