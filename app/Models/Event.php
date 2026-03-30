@@ -45,4 +45,14 @@ class Event extends Model
     {
         return $this->hasMany(Registration::class);
     }
+
+    
+    public function histories()
+    {
+        return $this->hasMany(\App\Models\EventHistory::class);
+    }
+    public function user()
+{
+    return $this->belongsTo(\App\Models\User::class);
+}
 }

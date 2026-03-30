@@ -11,10 +11,23 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Toggle;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EventCancelledNotification;
+use App\Models\EventHistory;
 
 class EditEvent extends EditRecord
 {
     protected static string $resource = EventResource::class;
+
+    /**
+     * 🔒 БЛОКУЄМО зміну дати НЕ адмінам
+     */
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        if (!auth()->user()?->isAdmin()) {
+            unset($data['event_date']); // ❌ заборона
+        }
+
+        return $data;
+    }
 
     /**
      * 🔥 SAVE / CANCEL
@@ -71,6 +84,17 @@ class EditEvent extends EditRecord
                         return;
                     }
 
+                    // 🔥 ЛОГ
+                    EventHistory::create([
+                        'event_id'   => $event->id,
+                        'user_id'    => auth()->id(),
+                        'action'     => 'cancelled',
+                        'description'=> $data['reason'],
+                        'old_date'   => $event->event_date,
+                        'new_date'   => null,
+                        'is_public'  => $data['is_public'] ?? false,
+                    ]);
+
                     $event->update([
                         'status' => EventStatus::Cancelled,
                         'cancel_reason' => $data['reason'],
@@ -120,14 +144,34 @@ class EditEvent extends EditRecord
 
                 ->action(function (array $data) {
 
-                    $formData = $this->form->getState();
+                    $event = $this->record;
 
-                    $formData['event_date'] = $data['new_date'];
+                    $oldDate = $event->event_date;
 
-                    $this->form->fill($formData);
+                    // 🔥 ЛОГ
+                    EventHistory::create([
+                        'event_id'   => $event->id,
+                        'user_id'    => auth()->id(),
+                        'action'     => 'rescheduled',
+                        'description'=> $data['reason'],
+                        'old_date'   => $oldDate,
+                        'new_date'   => $data['new_date'],
+                        'is_public'  => $data['is_public'] ?? false,
+                    ]);
 
-                    // 🔥 тригер для JS
-                    $this->dispatchBrowserEvent('form-changed');
+                    // ✅ оновлення
+                    $event->update([
+                        'event_date' => $data['new_date'],
+                    ]);
+
+                    // 🔁 оновлюємо форму
+                    $this->form->fill([
+                        ...$this->form->getState(),
+                        'event_date' => $data['new_date'],
+                    ]);
+
+                    // 🔥 тригер
+                    $this->dispatch('form-changed');
                 }),
         ];
     }

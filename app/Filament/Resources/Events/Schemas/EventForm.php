@@ -33,11 +33,21 @@ class EventForm
                 ->rows(4),
 
             DateTimePicker::make('event_date')
-                ->label('Дата події')
-                ->required()
-                ->seconds(false)
-                ->native(true)
-                ->minDate(fn () => Auth::user()->isAdmin() ? null : now()),
+               ->label('Дата події')
+               ->required()
+               ->seconds(false)
+               ->native(true)
+               ->minDate(fn () => Auth::user()->isAdmin() ? null : now())
+
+                //  блокування
+                ->disabled(fn () => !Auth::user()?->isAdmin())
+
+                //  підказка
+                ->helperText(fn () =>
+                    Auth::user()?->isAdmin()
+                        ? null
+                        : 'Зміну дати доступно тільки через кнопку "Перенести івент"'
+                ),
 
             FileUpload::make('image')
                 ->label('Фото')
@@ -50,14 +60,14 @@ class EventForm
                 ->default(false)
                 ->reactive(),
 
-            // 🔥 ВАЖЛИВО: додали ->live()
+            // ->live()
             Select::make('registration_type')
                 ->label('Тип реєстрації')
                 ->options([
                     'internal' => 'Форма (імʼя, телефон, email)',
                     'external' => 'Google форма',
                 ])
-                ->live() // 👈 ОЦЕ ФІКС
+                ->live() 
                 ->visible(fn ($get) => $get('has_registration'))
                 ->required(fn ($get) => $get('has_registration')),
 

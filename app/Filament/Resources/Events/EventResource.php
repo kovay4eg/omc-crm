@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Events;
 use App\Filament\Resources\Events\Schemas\EventForm;
 use App\Filament\Resources\Events\Tables\EventsTable;
 use App\Filament\Resources\Events\RelationManagers\RegistrationsRelationManager;
+use App\Filament\Resources\Events\RelationManagers\HistoriesRelationManager; 
 use App\Models\Event;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -14,7 +15,6 @@ class EventResource extends Resource
 {
     protected static ?string $model = Event::class;
 
-    // ⚠️ ВАЖЛИВО: сумісно з Filament v4
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-m-calendar';
 
     protected static ?string $recordTitleAttribute = 'title';
@@ -33,6 +33,7 @@ class EventResource extends Resource
     {
         return [
             RegistrationsRelationManager::class,
+            HistoriesRelationManager::class, 
         ];
     }
 
