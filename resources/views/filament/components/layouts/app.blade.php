@@ -1,4 +1,8 @@
 <x-filament::layouts.app>
+
+    {{-- 🔥 PREVIEW BANNER --}}
+    @include('filament.components.preview-banner')
+
     {{ $slot }}
 
     <script>

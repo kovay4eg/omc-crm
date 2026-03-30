@@ -18,12 +18,12 @@ class EditEvent extends EditRecord
     protected static string $resource = EventResource::class;
 
     /**
-     * 🔒 БЛОКУЄМО зміну дати НЕ адмінам
+     * 🔒 БЛОКУЄМО зміну дати НЕ адмінам (з урахуванням preview)
      */
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        if (!auth()->user()?->isAdmin()) {
-            unset($data['event_date']); // ❌ заборона
+        if (auth()->user()?->getActiveRole() !== 'admin') {
+            unset($data['event_date']);
         }
 
         return $data;
@@ -50,11 +50,37 @@ class EditEvent extends EditRecord
     }
 
     /**
-     * 🔥 HEADER ACTIONS
+     *  HEADER ACTIONS
      */
     protected function getHeaderActions(): array
     {
         return [
+
+            /**
+             * 🗑 ВИДАЛЕННЯ ІВЕНТУ (ТІЛЬКИ АДМІН)
+             */
+            Actions\DeleteAction::make()
+            ->label('Видалити івент')
+            ->color('danger')
+            ->visible(fn () => auth()->user()?->getActiveRole() === 'admin')
+
+            
+            ->modalHeading(fn () => 'Видалити "' . $this->record->title . '"')
+            ->modalDescription('Ви впевнені, що хочете видалити цей івент?')
+            ->modalSubmitActionLabel('Видалити')
+            ->modalCancelActionLabel('Скасувати')
+
+    ->before(function () {
+        \App\Models\EventHistory::create([
+            'event_id'   => $this->record->id,
+            'user_id'    => auth()->id(),
+            'action'     => 'deleted',
+            'description'=> 'Івент видалено',
+            'old_date'   => $this->record->event_date,
+            'new_date'   => null,
+            'is_public'  => false,
+        ]);
+    }),
 
             /**
              * ❌ СКАСУВАТИ
@@ -84,7 +110,6 @@ class EditEvent extends EditRecord
                         return;
                     }
 
-                    // 🔥 ЛОГ
                     EventHistory::create([
                         'event_id'   => $event->id,
                         'user_id'    => auth()->id(),
@@ -148,7 +173,6 @@ class EditEvent extends EditRecord
 
                     $oldDate = $event->event_date;
 
-                    // 🔥 ЛОГ
                     EventHistory::create([
                         'event_id'   => $event->id,
                         'user_id'    => auth()->id(),
@@ -159,18 +183,15 @@ class EditEvent extends EditRecord
                         'is_public'  => $data['is_public'] ?? false,
                     ]);
 
-                    // ✅ оновлення
                     $event->update([
                         'event_date' => $data['new_date'],
                     ]);
 
-                    // 🔁 оновлюємо форму
                     $this->form->fill([
                         ...$this->form->getState(),
                         'event_date' => $data['new_date'],
                     ]);
 
-                    // 🔥 тригер
                     $this->dispatch('form-changed');
                 }),
         ];

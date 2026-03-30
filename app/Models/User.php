@@ -60,6 +60,19 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * 🔥 АКТИВНА РОЛЬ (з урахуванням preview)
+     */
+    public function getActiveRole(): string
+    {
+        // якщо адмін і включений режим перегляду
+        if ($this->isAdmin() && session()->has('preview_role')) {
+            return session('preview_role');
+        }
+
+        return $this->role ?? 'user';
+    }
+
+    /**
      * ДОСТУП ДО FILAMENT
      */
     public function canAccessPanel(Panel $panel): bool

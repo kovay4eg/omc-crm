@@ -13,6 +13,12 @@ use Filament\Tables\Table;
 
 class EventResource extends Resource
 {
+    protected static ?string $navigationLabel = 'Івенти';
+
+    protected static ?string $pluralLabel = 'Івенти';
+        
+    protected static ?string $modelLabel = 'Івент';
+    
     protected static ?string $model = Event::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-m-calendar';

@@ -17,7 +17,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-// РЕСУРСИ (важливо)
+// РЕСУРСИ 
 use App\Filament\Resources\Events\EventResource;
 use App\Filament\Resources\UserResource;
 
@@ -30,6 +30,12 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
 
+            // БАНЕР 
+            ->renderHook(
+                'panels::body.start',
+                fn () => view('filament.components.preview-banner')
+            )
+
             // базовий дизайн
             ->colors([
                 'primary' => Color::Amber,
@@ -37,10 +43,9 @@ class AdminPanelProvider extends PanelProvider
 
             // сторінки (dashboard)
             ->pages([
-                Pages\Dashboard::class,
+                \App\Filament\Pages\Dashboard::class,
             ])
 
-            // ПІДКЛЮЧАЄМО РЕСУРСИ ВРУЧНУ (щоб точно працювало)
             ->resources([
                 EventResource::class,
                 UserResource::class,

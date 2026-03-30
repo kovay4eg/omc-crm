@@ -33,20 +33,28 @@ class EventForm
                 ->rows(4),
 
             DateTimePicker::make('event_date')
-               ->label('Дата події')
-               ->required()
-               ->seconds(false)
-               ->native(true)
-               ->minDate(fn () => Auth::user()->isAdmin() ? null : now())
+                ->label('Дата події')
+                ->required()
+                ->seconds(false)
+                ->native(true)
 
-                //  блокування
-                ->disabled(fn () => !Auth::user()?->isAdmin())
-
-                //  підказка
-                ->helperText(fn () =>
-                    Auth::user()?->isAdmin()
+                // ❗ для не адміна не можна ставити минуле
+                ->minDate(fn () =>
+                    Auth::user()?->getActiveRole() === 'admin'
                         ? null
-                        : 'Зміну дати доступно тільки через кнопку "Перенести івент"'
+                        : now()
+                )
+
+                // 🔥 ГОЛОВНЕ — БЛОКУВАННЯ
+                ->disabled(fn () =>
+                    Auth::user()?->getActiveRole() !== 'admin'
+                )
+
+                // 🔥 ПІДКАЗКА
+                ->helperText(fn () =>
+                    Auth::user()?->getActiveRole() === 'admin'
+                        ? null
+                        : 'Зміна дати доступно тільки через кнопку "Перенести івент"'
                 ),
 
             FileUpload::make('image')
@@ -60,14 +68,13 @@ class EventForm
                 ->default(false)
                 ->reactive(),
 
-            // ->live()
             Select::make('registration_type')
                 ->label('Тип реєстрації')
                 ->options([
                     'internal' => 'Форма (імʼя, телефон, email)',
                     'external' => 'Google форма',
                 ])
-                ->live() 
+                ->live()
                 ->visible(fn ($get) => $get('has_registration'))
                 ->required(fn ($get) => $get('has_registration')),
 
