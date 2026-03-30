@@ -36,26 +36,24 @@ class EventForm
                 ->label('Дата події')
                 ->required()
                 ->seconds(false)
-                ->native(true)
 
-                // ❗ для не адміна не можна ставити минуле
                 ->minDate(fn () =>
                     Auth::user()?->getActiveRole() === 'admin'
                         ? null
                         : now()
                 )
 
-                // 🔥 ГОЛОВНЕ — БЛОКУВАННЯ
-                ->disabled(fn () =>
-                    Auth::user()?->getActiveRole() !== 'admin'
-                )
+                ->disabled(function ($operation) {
+                    return $operation === 'edit'
+                        && Auth::user()?->getActiveRole() !== 'admin';
+                })
 
-                // 🔥 ПІДКАЗКА
-                ->helperText(fn () =>
-                    Auth::user()?->getActiveRole() === 'admin'
-                        ? null
-                        : 'Зміна дати доступно тільки через кнопку "Перенести івент"'
-                ),
+                ->helperText(function ($operation) {
+                    return $operation === 'edit'
+                        && Auth::user()?->getActiveRole() !== 'admin'
+                        ? 'Зміна дати доступно тільки через кнопку "Перенести івент"'
+                        : null;
+                }),
 
             FileUpload::make('image')
                 ->label('Фото')

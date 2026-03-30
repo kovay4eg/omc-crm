@@ -14,8 +14,12 @@ Route::get('/', function () {
 });
 
 
-// 🔥 ВИХІД З РЕЖИМУ ПЕРЕГЛЯДУ
 Route::post('/exit-preview', function () {
     session()->forget('preview_role');
     return back();
 })->name('exit-preview');
+
+
+Route::get('/login', function () {
+    return redirect('/admin/login');
+})->name('login');

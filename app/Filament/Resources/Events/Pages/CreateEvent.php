@@ -11,7 +11,6 @@ class CreateEvent extends CreateRecord
 {
     protected static string $resource = EventResource::class;
 
-   
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['user_id'] = Auth::id();
@@ -19,9 +18,9 @@ class CreateEvent extends CreateRecord
         return $data;
     }
 
-   
     protected function afterCreate(): void
     {
+        // ІСТОРІЯ 
         EventHistory::create([
             'event_id' => $this->record->id,
             'user_id' => Auth::id(),
@@ -31,5 +30,11 @@ class CreateEvent extends CreateRecord
             'new_date' => $this->record->event_date,
             'is_public' => false,
         ]);
+
+        // SYSTEM LOG
+        system_log(
+            'create_event',
+            'Створено івент: ' . $this->record->title
+        );
     }
 }
