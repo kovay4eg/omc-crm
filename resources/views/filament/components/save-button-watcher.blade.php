@@ -1,41 +1,32 @@
 <script>
-document.addEventListener('alpine:init', () => {
-
-    Alpine.store('formWatcher', {
-        changed: false
-    });
-
-});
-
 document.addEventListener('livewire:init', () => {
 
-    console.log('LIVEWIRE INIT');
+    function update() {
+        const form = document.querySelector('form');
+        const btn = document.querySelector('button[type="submit"]');
 
-    function attach() {
+        if (!form || !btn) return;
 
-        document.querySelectorAll('input, textarea, select').forEach(el => {
-
-            el.addEventListener('change', () => {
-
-                Alpine.store('formWatcher').changed = true;
-
-                console.log('FORM CHANGED');
-
-            });
-
-        });
-
+        if (form.querySelector('[wire\\:dirty]')) {
+            btn.classList.add('pulse-save');
+        } else {
+            btn.classList.remove('pulse-save');
+        }
     }
 
-    setTimeout(attach, 500);
+    setInterval(update, 500);
 
-    Livewire.hook('message.processed', () => {
-        attach();
-    });
-
-});
-
-window.addEventListener('form-changed', () => {
-    Alpine.store('formWatcher').changed = true;
 });
 </script>
+
+<style>
+.pulse-save {
+    animation: pulseSave 1s infinite;
+}
+
+@keyframes pulseSave {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+</style>

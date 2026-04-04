@@ -9,6 +9,8 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Assets\Css;
+use Filament\Support\Assets\Js;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -30,33 +32,45 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
 
-            // ✅ ВАЖЛИВО — додає login сторінку
+            // 🔥 FullCalendar підключення
+            ->assets([
+                Css::make(
+                    'fullcalendar-css',
+                    'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css'
+                ),
+                Js::make(
+                    'fullcalendar-js',
+                    'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'
+                ),
+            ])
+
+            // ✅ Login
             ->login()
 
-            // 🔥 БАНЕР
+            // 🔥 Банер
             ->renderHook(
                 'panels::body.start',
                 fn () => view('filament.components.preview-banner')
             )
 
-            // 🎨 КОЛІР
+            // 🎨 Кольори
             ->colors([
                 'primary' => Color::Amber,
             ])
 
-            // 📊 СТОРІНКИ
+            // 📊 Сторінки
             ->pages([
                 \App\Filament\Pages\Dashboard::class,
             ])
 
-            // 📦 РЕСУРСИ
+            // 📦 Ресурси
             ->resources([
                 EventResource::class,
                 UserResource::class,
                 SystemLogResource::class,
             ])
 
-            // ⚙️ MIDDLEWARE
+            // ⚙️ Middleware
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -69,7 +83,7 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
 
-            // 🔐 AUTH
+            // 🔐 Auth
             ->authMiddleware([
                 Authenticate::class,
             ]);

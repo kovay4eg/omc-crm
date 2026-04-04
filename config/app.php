@@ -10,13 +10,14 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
-    'timezone' => 'UTC',
+    // 🔥 ГОЛОВНИЙ ФІКС
+    'timezone' => 'Europe/Kyiv',
 
     'locale' => env('APP_LOCALE', 'uk'),
 
-'fallback_locale' => env('APP_FALLBACK_LOCALE', 'uk'),
+    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'uk'),
 
-'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
     'cipher' => 'AES-256-CBC',
 

@@ -9,15 +9,12 @@ use Filament\Forms\Components\Select;
 
 class Dashboard extends BaseDashboard
 {
-    //  ЗАГОЛОВОК
     protected static ?string $title = 'Адмін-панель';
 
-    //  МЕНЮ
     protected static ?string $navigationLabel = 'Адмін-панель';
 
     protected function getHeaderActions(): array
     {
-        // тільки для адміна
         if (!Auth::user()?->isAdmin()) {
             return [];
         }
@@ -36,14 +33,29 @@ class Dashboard extends BaseDashboard
                         ->default(session('preview_role', 'admin'))
                         ->required(),
                 ])
-
                 ->action(function (array $data) {
-    session(['preview_role' => $data['role']]);
+                    session(['preview_role' => $data['role']]);
 
-    return redirect()->route('filament.admin.pages.dashboard');
-})
-
+                    return redirect()->route('filament.admin.pages.dashboard');
+                })
                 ->modalSubmitActionLabel('Застосувати'),
         ];
+    }
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\Clock::class,
+            \App\Filament\Widgets\Weather::class,
+            \App\Filament\Widgets\StatsOverview::class,
+            \App\Filament\Widgets\EventCalendar::class,
+        ];
+    }
+    public function getColumns(): int | array
+    {
+        return 2;
+    } 
+    public function getWidgets(): array
+    {
+        return [];
     }
 }

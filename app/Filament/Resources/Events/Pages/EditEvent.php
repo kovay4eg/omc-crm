@@ -9,9 +9,9 @@ use Filament\Resources\Pages\EditRecord;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Toggle;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\EventCancelledNotification;
 use App\Models\EventHistory;
+use App\Services\GoogleCalendarService;
+use Filament\Notifications\Notification;
 
 class EditEvent extends EditRecord
 {
@@ -26,7 +26,6 @@ class EditEvent extends EditRecord
 
     protected function afterSave(): void
     {
-        // 🔥 SYSTEM LOG (редагування)
         $changes = [];
 
         foreach ($this->record->getChanges() as $field => $newValue) {
@@ -42,6 +41,17 @@ class EditEvent extends EditRecord
             'Оновлено івент: ' . $this->record->title .
             ' | Зміни: ' . implode(', ', $changes)
         );
+
+        $success = app(GoogleCalendarService::class)
+            ->updateEvent(auth()->user(), $this->record);
+
+        if (!$success) {
+            Notification::make()
+                ->title('Google не відповів')
+                ->body('Івент оновлено, але не синхронізовано з Google')
+                ->warning()
+                ->send();
+        }
     }
 
     protected function mutateFormDataBeforeSave(array $data): array
@@ -53,63 +63,31 @@ class EditEvent extends EditRecord
         return $data;
     }
 
-    protected function getFormActions(): array
-    {
-        return [
-            Actions\Action::make('save')
-                ->label('Зберегти зміни')
-                ->submit('save'),
-
-            Actions\Action::make('cancel')
-                ->label('Скасувати')
-                ->url($this->getResource()::getUrl('index')),
-        ];
-    }
-
     protected function getHeaderActions(): array
     {
         return [
 
-            // 🔥 DELETE + SYSTEM LOG
             Actions\DeleteAction::make()
                 ->label('Видалити івент')
                 ->color('danger')
-                ->visible(fn () => auth()->user()?->getActiveRole() === 'admin')
+                ->visible(fn () => auth()->user()?->getActiveRole() === 'admin'),
 
-                ->modalHeading(fn () => 'Видалити "' . $this->record->title . '"')
-                ->modalDescription('Ви впевнені, що хочете видалити цей івент?')
-                ->modalSubmitActionLabel('Видалити')
-                ->modalCancelActionLabel('Скасувати')
-
-                ->before(function () {
-
-                    // EventHistory
-                    EventHistory::create([
-                        'event_id'   => $this->record->id,
-                        'user_id'    => auth()->id(),
-                        'action'     => 'deleted',
-                        'description'=> 'Івент видалено',
-                        'old_date'   => $this->record->event_date,
-                        'new_date'   => null,
-                        'is_public'  => false,
-                    ]);
-
-                    // 🔥 SYSTEM LOG
-                    system_log(
-                        'delete_event',
-                        'Видалено івент: ' . $this->record->title
-                    );
-                }),
-
+            // CANCEL
             Actions\Action::make('cancel_event')
                 ->label('Скасувати івент')
                 ->color('danger')
                 ->visible(fn () => $this->record->status !== EventStatus::Cancelled)
 
                 ->form([
-                    Textarea::make('reason')->label('Причина скасування')->required(),
-                    Toggle::make('is_public')->label('Показати причину на сайті'),
-                    Toggle::make('notify_users')->label('Сповістити учасників'),
+                    Textarea::make('reason')
+                        ->label('Причина скасування')
+                        ->required(),
+
+                    Toggle::make('cancel_public')
+                        ->label('Показувати причину на сайті'),
+
+                    Toggle::make('notify_users')
+                        ->label('Сповістити учасників'),
                 ])
 
                 ->action(function (array $data) {
@@ -123,24 +101,45 @@ class EditEvent extends EditRecord
                         'description'=> $data['reason'],
                         'old_date'   => $event->event_date,
                         'new_date'   => null,
-                        'is_public'  => $data['is_public'] ?? false,
+                        'is_public'  => $data['cancel_public'] ?? false,
                     ]);
 
                     $event->update([
                         'status' => EventStatus::Cancelled,
                         'cancel_reason' => $data['reason'],
-                        'cancel_public' => $data['is_public'] ?? false,
+                        'cancel_public' => $data['cancel_public'] ?? false,
                         'cancelled_at' => now(),
                     ]);
+
+                    $success = app(GoogleCalendarService::class)
+                        ->updateEvent(auth()->user(), $event);
+
+                    if (!$success) {
+                        Notification::make()
+                            ->title('Google не відповів')
+                            ->warning()
+                            ->send();
+                    }
                 }),
 
+            // RESCHEDULE
             Actions\Action::make('reschedule_event')
                 ->label('Перенести івент')
                 ->color('warning')
 
                 ->form([
-                    DateTimePicker::make('new_date')->label('Нова дата')->required(),
-                    Textarea::make('reason')->label('Причина перенесення')->required(),
+                    DateTimePicker::make('new_date')
+                        ->label('Нова дата')
+                        ->required()
+                        ->seconds(false)
+                        ->default(fn () => $this->record->event_date), // 🔥 показує поточну дату
+
+                    Textarea::make('reason')
+                        ->label('Причина перенесення')
+                        ->required(),
+
+                    Toggle::make('reschedule_public')
+                        ->label('Показувати причину на сайті'),
                 ])
 
                 ->action(function (array $data) {
@@ -154,12 +153,25 @@ class EditEvent extends EditRecord
                         'description'=> $data['reason'],
                         'old_date'   => $event->event_date,
                         'new_date'   => $data['new_date'],
-                        'is_public'  => false,
+                        'is_public'  => $data['reschedule_public'] ?? false,
                     ]);
 
                     $event->update([
                         'event_date' => $data['new_date'],
                     ]);
+
+                    $this->record->refresh();
+                    $this->fillForm();
+
+                    $success = app(GoogleCalendarService::class)
+                        ->updateEvent(auth()->user(), $event);
+
+                    if (!$success) {
+                        Notification::make()
+                            ->title('Google не відповівідає')
+                            ->warning()
+                            ->send();
+                    }
                 }),
         ];
     }

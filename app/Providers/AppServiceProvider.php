@@ -3,7 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Filament\Facades\Filament;
+use App\Models\Event;
+use App\Observers\EventObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,9 +15,6 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Filament::registerRenderHook(
-            'panels::content.start',
-            fn (): string => view('custom.form-watcher')->render()
-        );
+        Event::observe(EventObserver::class);
     }
 }

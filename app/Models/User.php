@@ -60,7 +60,7 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * 🔥 АКТИВНА РОЛЬ (з урахуванням preview)
+     * АКТИВНА РОЛЬ (з урахуванням preview)
      */
     public function getActiveRole(): string
     {
