@@ -22,6 +22,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Resources\Events\EventResource;
 use App\Filament\Resources\UserResource;
 use App\Filament\Resources\SystemLogs\SystemLogResource;
+use App\Filament\Resources\Employees\EmployeeResource;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -32,7 +33,6 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
 
-            // 🔥 FullCalendar підключення
             ->assets([
                 Css::make(
                     'fullcalendar-css',
@@ -44,33 +44,28 @@ class AdminPanelProvider extends PanelProvider
                 ),
             ])
 
-            // ✅ Login
             ->login()
 
-            // 🔥 Банер
             ->renderHook(
                 'panels::body.start',
                 fn () => view('filament.components.preview-banner')
             )
 
-            // 🎨 Кольори
             ->colors([
                 'primary' => Color::Amber,
             ])
 
-            // 📊 Сторінки
             ->pages([
                 \App\Filament\Pages\Dashboard::class,
             ])
 
-            // 📦 Ресурси
             ->resources([
                 EventResource::class,
                 UserResource::class,
                 SystemLogResource::class,
+                EmployeeResource::class,
             ])
 
-            // ⚙️ Middleware
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -83,7 +78,6 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
 
-            // 🔐 Auth
             ->authMiddleware([
                 Authenticate::class,
             ]);

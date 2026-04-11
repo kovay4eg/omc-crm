@@ -8,11 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // вже існує — нічого не робимо
+        Schema::create('positions', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique(); // назва посади
+            $table->timestamps();
+        });
     }
 
     public function down(): void
     {
-        // нічого не відкочуємо
+        Schema::dropIfExists('positions');
     }
 };
