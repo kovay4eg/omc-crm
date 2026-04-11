@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\TeamController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,8 @@ use App\Http\Controllers\GoogleController;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/team', [TeamController::class, 'index'])->name('team');
 
 Route::post('/exit-preview', function () {
     session()->forget('preview_role');

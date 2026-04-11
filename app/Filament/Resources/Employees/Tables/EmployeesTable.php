@@ -4,10 +4,12 @@ namespace App\Filament\Resources\Employees\Tables;
 
 use App\Models\Department;
 use App\Models\Position;
+use App\Models\SiteSetting;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
@@ -44,6 +46,30 @@ class EmployeesTable
             ])
 
             ->headerActions([
+                Action::make('edit_team_banner')
+                    ->label('Редагувати загальне фото')
+                    ->form([
+                        FileUpload::make('team_banner')
+                            ->label('Фото команди')
+                            ->image()
+                            ->imageEditor()
+                            ->directory('team'),
+                    ])
+                    ->mountUsing(function ($form) {
+                        $settings = SiteSetting::first();
+
+                        $form->fill([
+                            'team_banner' => $settings?->team_banner,
+                        ]);
+                    })
+                    ->action(function ($data) {
+                        $settings = SiteSetting::first();
+
+                        $settings->update([
+                            'team_banner' => $data['team_banner'],
+                        ]);
+                    }),
+
                 Action::make('manage_departments')
                     ->label('Редагувати відділи')
                     ->form([
