@@ -24,28 +24,15 @@ class EmployeesTable
             ->defaultSort('sort')
 
             ->columns([
-                TextColumn::make('last_name')
-                    ->label('Прізвище')
-                    ->searchable(),
-
-                TextColumn::make('first_name')
-                    ->label('Імʼя')
-                    ->searchable(),
-
-                TextColumn::make('middle_name')
-                    ->label('По батькові')
-                    ->searchable(),
-
-                TextColumn::make('position.name')
-                    ->label('Посада')
-                    ->searchable(),
-
-                TextColumn::make('department.name')
-                    ->label('Відділ')
-                    ->searchable(),
+                TextColumn::make('last_name')->label('Прізвище')->searchable(),
+                TextColumn::make('first_name')->label('Імʼя')->searchable(),
+                TextColumn::make('middle_name')->label('По батькові')->searchable(),
+                TextColumn::make('position.name')->label('Посада')->searchable(),
+                TextColumn::make('department.name')->label('Відділ')->searchable(),
             ])
 
             ->headerActions([
+
                 Action::make('edit_team_banner')
                     ->label('Редагувати загальне фото')
                     ->form([
@@ -72,47 +59,75 @@ class EmployeesTable
 
                 Action::make('manage_departments')
                     ->label('Редагувати відділи')
+
+                    ->mountUsing(function ($form) {
+                        $form->fill([
+                            'departments' => Department::all()->map(fn ($d) => [
+                                'id' => $d->id,
+                                'name' => $d->name,
+                            ])->toArray()
+                        ]);
+                    })
+
                     ->form([
                         Repeater::make('departments')
-                            ->label('Список відділів')
                             ->schema([
+
+                                TextInput::make('id')->hidden(),
+
                                 TextInput::make('name')
-                                    ->label('Назва')
-                                    ->required(),
+                                    ->required()
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        $clean = preg_replace('/^відділ\s+/iu', '', $state);
+                                        $set('name', $clean);
+                                    }),
+
                             ])
-                            ->default(fn () => Department::all()->toArray())
-                            ->addActionLabel('Додати відділ'),
                     ])
+
                     ->action(function (array $data) {
-                        Department::query()->delete();
+
+                        $ids = [];
 
                         foreach ($data['departments'] as $item) {
-                            Department::create([
-                                'name' => $item['name'],
-                            ]);
+
+                            if (!empty($item['id'])) {
+
+                                Department::where('id', $item['id'])->update([
+                                    'name' => $item['name'],
+                                ]);
+
+                                $ids[] = $item['id'];
+
+                            } else {
+
+                                $new = Department::create([
+                                    'name' => $item['name'],
+                                ]);
+
+                                $ids[] = $new->id;
+                            }
                         }
+
+                        Department::whereNotIn('id', $ids)->delete();
                     }),
 
                 Action::make('manage_positions')
                     ->label('Редагувати посади')
                     ->form([
                         Repeater::make('positions')
-                            ->label('Список посад')
                             ->schema([
-                                TextInput::make('name')
-                                    ->label('Назва')
-                                    ->required(),
+                                TextInput::make('name')->required(),
                             ])
-                            ->default(fn () => Position::all()->toArray())
-                            ->addActionLabel('Додати посаду'),
+                            ->default(fn () => Position::all()->toArray()),
                     ])
-                    ->action(function (array $data) {
+                    ->action(function ($data) {
+
                         Position::query()->delete();
 
                         foreach ($data['positions'] as $item) {
-                            Position::create([
-                                'name' => $item['name'],
-                            ]);
+                            Position::create($item);
                         }
                     }),
             ])

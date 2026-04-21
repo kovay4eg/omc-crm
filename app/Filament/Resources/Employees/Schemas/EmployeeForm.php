@@ -2,10 +2,9 @@
 
 namespace App\Filament\Resources\Employees\Schemas;
 
-use App\Models\Position;
-use App\Models\Department;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Schema;
 
 class EmployeeForm
@@ -14,6 +13,7 @@ class EmployeeForm
     {
         return $schema
             ->components([
+
                 TextInput::make('first_name')
                     ->label('Імʼя')
                     ->required(),
@@ -30,11 +30,6 @@ class EmployeeForm
                     ->relationship('position', 'name')
                     ->searchable()
                     ->preload()
-                    ->createOptionForm([
-                        TextInput::make('name')
-                            ->label('Назва посади')
-                            ->required(),
-                    ])
                     ->required(),
 
                 Select::make('department_id')
@@ -42,20 +37,41 @@ class EmployeeForm
                     ->relationship('department', 'name')
                     ->searchable()
                     ->preload()
-                    ->createOptionForm([
-                        TextInput::make('name')
-                            ->label('Назва відділу')
-                            ->required(),
-                    ])
                     ->required(),
 
-                TextInput::make('photo')
-                    ->label('Фото'),
+                FileUpload::make('photo')
+                    ->label('Фото')
+                    ->image()
+                    ->directory('employees')
+
+                    // 🔥 ПРОПОРЦІЯ ЯК НА САЙТІ
+                    ->imageCropAspectRatio('3:4')
+
+                    // 🔥 РОЗМІР (щоб не ламав верстку)
+                    ->imageResizeTargetWidth('600')
+                    ->imageResizeTargetHeight('800')
+
+                    // 🔥 DRAG / ZOOM (вже є в Filament crop)
+                    ->panelAspectRatio('3:4')
+                    ->panelLayout('integrated')
+                    ->imageEditor()
+
+                    // 🔥 ПРЕВʼЮ
+                    ->imagePreviewHeight('250')
+
+                    // 🔥 FALLBACK
+                    ->default(null)
+                    ->avatar(fn ($state) =>
+                        $state
+                            ? asset('storage/' . $state)
+                            : asset('images/default-avatar.png')
+                    ),
 
                 TextInput::make('sort')
                     ->numeric()
                     ->default(0)
                     ->hidden(),
+
             ]);
     }
 }

@@ -24,6 +24,9 @@ use App\Filament\Resources\UserResource;
 use App\Filament\Resources\SystemLogs\SystemLogResource;
 use App\Filament\Resources\Employees\EmployeeResource;
 
+// ДОДАНО
+use App\Filament\Pages\HomepageSettings;
+
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -57,6 +60,7 @@ class AdminPanelProvider extends PanelProvider
 
             ->pages([
                 \App\Filament\Pages\Dashboard::class,
+                HomepageSettings::class,
             ])
 
             ->resources([

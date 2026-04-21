@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\HomeController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +27,8 @@ Route::post('/exit-preview', function () {
 Route::get('/login', function () {
     return redirect('/admin/login');
 })->name('login');
+
+Route::get('/', [HomeController::class, 'index']);
 
 
 // GOOGLE
