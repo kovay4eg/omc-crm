@@ -13,10 +13,16 @@
             font-family: 'Commissioner', sans-serif;
         }
 
-        /* ===== ФОН ===== */
+        /* ===== БЛОК ЗАГОЛОВОК + ФОН ===== */
+        .title-block {
+            position: relative;
+            margin-bottom: 140px;
+        }
+
         #bgText {
             position: absolute;
             top: 50%;
+            left: 0;
             transform: translateY(-50%);
             font-size: 180px;
             font-weight: 800;
@@ -24,6 +30,15 @@
             opacity: 0.25;
             white-space: nowrap;
             pointer-events: none;
+            z-index: 0;
+        }
+
+        .title-block h2 {
+            position: relative;
+            z-index: 2;
+            color:#2e3aa1;
+            font-size:36px;
+            font-weight:800;
         }
 
         /* ===== КАРТКИ ===== */
@@ -41,23 +56,30 @@
 
             opacity: 0;
             transform-origin: center;
+
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.05) translateY(-10px) !important;
+            z-index: 10;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
         }
 
         .card img {
             position: absolute;
-            top: 22px;
+            top: 45px;
             left: 24px;
-            width: 56px;
+            width: 90px;
         }
 
         .card p {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 800;
             line-height: 1.35;
             color: #000;
         }
 
-        /* ===== КОЛЬОРИ ===== */
         .c1 { background: #C7CBF3; }
         .c2 { background: #9FA8F0; }
         .c3 { background: #D6D9F7; }
@@ -67,7 +89,6 @@
             background: linear-gradient(135deg,#5B63E6,#4A54D1);
         }
 
-        /* ===== Z INDEX ===== */
         .c1 { z-index: 1; }
         .c2 { z-index: 2; }
         .c3 { z-index: 3; }
@@ -83,50 +104,53 @@
     $settings = $settings ?? null;
 @endphp
 
-<!-- HERO -->
-<section style="max-width:1100px;margin:40px auto;background:white;padding:40px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.05);">
+<!-- HERO (ВИПРАВЛЕНО) -->
+<section style="max-width:1100px;margin:0 auto;">
     @if($settings && $settings->banner_image)
-        <img src="{{ asset('storage/' . $settings->banner_image) }}" style="width:100%;border-radius:12px;">
+        <img src="{{ asset('storage/' . $settings->banner_image) }}" style="width:100%;">
     @endif
 </section>
 
 <!-- НАПРЯМИ -->
 <section style="position:relative;padding:160px 0;overflow:hidden;">
 
-    <!-- ФОН -->
-    <div id="bgText">
-        НАПРЯМИ ДІЯЛЬНОСТІ &nbsp;&nbsp;&nbsp; НАПРЯМИ ДІЯЛЬНОСТІ
-    </div>
+    <div style="max-width:1200px;margin:auto;padding:0 20px;position:relative;">
 
-    <div style="max-width:1100px;margin:auto;padding:0 20px;position:relative;">
+        <div class="title-block">
 
-        <h2 style="color:#2e3aa1;font-size:36px;font-weight:800;margin-bottom:140px;">
-            ГОЛОВНІ НАПРЯМИ ДІЯЛЬНОСТІ:
-        </h2>
+            <div id="bgText">
+                НАПРЯМИ ДІЯЛЬНОСТІ &nbsp;&nbsp;&nbsp; НАПРЯМИ ДІЯЛЬНОСТІ
+            </div>
 
-        <div style="position:relative;height:360px;max-width:1050px;margin:auto;">
+            <h2>
+                ГОЛОВНІ НАПРЯМИ ДІЯЛЬНОСТІ:
+            </h2>
 
-            <div class="card c1" style="left:0px; top:120px; transform:rotate(-12deg);">
+        </div>
+
+        <div style="position:relative;height:360px;max-width:1150px;margin:auto;">
+
+            <div class="card c1" style="left:0px; top:100px; transform:rotate(+10deg);">
                 <img src="/images/cards/education.png">
                 <p>НЕФОРМАЛЬНА ОСВІТА, ЯКОЇ БРАКУЄ В ПІДРУЧНИКАХ</p>
             </div>
 
-            <div class="card c2" style="left:260px; top:150px; transform:rotate(-6deg);">
+            <div class="card c2" style="left:255px; top:155px; transform:rotate(-6deg);">
                 <img src="/images/cards/career.png">
                 <p>ВПЕВНЕНИЙ КАР'ЄРНИЙ СТАРТ ТА ПРОФОРІЄНТАЦІЯ</p>
             </div>
 
-            <div class="card c3" style="left:520px; top:120px; transform:rotate(-2deg);">
+            <div class="card c3" style="left:520px; top:90px; transform:rotate(+5deg);">
                 <img src="/images/cards/community.png">
                 <p>РОЗВИТОК МОЛОДІЖНИХ РАД ТА ПІДТРИМКА ІНІЦІАТИВ</p>
             </div>
 
-            <div class="card card-main" style="left:780px; top:40px; transform:rotate(4deg) scale(1.08);">
+            <div class="card card-main" style="left:780px; top:140px; transform:rotate(-4deg);">
                 <img src="/images/cards/health.png">
                 <p>ЗДОРОВИЙ СПОСІБ ЖИТТЯ ТА МЕНТАЛЬНА СТІЙКІСТЬ</p>
             </div>
 
-            <div class="card c5" style="left:1040px; top:140px; transform:rotate(10deg);">
+            <div class="card c5" style="left:1060px; top:170px; transform:rotate(10deg);">
                 <img src="/images/cards/patriotic.png">
                 <p>ПАТРІОТИЧНЕ ВИХОВАННЯ ТА ЗМІСТОВНЕ ДОЗВІЛЛЯ</p>
             </div>
