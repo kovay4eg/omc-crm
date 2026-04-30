@@ -57,6 +57,15 @@ class HomepageSettings extends Page implements HasForms
                     ->preserveFilenames()
                     ->required(),
 
+                // 🔥 мобільний банер
+                FileUpload::make('mobile_banner_image')
+                    ->label('Банер (мобільна версія)')
+                    ->image()
+                    ->disk('public')
+                    ->directory('homepage')
+                    ->visibility('public')
+                    ->preserveFilenames(),
+
                 FileUpload::make('logo')
                     ->label('Логотип')
                     ->image()
@@ -86,12 +95,19 @@ class HomepageSettings extends Page implements HasForms
                     ->url()
                     ->hidden(fn ($get) => !$get('telegram_enabled')),
 
-                Toggle::make('x_enabled')->label('X (Twitter)')->live(),
+                Toggle::make('youtube_enabled')->label('YouTube')->live(),
 
-                TextInput::make('x_url')
-                    ->label('X URL')
+                TextInput::make('youtube_url')
+                    ->label('YouTube URL')
                     ->url()
-                    ->hidden(fn ($get) => !$get('x_enabled')),
+                    ->hidden(fn ($get) => !$get('youtube_enabled')),
+
+                Toggle::make('tiktok_enabled')->label('TikTok')->live(),
+
+                TextInput::make('tiktok_url')
+                    ->label('TikTok URL')
+                    ->url()
+                    ->hidden(fn ($get) => !$get('tiktok_enabled')),
             ])
             ->statePath('data');
     }
@@ -103,6 +119,7 @@ class HomepageSettings extends Page implements HasForms
         $settings = HomepageSetting::first() ?? new HomepageSetting();
 
         $settings->banner_image = $data['banner_image'] ?? null;
+        $settings->mobile_banner_image = $data['mobile_banner_image'] ?? null; // 🔥
         $settings->logo = $data['logo'] ?? null;
 
         $settings->facebook_enabled = !empty($data['facebook_enabled']);
@@ -114,8 +131,11 @@ class HomepageSettings extends Page implements HasForms
         $settings->telegram_enabled = !empty($data['telegram_enabled']);
         $settings->telegram_url = $data['telegram_url'] ?? null;
 
-        $settings->x_enabled = !empty($data['x_enabled']);
-        $settings->x_url = $data['x_url'] ?? null;
+        $settings->youtube_enabled = !empty($data['youtube_enabled']);
+        $settings->youtube_url = $data['youtube_url'] ?? null;
+
+        $settings->tiktok_enabled = !empty($data['tiktok_enabled']);
+        $settings->tiktok_url = $data['tiktok_url'] ?? null;
 
         $settings->save();
 
