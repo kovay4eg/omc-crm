@@ -40,7 +40,7 @@
 
 /* logo */
 .logo img{
-    width:170px;
+    width:120px;
 }
 
 /* nav */
@@ -228,7 +228,7 @@
         <nav class="nav" id="navMenu">
 
             <a href="/" class="{{ request()->is('/') ? 'active' : '' }}">Головна</a>
-            <a href="/about" class="{{ request()->is('about') ? 'active' : '' }}">Про нас</a>
+            <a href="/#about-section">Про нас</a>
             <a href="/meet" class="{{ request()->is('meet') ? 'active' : '' }}">Де ми можемо зустрітися?</a>
             <a href="/events" class="{{ request()->is('events') ? 'active' : '' }}">Анонси заходів</a>
             <a href="/results" class="{{ request()->is('results') ? 'active' : '' }}">Підсумки заходів</a>
