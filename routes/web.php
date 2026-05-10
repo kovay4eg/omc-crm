@@ -19,6 +19,8 @@ Route::get('/', function () {
 
 Route::get('/team', [TeamController::class, 'index'])->name('team');
 
+Route::view('/statut', 'statuts.status');
+
 Route::post('/exit-preview', function () {
     session()->forget('preview_role');
     return back();

@@ -10,7 +10,7 @@
 
     <style>
         html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; }
-        body { background: #f5f5f5; font-family: 'Commissioner', sans-serif; }
+        body { background: #ffffff; font-family: 'Commissioner', sans-serif; }
 
         .container-1200 { max-width: 1200px; margin: 0 auto; padding: 0 15px; position: relative; }
 
@@ -37,8 +37,9 @@
             display: flex; flex-direction: column; justify-content: flex-end;
             transition: opacity 1s ease, transform 0.4s ease, box-shadow 0.4s ease;
             opacity: 0; border: none; position: relative; cursor: pointer;
+            
         }
-
+    
         @keyframes cardFloat {
             0% { transform: translateY(0) rotate(var(--r)); }
             100% { transform: translateY(-15px) rotate(var(--r)); }
@@ -56,7 +57,23 @@
         .card-main p { color: #fff; }
         .c5 { background: #9FA8F0; --r: 5deg; --d: 0.2s; }
 
+        @media (max-width: 1199px) {
+            .cards-wrapper {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 30px;
+                padding-top: 20px;
+            }
+            .card {
+                width: 275px;
+                height: 320px;
+                position: relative;
+            }
+        }
+
         @media (min-width: 1200px) {
+            .mobile-title {display:none;}
             .cards-wrapper { height: 480px; }
             .card { position: absolute; width: 275px; height: 320px; }
             .card.c1 { left:0; top:40px; }
@@ -64,6 +81,7 @@
             .card.c3 { left:460px; top:30px; }
             .card.card-main { left:690px; top:110px; }
             .card.c5 { left:925px; top:60px; }
+            .desktop-title {display: none;}
         }
 
         /* Accordion General */
@@ -100,6 +118,18 @@
         .t-card.loaded { opacity: 1; animation: cardFloat 3.5s ease-in-out infinite alternate; }
         .t-card img { position: absolute; top: 25px; left: 20px; width: 60px; height: auto; }
         .t-card p { font-weight: 800; font-size: 14px; line-height: 1.2; margin: 0; text-transform: uppercase; color: #000; }
+        /* Додайте це для карток з файлу image_949d41.png */
+        .t-card:hover {
+        animation: none !important; /* Зупиняємо плавання */
+        transform: translateY(-15px) scale(1.05) rotate(0deg) !important; /* Піднімаємо та вирівнюємо */
+        z-index: 10; /* Виводимо на передній план */
+        box-shadow: 0 20px 40px rgba(0,0,0,0.12); /* Додаємо м'яку тінь */
+        transition: all 0.3s ease !important; /* Робимо рух плавним */
+       }
+        .t-card:hover img {
+            transform: scale(1.1);
+            transition: transform 0.3s ease;
+        }
         .tc-1 { background: #b1b8e8; --r: -3deg; --d: 0.1s; }
         .tc-2 { background: #919ce1; --r: 2deg; --d: 0.2s; margin-top: 15px; }
         .tc-3 { background: #ffffff; --r: -2deg; --d: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
@@ -121,14 +151,83 @@
         @media (max-width: 991px) {
             .design-cards-row { grid-template-columns: repeat(2, 1fr); }
             .offer-item { width: 40%; }
+            .desktop-title {
+        display: none;
+    }
         }
 
         @media (max-width: 767px) {
-            .design-cards-row { grid-template-columns: 1fr; }
-            .offer-item { width: 100%; }
-            .t-card { width: 100% !important; min-height: 180px; height: auto !important; transform: rotate(0deg) !important; opacity: 1 !important; animation: none !important; }
-            .t-card img { position: relative !important; top: 0 !important; left: 0 !important; margin-bottom: 15px; width: 50px !important; }
-        }
+              .t-card{
+        width:50% !important;
+        min-height:220px;
+        height:auto !important;
+        padding:10px;
+        position:relative;
+        
+    }
+    .desktop-title {
+        display: none;
+    }
+
+
+
+    .t-card img{
+        width:60px !important;
+        left:20px !important;
+        top:30px !important;
+    }
+
+    .t-card h5{
+        margin-top:90px;
+        font-size:15px;
+        line-height:1.1;
+    }
+
+    .tc-1{
+        transform:rotate(-7deg) !important;
+    }
+
+    .tc-2{
+        transform:rotate(6deg) !important;
+    }
+
+    .tc-3{
+        transform:rotate(-5deg) !important;
+    }
+
+    .tc-4{
+        transform:rotate(7deg) !important;
+    }
+
+    .tc-5{
+        transform:rotate(-6deg) !important;
+    }
+    }
+    
+
+    .mobile-title{
+        display:flex;
+        flex-direction:column;
+        line-height:1.05;
+    }
+
+    .mobile-title span{
+        display:block;
+    }
+
+    .acc-btn-left{
+        display:flex;
+        align-items:center;
+        gap:12px;
+    }
+
+    .accordion-title{
+        display:flex;
+        flex-direction:column;
+    }
+
+        
+
     </style>
 </head>
 <body>
@@ -174,7 +273,6 @@
         </div>
 
         <div class="accordion custom-accordion" id="mainAccordion">
-            <!-- 1. Акордеон: ЩО ТАКЕ ПОМЦ? -->
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
@@ -202,7 +300,6 @@
                 </div>
             </div>
 
-            <!-- 2. Акордеон: ДЛЯ КОГО МИ? -->
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
@@ -224,62 +321,130 @@
                 </div>
             </div>
 
-            <!-- 3. Акордеон: ЩО МИ МОЖЕМО ТОБІ ДАТИ? (Виправлено на шаховий порядок 3+2) -->
             <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
-                        <span class="acc-btn-left"><i class="icon-flower"></i> ЩО МИ МОЖЕМО ТОБІ ДАТИ?</span>
-                        <i class="icon-arrow-custom"></i>
-                    </button>
-                </h2>
-                <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#mainAccordion">
-                    <div class="accordion-body px-0">
-                        <div class="offers-wrapper">
-                            <p class="offers-intro-text">ПОМЦ – це про можливості, які стають реальністю.<br><strong>У НАС ТИ МОЖЕШ:</strong></p>
-                            
-                            <div class="offers-grid-container">
-                                <!-- Ряд 1: 3 елементи -->
-                                <div class="offers-row top-row">
-                                    <div class="offer-item">
-                                        <img src="/images/cards/patriotic.png" alt="icon">
-                                        <h5>НАВЧАТИСЯ</h5>
-                                        <p>Проводимо тренінги з лідерства, проєктного менеджменту та комунікацій</p>
-                                    </div>
-                                    <div class="offer-item">
-                                        <img src="/images/cards/patriotic.png" alt="icon">
-                                        <h5>РЕАЛІЗОВУВАТИ СВОЇ ІДЕЇ</h5>
-                                        <p>Допомагаємо перетворити твої задуми на реальні проєкти</p>
-                                    </div>
-                                    <div class="offer-item">
-                                        <img src="/images/cards/patriotic.png" alt="icon">
-                                        <h5>ЗНАХОДИТИ НОВІ МОЖЛИВОСТІ</h5>
-                                        <p>Участь у всеукраїнських форумах, нові знайомства та корисні контакти. Розвиток кар'єрних можливостей у форматі зустрічей TEDx та Speed Friending з успішними підприємцями</p>
-                                    </div>
-                                </div>
+    <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
 
-                                <!-- Ряд 2: 2 елементи (центруються) -->
-                                <div class="offers-row bottom-row">
-                                    <div class="offer-item">
-                                        <img src="/images/cards/patriotic.png" alt="icon">
-                                        <h5>РОЗВИВАТИСЯ ТВОРЧО, МЕНТАЛЬНО І ФІЗИЧНО</h5>
-                                        <p>Організовуємо заходи з емоційного розвантаження, психологічні консультації та практики ментального здоров'я. Проводимо заняття з йоги, танців та спортивні івенти</p>
-                                    </div>
-                                    <div class="offer-item">
-                                        <img src="/images/cards/patriotic.png" alt="icon">
-                                        <h5>БУТИ ЧАСТИНОЮ СПІЛЬНОТИ</h5>
-                                        <p>Безпечний і відкритий простір для навчання, роботи чи спілкування. Ми не лише чекаємо на тебе в Молодіжному хабі в Полтаві, а й регулярно виїжджаємо в громади Полтавської області, щоб бути ближчими до молоді</p>
-                                    </div>
-                                </div>
-                            </div>
+            <span class="acc-btn-left">
 
-                            <p class="offers-footer-note">Команда працює для молоді віком від 14 до 35 років, яка живе, навчається або працює в Полтаві та області.</p>
+                <i class="icon-flower"></i>
+
+                <span class="accordion-title">
+
+                    <span class="desktop-title">
+                        ЩО МИ МОЖЕМО ТОБІ ДАТИ?
+                    </span>
+
+                    <span class="mobile-title">
+                        <span>ЩО МИ МОЖЕМО ТОБІ</span>
+                        <span>ДАТИ?</span>
+                    </span>
+
+                </span>
+
+            </span>
+
+            <i class="icon-arrow-custom"></i>
+
+        </button>
+    </h2>
+
+    <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#mainAccordion">
+        <div class="accordion-body px-0">
+            <div class="offers-wrapper">
+
+                <p class="offers-intro-text">
+                    ПОМЦ – це про можливості, які стають реальністю.
+                    <br>
+                    <strong>У НАС ТИ МОЖЕШ:</strong>
+                </p>
+
+                <div class="offers-grid-container">
+
+                    <div class="offers-row top-row">
+
+                        <div class="offer-item">
+                            <img src="/images/cards/patriotic.png" alt="icon">
+                            <h5>НАВЧАТИСЯ</h5>
+                            <p>
+                                Проводимо тренінги з лідерства,
+                                проєктного менеджменту та комунікацій
+                            </p>
                         </div>
+
+                        <div class="offer-item">
+                            <img src="/images/cards/patriotic.png" alt="icon">
+                            <h5>РЕАЛІЗОВУВАТИ СВОЇ ІДЕЇ</h5>
+                            <p>
+                                Допомагаємо перетворити твої задуми
+                                на реальні проєкти
+                            </p>
+                        </div>
+
+                        <div class="offer-item">
+                            <img src="/images/cards/patriotic.png" alt="icon">
+                            <h5>ЗНАХОДИТИ НОВІ МОЖЛИВОСТІ</h5>
+                            <p>
+                                Участь у всеукраїнських форумах,
+                                нові знайомства та корисні контакти.
+                                Розвиток кар'єрних можливостей у форматі
+                                зустрічей TEDx та Speed Friending
+                                з успішними підприємцями
+                            </p>
+                        </div>
+
                     </div>
+
+                    <div class="offers-row bottom-row">
+
+                        <div class="offer-item">
+                            <img src="/images/cards/patriotic.png" alt="icon">
+                            <h5>РОЗВИВАТИСЯ ТВОРЧО, МЕНТАЛЬНО І ФІЗИЧНО</h5>
+                            <p>
+                                Організовуємо заходи з емоційного
+                                розвантаження, психологічні консультації
+                                та практики ментального здоров'я.
+                                Проводимо заняття з йоги,
+                                танців та спортивні івенти
+                            </p>
+                        </div>
+
+                        <div class="offer-item">
+                            <img src="/images/cards/patriotic.png" alt="icon">
+                            <h5>БУТИ ЧАСТИНОЮ СПІЛЬНОТИ</h5>
+                            <p>
+                                Безпечний і відкритий простір
+                                для навчання, роботи чи спілкування.
+                                Ми не лише чекаємо на тебе
+                                в Молодіжному хабі в Полтаві,
+                                а й регулярно виїжджаємо
+                                в громади Полтавської області,
+                                щоб бути ближчими до молоді
+                            </p>
+                        </div>
+
+                    </div>
+
                 </div>
+
+                <p class="offers-footer-note">
+                    Команда працює для молоді віком від 14 до 35 років,
+                    яка живе, навчається або працює
+                    в Полтаві та області.
+                </p>
+
             </div>
         </div>
     </div>
+</div>
 </section>
+
+@include('team.index', [
+    'departments' => $departments,
+    'settings' => $teamSettings
+])
+
+@include('statuts.status')
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -317,9 +482,73 @@ document.addEventListener('DOMContentLoaded', () => {
 
     mainCards.forEach(card => observer.observe(card));
     targetCards.forEach(card => observer.observe(card));
+
+    
 });
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+<script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. ФІКС СКРОЛУ: примусово повертаємо на початок при завантаженні
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+
+    // 2. СЕЛЕКТОРИ: шукаємо посилання всюди в хедері
+    // Якщо у вас посилання мають інший клас, додайте його сюди
+    const navLinks = document.querySelectorAll('header a, .nav-link, .nav a');
+    const aboutSection = document.getElementById('about-section');
+
+    function setActive(targetHref) {
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            // Перевіряємо точний збіг або закінчення рядка
+            if (href === targetHref || (href && href.endsWith(targetHref))) {
+                link.classList.add('active');
+                // Додаємо стиль безпосередньо, якщо CSS клас не спрацьовує
+                link.style.color = '#2e3aa1'; 
+                link.style.borderBottom = '2px solid #2e3aa1';
+            } else {
+                link.classList.remove('active');
+                link.style.color = ''; 
+                link.style.borderBottom = '';
+            }
+        });
+    }
+
+    function handleScroll() {
+        const scrollY = window.scrollY;
+
+        // Якщо ми вгорі сторінки
+        if (scrollY < 200) {
+            setActive('/');
+            return;
+        }
+
+        // Якщо докрутили до секції "Про нас"
+        if (aboutSection) {
+            const rect = aboutSection.getBoundingClientRect();
+            // Активуємо, коли заголовок секції піднімається вище середини екрана
+            if (rect.top <= 300) {
+                setActive('#about-section');
+            } else {
+                setActive('/');
+            }
+        }
+    }
+
+    // Слухаємо скрол
+    window.addEventListener('scroll', handleScroll);
+    
+    // Викликаємо відразу для ініціалізації
+    handleScroll();
+});
+</script>
+</script>
+</script>
 </body>
 </html>
