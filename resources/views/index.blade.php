@@ -225,6 +225,63 @@
         display:flex;
         flex-direction:column;
     }
+    .about-toggle-wrapper{
+    display:flex;
+    justify-content:center;
+    margin-top:50px;
+    margin-bottom:80px;
+}
+
+.about-toggle-btn{
+    border:none;
+    background:#2e3aa1;
+    color:#fff;
+    padding:18px 40px;
+    border-radius:60px;
+    font-size:18px;
+    font-weight:800;
+    display:flex;
+    align-items:center;
+    gap:15px;
+    transition:all .3s ease;
+    cursor:pointer;
+}
+
+.about-toggle-btn:hover{
+    transform:translateY(-5px);
+    box-shadow:0 20px 40px rgba(46,58,161,.25);
+}
+
+.about-toggle-arrow{
+    font-size:22px;
+    transition:transform .3s ease;
+}
+
+.about-toggle-btn.active .about-toggle-arrow{
+    transform:rotate(180deg);
+}
+
+.about-more-wrapper{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .8s ease;
+}
+
+.about-more-wrapper.open{
+    max-height:30000px;
+    overflow:visible;
+}
+
+@media (max-width: 767px){
+
+    .about-toggle-btn{
+        width:100%;
+        justify-content:center;
+        font-size:16px;
+        padding:16px 20px;
+    }
+
+}
 
         
 
@@ -439,120 +496,359 @@
 </div>
 </section>
 
-@include('team.index', [
-    'departments' => $departments,
-    'settings' => $teamSettings
-])
+<div class="about-toggle-wrapper">
 
-@include('statuts.status')
+    <button id="toggleAboutMore" class="about-toggle-btn">
 
-@include('reporting.reporting')
+        <span class="about-toggle-text">
+            ПОКАЗАТИ БІЛЬШЕ
+        </span>
 
-@include('calendar_plan.calendar_plan')
+        <span class="about-toggle-arrow">
+            ↓
+        </span>
+
+    </button>
+
+</div>
+
+<div id="aboutMoreWrapper" class="about-more-wrapper">
+
+    @include('team.index', [
+        'departments' => $departments,
+        'settings' => $teamSettings
+    ])
+
+    @include('statuts.status')
+
+    @include('reporting.reporting')
+
+    @include('calendar_plan.calendar_plan')
+
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+
     const mainCards = document.querySelectorAll('.card');
     const targetCards = document.querySelectorAll('.t-card');
     const flowers = document.querySelectorAll('.icon-flower');
+
     const bgText1 = document.getElementById('bgText');
     const bgText2 = document.getElementById('bgTextSecondary');
+
     const accordionButtons = document.querySelectorAll('.accordion-button');
 
     accordionButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
+
+        btn.addEventListener('click', function () {
+
             const flower = this.querySelector('.icon-flower');
-            flower.classList.add('flower-spin');
-            setTimeout(() => { if(this.classList.contains('collapsed')) flower.classList.remove('flower-spin'); }, 600);
+
+            if (flower) {
+
+                flower.classList.add('flower-spin');
+
+                setTimeout(() => {
+
+                    if (this.classList.contains('collapsed')) {
+                        flower.classList.remove('flower-spin');
+                    }
+
+                }, 600);
+
+            }
+
         });
+
     });
 
     window.addEventListener('scroll', () => {
+
         const scrollPos = window.scrollY;
-        flowers.forEach(flower => { if (flower.closest('.accordion-button').classList.contains('collapsed')) flower.style.transform = `rotate(${scrollPos * 0.2}deg)`; });
-        if (bgText1) bgText1.style.transform = `translateY(-50%) translateX(-${scrollPos * 0.3}px)`;
-        if (bgText2) bgText2.style.transform = `translateY(-50%) translateX(-${scrollPos * 0.3}px)`;
+
+        flowers.forEach(flower => {
+
+            const parentBtn = flower.closest('.accordion-button');
+
+            if (
+                parentBtn &&
+                parentBtn.classList.contains('collapsed')
+            ) {
+
+                flower.style.transform =
+                    `rotate(${scrollPos * 0.2}deg)`;
+
+            }
+
+        });
+
+        if (bgText1) {
+
+            bgText1.style.transform =
+                `translateY(-50%) translateX(-${scrollPos * 0.3}px)`;
+
+        }
+
+        if (bgText2) {
+
+            bgText2.style.transform =
+                `translateY(-50%) translateX(-${scrollPos * 0.3}px)`;
+
+        }
+
     });
 
     const observer = new IntersectionObserver(entries => {
+
         entries.forEach(entry => {
+
             if (entry.isIntersecting) {
+
                 const card = entry.target;
-                const delay = parseFloat(getComputedStyle(card).getPropertyValue('--d')) * 1000 || 0;
-                setTimeout(() => card.classList.add('loaded'), delay);
+
+                const delay =
+                    parseFloat(
+                        getComputedStyle(card)
+                        .getPropertyValue('--d')
+                    ) * 1000 || 0;
+
+                setTimeout(() => {
+
+                    card.classList.add('loaded');
+
+                }, delay);
+
             }
+
         });
-    }, { threshold: 0.1 });
+
+    }, {
+        threshold: 0.1
+    });
 
     mainCards.forEach(card => observer.observe(card));
+
     targetCards.forEach(card => observer.observe(card));
 
-    
+    const toggleBtn =
+        document.getElementById('toggleAboutMore');
+
+    const wrapper =
+        document.getElementById('aboutMoreWrapper');
+
+    const hiddenSections = [
+        '#team-section',
+        '#statut-section',
+        '#reports-section',
+        '#calendar-plan-section'
+    ];
+
+    function openAboutSections() {
+
+        if (!wrapper || !toggleBtn) return;
+
+        wrapper.classList.add('open');
+
+        toggleBtn.classList.add('active');
+
+        const text =
+            toggleBtn.querySelector('.about-toggle-text');
+
+        if (text) {
+
+            text.textContent = 'ПРИХОВАТИ';
+
+        }
+
+    }
+
+    function closeAboutSections() {
+
+        if (!wrapper || !toggleBtn) return;
+
+        wrapper.classList.remove('open');
+
+        toggleBtn.classList.remove('active');
+
+        const text =
+            toggleBtn.querySelector('.about-toggle-text');
+
+        if (text) {
+
+            text.textContent = 'ПОКАЗАТИ БІЛЬШЕ';
+
+        }
+
+    }
+
+    if (toggleBtn && wrapper) {
+
+        toggleBtn.addEventListener('click', () => {
+
+            if (wrapper.classList.contains('open')) {
+
+                closeAboutSections();
+
+            } else {
+
+                openAboutSections();
+
+            }
+
+        });
+
+    }
+
+    if (hiddenSections.includes(window.location.hash)) {
+
+        openAboutSections();
+
+        setTimeout(() => {
+
+            const el =
+                document.querySelector(window.location.hash);
+
+            if (el) {
+
+                el.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+
+            }
+
+        }, 700);
+
+    }
+
+    if ('scrollRestoration' in history) {
+
+        history.scrollRestoration = 'manual';
+
+    }
+
+    window.scrollTo(0, 0);
+
+    const navLinks =
+        document.querySelectorAll(
+            'header a, .nav-link, .nav a'
+        );
+
+    const aboutSection =
+        document.getElementById('about-section');
+
+    function setActive(targetHref) {
+
+        navLinks.forEach(link => {
+
+            const href = link.getAttribute('href');
+
+            if (
+                href === targetHref ||
+                (href && href.endsWith(targetHref))
+            ) {
+
+                link.classList.add('active');
+
+                link.style.color = '#2e3aa1';
+
+            } else {
+
+                link.classList.remove('active');
+
+                link.style.color = '';
+
+            }
+
+        });
+
+    }
+
+    function handleScroll() {
+
+        const scrollY = window.scrollY;
+
+        if (scrollY < 200) {
+
+            setActive('/');
+
+            return;
+
+        }
+
+        if (aboutSection) {
+
+            const rect =
+                aboutSection.getBoundingClientRect();
+
+            if (rect.top <= 300) {
+
+                setActive('#about-section');
+
+            } else {
+
+                setActive('/');
+
+            }
+
+        }
+
+    }
+
+    const hiddenMenuLinks = document.querySelectorAll(
+    '.dropdown-menu a[href^="#"]'
+);
+
+hiddenMenuLinks.forEach(link => {
+
+    link.addEventListener('click', (e) => {
+
+        const target =
+            link.getAttribute('href');
+
+        if (
+            hiddenSections.includes(target)
+        ) {
+
+            e.preventDefault();
+
+            openAboutSections();
+
+            setTimeout(() => {
+
+                const targetElement =
+                    document.querySelector(target);
+
+                if (targetElement) {
+
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    history.replaceState(
+                        null,
+                        null,
+                        window.location.pathname
+                    );
+
+                }
+
+            }, 180);
+
+        }
+
+    });
+
+});
+
+    window.addEventListener('scroll', handleScroll);
+
+    handleScroll();
+
 });
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-<script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. ФІКС СКРОЛУ: примусово повертаємо на початок при завантаженні
-    if ('scrollRestoration' in history) {
-        history.scrollRestoration = 'manual';
-    }
-    window.scrollTo(0, 0);
-
-    // 2. СЕЛЕКТОРИ: шукаємо посилання всюди в хедері
-    // Якщо у вас посилання мають інший клас, додайте його сюди
-    const navLinks = document.querySelectorAll('header a, .nav-link, .nav a');
-    const aboutSection = document.getElementById('about-section');
-
-    function setActive(targetHref) {
-        navLinks.forEach(link => {
-            const href = link.getAttribute('href');
-            // Перевіряємо точний збіг або закінчення рядка
-            if (href === targetHref || (href && href.endsWith(targetHref))) {
-                link.classList.add('active');
-                // Додаємо стиль безпосередньо, якщо CSS клас не спрацьовує
-                link.style.color = '#2e3aa1'; 
-                link.style.borderBottom = '2px solid #2e3aa1';
-            } else {
-                link.classList.remove('active');
-                link.style.color = ''; 
-                link.style.borderBottom = '';
-            }
-        });
-    }
-
-    function handleScroll() {
-        const scrollY = window.scrollY;
-
-        // Якщо ми вгорі сторінки
-        if (scrollY < 200) {
-            setActive('/');
-            return;
-        }
-
-        // Якщо докрутили до секції "Про нас"
-        if (aboutSection) {
-            const rect = aboutSection.getBoundingClientRect();
-            // Активуємо, коли заголовок секції піднімається вище середини екрана
-            if (rect.top <= 300) {
-                setActive('#about-section');
-            } else {
-                setActive('/');
-            }
-        }
-    }
-
-    // Слухаємо скрол
-    window.addEventListener('scroll', handleScroll);
-    
-    // Викликаємо відразу для ініціалізації
-    handleScroll();
-});
-</script>
-</script>
-</script>
 </body>
 </html>

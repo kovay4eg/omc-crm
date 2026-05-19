@@ -378,21 +378,28 @@ html{
                         <path d="m6 9 6 6 6-6"/>
                     </svg>
                 </button>
-
+                
                 <div class="dropdown-menu">
 
                     <a href="#about-section">Про нас</a>
 
-                    <a href="#team-section">Команда</a>
+                    <a href="#team-section" class="about-hidden-link">
+                        Команда
+                    </a>
 
-                    <a href="#statut-section">Статут</a>
+                    <a href="#statut-section" class="about-hidden-link">
+                        Статут
+                    </a>
 
-                    <a href="#reporting-section">Звітність</a>
+                    <a href="#reports-section" class="about-hidden-link">
+                        Звітність
+                    </a>
 
-                    <a href="#calendar-plan-section">Календарний план</a>
+                    <a href="#calendar-plan-section" class="about-hidden-link">
+                        Календарний план
+                    </a>
 
-                </div>
-
+</div>
             </div>
 
             <a href="/meet">Де ми можемо зустрітися?</a>

@@ -6,7 +6,7 @@ $reports = Report::orderBy('year', 'desc')->get();
 
 @endphp
 
-<section id="reporting-section" class="reports-section">
+<section id="reports-section" class="reports-section">
 
 <style>
 
