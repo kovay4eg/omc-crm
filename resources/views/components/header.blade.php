@@ -387,9 +387,9 @@ html{
 
                     <a href="#statut-section">Статут</a>
 
-                    <a href="/reporting">Звітність</a>
+                    <a href="#reporting-section">Звітність</a>
 
-                    <a href="/calendar">Календарний план</a>
+                    <a href="#calendar-plan-section">Календарний план</a>
 
                 </div>
 

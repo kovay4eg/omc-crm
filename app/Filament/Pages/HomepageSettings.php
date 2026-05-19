@@ -5,12 +5,13 @@ namespace App\Filament\Pages;
 use Filament\Pages\Page;
 use Filament\Actions\Action;
 use Filament\Schemas\Schema;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\TextInput;
+use App\Models\HomepageSetting;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Concerns\InteractsWithForms;
-use App\Models\HomepageSetting;
+
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
 
 class HomepageSettings extends Page implements HasForms
 {
@@ -38,9 +39,13 @@ class HomepageSettings extends Page implements HasForms
     {
         $settings = HomepageSetting::first();
 
+        $formData = [];
+
         if ($settings) {
-            $this->form->fill($settings->toArray());
+            $formData = $settings->toArray();
         }
+
+        $this->form->fill($formData);
     }
 
     public function form(Schema $form): Schema
@@ -57,7 +62,6 @@ class HomepageSettings extends Page implements HasForms
                     ->preserveFilenames()
                     ->required(),
 
-                // 🔥 мобільний банер
                 FileUpload::make('mobile_banner_image')
                     ->label('Банер (мобільна версія)')
                     ->image()
@@ -74,52 +78,65 @@ class HomepageSettings extends Page implements HasForms
                     ->visibility('public')
                     ->preserveFilenames(),
 
-                Toggle::make('facebook_enabled')->label('Facebook')->live(),
+                Toggle::make('facebook_enabled')
+                    ->label('Facebook')
+                    ->live(),
 
                 TextInput::make('facebook_url')
                     ->label('Facebook URL')
                     ->url()
                     ->hidden(fn ($get) => !$get('facebook_enabled')),
 
-                Toggle::make('instagram_enabled')->label('Instagram')->live(),
+                Toggle::make('instagram_enabled')
+                    ->label('Instagram')
+                    ->live(),
 
                 TextInput::make('instagram_url')
                     ->label('Instagram URL')
                     ->url()
                     ->hidden(fn ($get) => !$get('instagram_enabled')),
 
-                Toggle::make('telegram_enabled')->label('Telegram')->live(),
+                Toggle::make('telegram_enabled')
+                    ->label('Telegram')
+                    ->live(),
 
                 TextInput::make('telegram_url')
                     ->label('Telegram URL')
                     ->url()
                     ->hidden(fn ($get) => !$get('telegram_enabled')),
 
-                Toggle::make('youtube_enabled')->label('YouTube')->live(),
+                Toggle::make('youtube_enabled')
+                    ->label('YouTube')
+                    ->live(),
 
                 TextInput::make('youtube_url')
                     ->label('YouTube URL')
                     ->url()
                     ->hidden(fn ($get) => !$get('youtube_enabled')),
 
-                Toggle::make('tiktok_enabled')->label('TikTok')->live(),
+                Toggle::make('tiktok_enabled')
+                    ->label('TikTok')
+                    ->live(),
 
                 TextInput::make('tiktok_url')
                     ->label('TikTok URL')
                     ->url()
                     ->hidden(fn ($get) => !$get('tiktok_enabled')),
+
             ])
             ->statePath('data');
     }
 
     public function save(): void
     {
-        $data = $this->form->getState(); 
+        $data = $this->form->getState();
 
         $settings = HomepageSetting::first() ?? new HomepageSetting();
 
         $settings->banner_image = $data['banner_image'] ?? null;
-        $settings->mobile_banner_image = $data['mobile_banner_image'] ?? null; // 🔥
+
+        $settings->mobile_banner_image = $data['mobile_banner_image'] ?? null;
+
         $settings->logo = $data['logo'] ?? null;
 
         $settings->facebook_enabled = !empty($data['facebook_enabled']);
@@ -139,6 +156,6 @@ class HomepageSettings extends Page implements HasForms
 
         $settings->save();
 
-        $this->form->fill($settings->toArray()); 
+        $this->form->fill($settings->toArray());
     }
 }

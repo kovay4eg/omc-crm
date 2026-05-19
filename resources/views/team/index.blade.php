@@ -58,7 +58,6 @@
     margin-bottom:35px;
     text-transform:uppercase;
     padding-top: 80px;
-
 }
 
 .team-desc{
@@ -468,11 +467,34 @@
 
 function toggleDept(id, el){
 
-    const block = document.getElementById('dept-' + id);
+    const currentBlock = document.getElementById('dept-' + id);
 
-    el.classList.toggle('active');
+    const allBlocks = document.querySelectorAll('.employees');
 
-    block.classList.toggle('open');
+    const allRows = document.querySelectorAll('.dept-row');
+
+    const isOpen = currentBlock.classList.contains('open');
+
+    allBlocks.forEach(block => {
+
+        block.classList.remove('open');
+
+    });
+
+    allRows.forEach(row => {
+
+        row.classList.remove('active');
+
+    });
+
+    if(!isOpen){
+
+        currentBlock.classList.add('open');
+
+        el.classList.add('active');
+
+    }
+
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -484,12 +506,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const scrollPos = window.scrollY;
 
         if(bg){
-            bg.style.transform = `translateY(-50%) translateX(-${scrollPos * 0.3}px)`;
+
+            bg.style.transform =
+                `translate(-50%, -50%) translateX(-${scrollPos * 0.3}px)`;
+
         }
 
         document.querySelectorAll('.dept-icon img').forEach(el => {
 
-            el.style.transform = `rotate(${scrollPos * 0.15}deg)`;
+            el.style.transform =
+                `rotate(${scrollPos * 0.15}deg)`;
 
         });
 

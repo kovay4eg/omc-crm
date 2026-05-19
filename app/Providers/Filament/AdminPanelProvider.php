@@ -23,8 +23,11 @@ use App\Filament\Resources\Events\EventResource;
 use App\Filament\Resources\UserResource;
 use App\Filament\Resources\SystemLogs\SystemLogResource;
 use App\Filament\Resources\Employees\EmployeeResource;
+use App\Filament\Resources\Statutes\StatuteResource;
+use App\Filament\Resources\Reports\ReportResource;
+use App\Filament\Resources\CalendarPlans\CalendarPlanResource;
 
-// ДОДАНО
+// СТОРІНКИ
 use App\Filament\Pages\HomepageSettings;
 
 class AdminPanelProvider extends PanelProvider
@@ -41,6 +44,7 @@ class AdminPanelProvider extends PanelProvider
                     'fullcalendar-css',
                     'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css'
                 ),
+
                 Js::make(
                     'fullcalendar-js',
                     'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'
@@ -68,6 +72,9 @@ class AdminPanelProvider extends PanelProvider
                 UserResource::class,
                 SystemLogResource::class,
                 EmployeeResource::class,
+                StatuteResource::class,
+                ReportResource::class,
+                CalendarPlanResource::class,
             ])
 
             ->middleware([

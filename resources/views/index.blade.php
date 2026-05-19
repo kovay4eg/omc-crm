@@ -446,6 +446,10 @@
 
 @include('statuts.status')
 
+@include('reporting.reporting')
+
+@include('calendar_plan.calendar_plan')
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const mainCards = document.querySelectorAll('.card');
