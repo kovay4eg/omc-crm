@@ -84,13 +84,13 @@
 
     .nav a::after,
     .nav-btn::after {
-        content: '';
         position: absolute;
         bottom: -5px;
         left: 0;
         width: 0;
         height: 2px;
         background: #2b3cff;
+        content: '';
         transition: .3s;
     }
 
@@ -326,7 +326,7 @@
     <div class="container-1200 header-inner">
         <div class="logo">
             <a href="/">
-                @if(!empty($settings?->logo))
+                @if (!empty($settings?->logo))
                     <img
                         src="{{ asset('storage/' . $settings->logo) }}"
                         alt="Логотип"
@@ -387,10 +387,7 @@
                 Де ми можемо зустрітися?
             </a>
 
-            <a
-                href="/events"
-                class="{{ (request()->is('events') || request()->is('events/*')) ? 'active' : '' }}"
-            >
+            <a href="#events-section" id="eventsNavLink">
                 Анонси заходів
             </a>
 
@@ -409,32 +406,32 @@
             </a>
 
             <div class="mobile-socials">
-                @if($settings?->facebook_enabled && $settings?->facebook_url)
-                    <a href="{{ $settings->facebook_url }}" target="_blank">
+                @if ($settings?->facebook_enabled && $settings?->facebook_url)
+                    <a href="{{ $settings->facebook_url }}" target="_blank" rel="noopener noreferrer">
                         <img src="{{ asset('icons/facebook.svg') }}" alt="Facebook">
                     </a>
                 @endif
 
-                @if($settings?->instagram_enabled && $settings?->instagram_url)
-                    <a href="{{ $settings->instagram_url }}" target="_blank">
+                @if ($settings?->instagram_enabled && $settings?->instagram_url)
+                    <a href="{{ $settings->instagram_url }}" target="_blank" rel="noopener noreferrer">
                         <img src="{{ asset('icons/instagram.svg') }}" alt="Instagram">
                     </a>
                 @endif
 
-                @if($settings?->telegram_enabled && $settings?->telegram_url)
-                    <a href="{{ $settings->telegram_url }}" target="_blank">
+                @if ($settings?->telegram_enabled && $settings?->telegram_url)
+                    <a href="{{ $settings->telegram_url }}" target="_blank" rel="noopener noreferrer">
                         <img src="{{ asset('icons/telegram.svg') }}" alt="Telegram">
                     </a>
                 @endif
 
-                @if($settings?->youtube_enabled && $settings?->youtube_url)
-                    <a href="{{ $settings->youtube_url }}" target="_blank">
+                @if ($settings?->youtube_enabled && $settings?->youtube_url)
+                    <a href="{{ $settings->youtube_url }}" target="_blank" rel="noopener noreferrer">
                         <img src="{{ asset('icons/youtube.svg') }}" alt="YouTube">
                     </a>
                 @endif
 
-                @if($settings?->tiktok_enabled && $settings?->tiktok_url)
-                    <a href="{{ $settings->tiktok_url }}" target="_blank">
+                @if ($settings?->tiktok_enabled && $settings?->tiktok_url)
+                    <a href="{{ $settings->tiktok_url }}" target="_blank" rel="noopener noreferrer">
                         <img src="{{ asset('icons/tiktok.svg') }}" alt="TikTok">
                     </a>
                 @endif
@@ -442,32 +439,32 @@
         </nav>
 
         <div class="socials">
-            @if($settings?->facebook_enabled && $settings?->facebook_url)
-                <a href="{{ $settings->facebook_url }}" target="_blank">
+            @if ($settings?->facebook_enabled && $settings?->facebook_url)
+                <a href="{{ $settings->facebook_url }}" target="_blank" rel="noopener noreferrer">
                     <img src="{{ asset('icons/facebook.svg') }}" alt="Facebook">
                 </a>
             @endif
 
-            @if($settings?->instagram_enabled && $settings?->instagram_url)
-                <a href="{{ $settings->instagram_url }}" target="_blank">
+            @if ($settings?->instagram_enabled && $settings?->instagram_url)
+                <a href="{{ $settings->instagram_url }}" target="_blank" rel="noopener noreferrer">
                     <img src="{{ asset('icons/instagram.svg') }}" alt="Instagram">
                 </a>
             @endif
 
-            @if($settings?->telegram_enabled && $settings?->telegram_url)
-                <a href="{{ $settings->telegram_url }}" target="_blank">
+            @if ($settings?->telegram_enabled && $settings?->telegram_url)
+                <a href="{{ $settings->telegram_url }}" target="_blank" rel="noopener noreferrer">
                     <img src="{{ asset('icons/telegram.svg') }}" alt="Telegram">
                 </a>
             @endif
 
-            @if($settings?->youtube_enabled && $settings?->youtube_url)
-                <a href="{{ $settings->youtube_url }}" target="_blank">
+            @if ($settings?->youtube_enabled && $settings?->youtube_url)
+                <a href="{{ $settings->youtube_url }}" target="_blank" rel="noopener noreferrer">
                     <img src="{{ asset('icons/youtube.svg') }}" alt="YouTube">
                 </a>
             @endif
 
-            @if($settings?->tiktok_enabled && $settings?->tiktok_url)
-                <a href="{{ $settings->tiktok_url }}" target="_blank">
+            @if ($settings?->tiktok_enabled && $settings?->tiktok_url)
+                <a href="{{ $settings->tiktok_url }}" target="_blank" rel="noopener noreferrer">
                     <img src="{{ asset('icons/tiktok.svg') }}" alt="TikTok">
                 </a>
             @endif
@@ -480,24 +477,112 @@
     const nav = document.getElementById('navMenu');
     const header = document.getElementById('header');
     const aboutDropdown = document.getElementById('aboutDropdown');
+    const eventsNavLink = document.getElementById('eventsNavLink');
 
-    burger.addEventListener('click', () => {
-        burger.classList.toggle('active');
-        nav.classList.toggle('active');
-    });
+    function activateEventsMenu() {
+        if (!nav || !eventsNavLink) {
+            return;
+        }
 
-    aboutDropdown.addEventListener('click', function(event) {
-        if (window.innerWidth <= 768 && event.target.closest('.nav-btn')) {
+        nav.querySelectorAll(':scope > a').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        const aboutButton = document.querySelector('#aboutDropdown .nav-btn');
+
+        if (aboutButton) {
+            aboutButton.classList.remove('active');
+        }
+
+        eventsNavLink.classList.add('active');
+    }
+
+    function isEventsSectionActive() {
+        const eventsSection = document.getElementById('events-section');
+
+        if (!eventsSection || !header) {
+            return false;
+        }
+
+        const position = eventsSection.getBoundingClientRect();
+        const activationPoint = header.offsetHeight + 30;
+
+        return (
+            position.top <= activationPoint
+            && position.bottom > activationPoint
+        );
+    }
+
+    function updateHeaderState() {
+        if (header) {
+            if (window.scrollY > 20) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        }
+
+        if (isEventsSectionActive()) {
+            window.requestAnimationFrame(activateEventsMenu);
+
+            return;
+        }
+
+        if (eventsNavLink) {
+            eventsNavLink.classList.remove('active');
+        }
+    }
+
+    if (burger && nav) {
+        burger.addEventListener('click', () => {
+            burger.classList.toggle('active');
+            nav.classList.toggle('active');
+        });
+    }
+
+    if (aboutDropdown) {
+        aboutDropdown.addEventListener('click', function (event) {
+            if (window.innerWidth <= 768 && event.target.closest('.nav-btn')) {
+                event.preventDefault();
+                this.classList.toggle('open');
+            }
+        });
+    }
+
+    if (eventsNavLink) {
+        eventsNavLink.addEventListener('click', event => {
+            const eventsSection = document.getElementById('events-section');
+
+            if (!eventsSection) {
+                return;
+            }
+
             event.preventDefault();
-            this.classList.toggle('open');
-        }
+
+            const headerOffset = header ? header.offsetHeight + 16 : 16;
+
+            const targetPosition =
+                window.scrollY
+                + eventsSection.getBoundingClientRect().top
+                - headerOffset;
+
+            window.scrollTo({
+                top: targetPosition,
+                behavior: 'smooth',
+            });
+
+            history.replaceState(null, '', '#events-section');
+
+            if (window.innerWidth <= 768 && burger && nav) {
+                burger.classList.remove('active');
+                nav.classList.remove('active');
+            }
+        });
+    }
+
+    window.addEventListener('scroll', updateHeaderState, {
+        passive: true,
     });
 
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 20) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-    });
+    updateHeaderState();
 </script>

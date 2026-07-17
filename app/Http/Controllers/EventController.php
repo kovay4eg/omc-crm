@@ -3,27 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Enums\EventStatus;
-use App\Models\CalendarPlan;
-use App\Models\Department;
 use App\Models\Event;
-use App\Models\HomepageSetting;
-use App\Models\Report;
-use App\Models\SiteSetting;
 
-class HomeController extends Controller
+class EventController extends Controller
 {
     public function index()
     {
-        $settings = HomepageSetting::first();
-
-        $departments = Department::with('employees.position')->get();
-
-        $siteSettings = SiteSetting::first();
-
-        $reports = Report::orderBy('year', 'desc')->get();
-
-        $calendarPlans = CalendarPlan::orderBy('year', 'desc')->get();
-
         $events = Event::query()
             ->withCount('registrations')
             ->whereDate('event_date', '>=', today())
@@ -48,14 +33,6 @@ class HomeController extends Controller
                     && !$event->is_full;
             });
 
-        return view('index', [
-            'settings' => $settings,
-            'departments' => $departments,
-            'siteSettings' => $siteSettings,
-            'teamSettings' => $siteSettings,
-            'reports' => $reports,
-            'calendarPlans' => $calendarPlans,
-            'events' => $events,
-        ]);
+        return view('events.index', compact('events'));
     }
 }

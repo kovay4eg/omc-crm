@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Enums\EventStatus;
+use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
 {
@@ -21,12 +21,11 @@ class Event extends Model
         'show_available_slots',
         'user_id',
 
-        // cancel
         'cancel_reason',
         'cancel_public',
         'cancelled_at',
 
-        // reschedule
+        'old_event_date',
         'rescheduled_at',
         'reschedule_reason',
         'reschedule_public',
@@ -34,6 +33,7 @@ class Event extends Model
 
     protected $casts = [
         'event_date' => 'datetime',
+        'old_event_date' => 'datetime',
         'cancelled_at' => 'datetime',
         'rescheduled_at' => 'datetime',
         'cancel_public' => 'boolean',
@@ -48,11 +48,11 @@ class Event extends Model
 
     public function histories()
     {
-        return $this->hasMany(\App\Models\EventHistory::class);
+        return $this->hasMany(EventHistory::class);
     }
 
     public function user()
     {
-        return $this->belongsTo(\App\Models\User::class);
+        return $this->belongsTo(User::class);
     }
 }

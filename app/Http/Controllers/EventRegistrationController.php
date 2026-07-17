@@ -2,80 +2,104 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\EventStatus;
+use App\Mail\NewRegistrationNotification;
 use App\Models\Event;
 use App\Models\Registration;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
-use App\Mail\NewRegistrationNotification;
 
 class EventRegistrationController extends Controller
 {
-    public function store(Request $request, Event $event)
+    public function store(Request $request)
     {
-        // ❌ якщо реєстрація вимкнена
-        if (!$event->has_registration) {
-            return back()->with('error', 'Реєстрація закрита');
-        }
-
-        // ❌ якщо івент скасований
-        if ($event->status === 'cancelled') {
-            return back()->with('error', 'Цей захід скасовано');
-        }
-
-        // ✅ валідація
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'phone' => 'required|string|max:20',
+            'event_id' => ['required', 'integer', 'exists:events,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'phone' => ['required', 'string', 'max:30'],
         ]);
 
-        DB::transaction(function () use ($event, $validated) {
+        try {
+            $registration = DB::transaction(function () use ($validated) {
+                $event = Event::query()
+                    ->lockForUpdate()
+                    ->findOrFail($validated['event_id']);
 
-            // 🔒 блокуємо запис
-            $event->lockForUpdate();
+                if (
+                    !in_array(
+                        $event->status,
+                        [EventStatus::Published, EventStatus::Rescheduled],
+                        true
+                    )
+                ) {
+                    throw ValidationException::withMessages([
+                        'event_id' => 'Реєстрацію на цей захід закрито.',
+                    ]);
+                }
 
-            // ❌ перевірка дубля (email або телефон)
-            if (
-                $event->registrations()
-                    ->where(function ($q) use ($validated) {
-                        $q->where('email', $validated['email'])
-                          ->orWhere('phone', $validated['phone']);
+                if (
+                    !$event->has_registration_button ||
+                    $event->registration_type !== 'internal'
+                ) {
+                    throw ValidationException::withMessages([
+                        'event_id' => 'Онлайн-реєстрація на цей захід недоступна.',
+                    ]);
+                }
+
+                $alreadyRegistered = $event->registrations()
+                    ->where(function ($query) use ($validated) {
+                        $query->where('email', $validated['email'])
+                            ->orWhere('phone', $validated['phone']);
                     })
-                    ->exists()
-            ) {
+                    ->exists();
+
+                if ($alreadyRegistered) {
+                    throw ValidationException::withMessages([
+                        'email' => 'Ви вже зареєстровані на цей захід.',
+                    ]);
+                }
+
+                if (
+                    $event->max_participants !== null &&
+                    $event->registrations()->count() >= $event->max_participants
+                ) {
+                    throw ValidationException::withMessages([
+                        'limit' => 'Реєстрацію закрито: вільних місць немає.',
+                    ]);
+                }
+
+                $registration = Registration::create([
+                    'event_id' => $event->id,
+                    'name' => $validated['name'],
+                    'email' => $validated['email'],
+                    'phone' => $validated['phone'],
+                    'source' => 'internal',
+                ]);
+
+                if ($event->notify_email) {
+                    Mail::to($event->notify_email)
+                        ->send(new NewRegistrationNotification($registration, $event));
+                }
+
+                return $registration;
+            });
+        } catch (QueryException $exception) {
+            if ($exception->getCode() === '23000') {
                 throw ValidationException::withMessages([
-                    'email' => 'Ви вже зареєстровані на цей захід',
+                    'email' => 'Ви вже зареєстровані на цей захід.',
                 ]);
             }
 
-            // ❌ перевірка ліміту
-            if (
-                $event->max_participants &&
-                $event->registrations()->count() >= $event->max_participants
-            ) {
-                throw ValidationException::withMessages([
-                    'limit' => 'Досягнуто ліміту учасників',
-                ]);
-            }
+            throw $exception;
+        }
 
-            // ✅ створення реєстрації
-            $registration = Registration::create([
-                'event_id' => $event->id,
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'phone' => $validated['phone'],
-                'source' => $event->registration_type,
-            ]);
-
-            // 📧 email адміну (якщо вказаний)
-            if ($event->notify_email) {
-                Mail::to($event->notify_email)
-                    ->send(new NewRegistrationNotification($registration, $event));
-            }
-        });
-
-        return back()->with('success', 'Реєстрація успішна');
+        return response()->json([
+            'message' => 'Реєстрація успішна.',
+            'registration_id' => $registration->id,
+        ], 201);
     }
 }

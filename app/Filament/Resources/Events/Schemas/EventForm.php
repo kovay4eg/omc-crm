@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\Events\Schemas;
 
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +16,6 @@ class EventForm
     public static function schema(Schema $schema): Schema
     {
         return $schema->components([
-
             TextInput::make('title')
                 ->label('Назва')
                 ->required()
@@ -36,22 +35,19 @@ class EventForm
                 ->label('Дата події')
                 ->required()
                 ->seconds(false)
-
                 ->minDate(fn () =>
                     Auth::user()?->getActiveRole() === 'admin'
                         ? null
                         : now()
                 )
-
                 ->disabled(function ($operation) {
                     return $operation === 'edit'
                         && Auth::user()?->getActiveRole() !== 'admin';
                 })
-
                 ->helperText(function ($operation) {
                     return $operation === 'edit'
                         && Auth::user()?->getActiveRole() !== 'admin'
-                        ? 'Зміна дати доступно тільки через кнопку "Перенести івент"'
+                        ? 'Зміна дати доступна тільки через кнопку "Перенести івент".'
                         : null;
                 }),
 
@@ -61,10 +57,10 @@ class EventForm
                 ->directory('events')
                 ->nullable(),
 
-            Toggle::make('has_registration')
+            Toggle::make('has_registration_button')
                 ->label('Показувати кнопку "Записатись"')
                 ->default(false)
-                ->reactive(),
+                ->live(),
 
             Select::make('registration_type')
                 ->label('Тип реєстрації')
@@ -72,20 +68,32 @@ class EventForm
                     'internal' => 'Форма (імʼя, телефон, email)',
                     'external' => 'Google форма',
                 ])
-                ->live()
-                ->visible(fn ($get) => $get('has_registration'))
-                ->required(fn ($get) => $get('has_registration')),
+                ->visible(fn ($get) => $get('has_registration_button'))
+                ->required(fn ($get) => $get('has_registration_button'))
+                ->live(),
 
-            TextInput::make('external_link')
+            TextInput::make('google_form_url')
                 ->label('Посилання на Google форму')
                 ->url()
-                ->visible(fn ($get) => $get('registration_type') === 'external'),
+                ->visible(fn ($get) =>
+                    $get('has_registration_button')
+                    && $get('registration_type') === 'external'
+                )
+                ->required(fn ($get) =>
+                    $get('has_registration_button')
+                    && $get('registration_type') === 'external'
+                ),
 
             TextInput::make('max_participants')
                 ->label('Макс. кількість учасників')
                 ->numeric()
                 ->minValue(1)
-                ->nullable(),
+                ->nullable()
+                ->live(),
+
+            Toggle::make('show_available_slots')
+                ->label('Показувати кількість місць на сайті')
+                ->default(true),
 
             Select::make('status')
                 ->label('Статус')
@@ -95,7 +103,6 @@ class EventForm
                 ])
                 ->default('draft')
                 ->required(),
-
         ]);
     }
 }

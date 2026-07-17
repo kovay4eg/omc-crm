@@ -9,20 +9,51 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; }
-        body { background: #ffffff; font-family: 'Commissioner', sans-serif; }
+        html, body {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
 
-        .container-1200 { max-width: 1200px; margin: 0 auto; padding: 0 15px; position: relative; }
+        body {
+            background: #ffffff;
+            font-family: 'Commissioner', sans-serif;
+        }
 
-        .banner-section img { width: 100%; height: auto; display: block; border-radius: 20px; }
+        .container-1200 {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
 
-        .content-section { position: relative; padding: 80px 0; }
-        .title-block { position: relative; margin-bottom: 80px; display: flex; align-items: center; min-height: 200px; }
+        .banner-section img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 20px;
+        }
 
-        #bgText, #bgTextSecondary {
+        .content-section {
+            position: relative;
+            padding: 80px 0;
+        }
+
+        .title-block {
+            position: relative;
+            display: flex;
+            align-items: center;
+            min-height: 200px;
+            margin-bottom: 80px;
+        }
+
+        #bgText,
+        #bgTextSecondary {
             position: absolute;
             top: 50%;
             left: 0;
+            z-index: 0;
             width: 250vw;
             color: #dbe3ff;
             font-size: clamp(80px, 15vw, 180px);
@@ -32,7 +63,6 @@
             pointer-events: none;
             transform: translateY(-50%);
             will-change: transform;
-            z-index: 0;
         }
 
         .title-block h2 {
@@ -45,7 +75,11 @@
             text-transform: uppercase;
         }
 
-        .cards-wrapper { position: relative; width: 100%; z-index: 2; }
+        .cards-wrapper {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+        }
 
         .card {
             position: relative;
@@ -62,11 +96,20 @@
         }
 
         @keyframes cardFloat {
-            0% { transform: translateY(0) rotate(var(--r)); }
-            100% { transform: translateY(-15px) rotate(var(--r)); }
+            0% {
+                transform: translateY(0) rotate(var(--r));
+            }
+
+            100% {
+                transform: translateY(-15px) rotate(var(--r));
+            }
         }
 
-        .card.loaded { opacity: 1; animation: cardFloat 3s ease-in-out infinite alternate; }
+        .card.loaded {
+            opacity: 1;
+            animation: cardFloat 3s ease-in-out infinite alternate;
+        }
+
         .card:hover {
             z-index: 20;
             animation: none;
@@ -74,17 +117,57 @@
             box-shadow: 0 30px 70px rgba(0, 0, 0, .2);
         }
 
-        .card img { position: absolute; top: 65px; left: 24px; width: 80px; }
-        .card p { margin: 0; font-weight: 800; line-height: 1.2; }
+        .card img {
+            position: absolute;
+            top: 65px;
+            left: 24px;
+            width: 80px;
+        }
 
-        .c1 { background: #C7CBF3; --r: 6deg; --d: 0s; }
-        .c2 { background: #9FA8F0; --r: -5deg; --d: .3s; }
-        .c3 { background: #D6D9F7; --r: 4deg; --d: .1s; }
-        .card-main { background: linear-gradient(135deg, #5B63E6, #4A54D1); --r: -4deg; --d: .4s; }
-        .card-main p { color: #fff; }
-        .c5 { background: #9FA8F0; --r: 5deg; --d: .2s; }
+        .card p {
+            margin: 0;
+            font-weight: 800;
+            line-height: 1.2;
+        }
 
-        .info-accordion-section { padding-bottom: 60px; background-color: #fff; }
+        .c1 {
+            --r: 6deg;
+            --d: 0s;
+            background: #c7cbf3;
+        }
+
+        .c2 {
+            --r: -5deg;
+            --d: .3s;
+            background: #9fa8f0;
+        }
+
+        .c3 {
+            --r: 4deg;
+            --d: .1s;
+            background: #d6d9f7;
+        }
+
+        .card-main {
+            --r: -4deg;
+            --d: .4s;
+            background: linear-gradient(135deg, #5b63e6, #4a54d1);
+        }
+
+        .card-main p {
+            color: #ffffff;
+        }
+
+        .c5 {
+            --r: 5deg;
+            --d: .2s;
+            background: #9fa8f0;
+        }
+
+        .info-accordion-section {
+            padding-bottom: 60px;
+            background-color: #ffffff;
+        }
 
         .custom-accordion .accordion-item {
             margin-bottom: 10px;
@@ -106,7 +189,9 @@
             text-transform: uppercase;
         }
 
-        .custom-accordion .accordion-button::after { display: none; }
+        .custom-accordion .accordion-button::after {
+            display: none;
+        }
 
         .icon-flower {
             display: inline-block;
@@ -118,7 +203,9 @@
             will-change: transform;
         }
 
-        .flower-spin { transform: rotate(360deg) !important; }
+        .flower-spin {
+            transform: rotate(360deg) !important;
+        }
 
         .icon-arrow-custom {
             width: 32px;
@@ -132,7 +219,12 @@
             filter: invert(18%) sepia(51%) saturate(5436%) hue-rotate(229deg) brightness(91%) contrast(92%);
         }
 
-        .design-intro-text { margin-bottom: 40px; color: #000; font-size: 1.1rem; line-height: 1.5; }
+        .design-intro-text {
+            margin-bottom: 40px;
+            color: #000000;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
 
         .design-cards-row {
             display: grid;
@@ -149,7 +241,7 @@
             min-height: 380px;
             padding: 30px;
             border-radius: 24px;
-            background: #E8EAFB;
+            background: #e8eafb;
         }
 
         .icon-mic-img {
@@ -163,23 +255,36 @@
 
         .design-info-card h4 {
             margin-bottom: 15px;
-            color: #000;
+            color: #000000;
             font-size: 1.2rem;
             font-weight: 800;
             text-transform: uppercase;
         }
 
-        .design-info-card p { margin: 0; color: #333; font-size: .95rem; line-height: 1.4; }
+        .design-info-card p {
+            margin: 0;
+            color: #333333;
+            font-size: .95rem;
+            line-height: 1.4;
+        }
 
         .design-legal-block {
             margin-top: 20px;
             padding: 40px;
             border-radius: 24px;
-            background: #E8EAFB;
+            background: #e8eafb;
         }
 
-        .design-legal-block h4 { margin-bottom: 25px; font-weight: 800; text-transform: uppercase; }
-        .design-legal-block ul { padding: 0; list-style: none; }
+        .design-legal-block h4 {
+            margin-bottom: 25px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .design-legal-block ul {
+            padding: 0;
+            list-style: none;
+        }
 
         .design-legal-block ul li {
             position: relative;
@@ -190,10 +295,10 @@
         }
 
         .design-legal-block ul li::before {
-            content: "◆";
             position: absolute;
             left: 0;
             color: #2e3aa1;
+            content: "◆";
             font-size: 1rem;
         }
 
@@ -231,7 +336,10 @@
             transition: opacity 1s ease, transform .4s ease, box-shadow .4s ease;
         }
 
-        .t-card.loaded { opacity: 1; animation: cardFloat 3.5s ease-in-out infinite alternate; }
+        .t-card.loaded {
+            opacity: 1;
+            animation: cardFloat 3.5s ease-in-out infinite alternate;
+        }
 
         .t-card img {
             position: absolute;
@@ -243,7 +351,7 @@
 
         .t-card p {
             margin: 0;
-            color: #000;
+            color: #000000;
             font-size: 14px;
             font-weight: 800;
             line-height: 1.2;
@@ -263,15 +371,53 @@
             transition: transform .3s ease;
         }
 
-        .tc-1 { background: #b1b8e8; --r: -3deg; --d: .1s; }
-        .tc-2 { margin-top: 15px; background: #919ce1; --r: 2deg; --d: .2s; }
-        .tc-3 { background: #fff; box-shadow: 0 10px 30px rgba(0, 0, 0, .05); --r: -2deg; --d: .3s; }
-        .tc-4 { margin-top: 15px; background: #5a66d6; --r: 3deg; --d: .4s; }
-        .tc-4 p { color: #fff; }
-        .tc-5 { background: #b1b8e8; --r: -2deg; --d: .5s; }
+        .tc-1 {
+            --r: -3deg;
+            --d: .1s;
+            background: #b1b8e8;
+        }
 
-        .offers-wrapper { padding: 40px 0; text-align: center; }
-        .offers-intro-text { margin-bottom: 50px; font-size: 1.1rem; text-transform: uppercase; }
+        .tc-2 {
+            --r: 2deg;
+            --d: .2s;
+            margin-top: 15px;
+            background: #919ce1;
+        }
+
+        .tc-3 {
+            --r: -2deg;
+            --d: .3s;
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .05);
+        }
+
+        .tc-4 {
+            --r: 3deg;
+            --d: .4s;
+            margin-top: 15px;
+            background: #5a66d6;
+        }
+
+        .tc-4 p {
+            color: #ffffff;
+        }
+
+        .tc-5 {
+            --r: -2deg;
+            --d: .5s;
+            background: #b1b8e8;
+        }
+
+        .offers-wrapper {
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .offers-intro-text {
+            margin-bottom: 50px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+        }
 
         .offers-grid-container {
             display: flex;
@@ -296,7 +442,11 @@
             width: 300px;
         }
 
-        .offer-item img { width: 120px; height: auto; margin-bottom: 25px; }
+        .offer-item img {
+            width: 120px;
+            height: auto;
+            margin-bottom: 25px;
+        }
 
         .offer-item h5 {
             display: flex;
@@ -304,19 +454,49 @@
             justify-content: center;
             min-height: 40px;
             margin-bottom: 15px;
-            color: #000;
+            color: #000000;
             font-size: 1rem;
             font-weight: 800;
             text-transform: uppercase;
         }
 
-        .offer-item p { margin: 0; color: #333; font-size: .95rem; line-height: 1.4; }
-        .offers-footer-note { margin-top: 50px; font-size: 1rem; font-weight: 700; }
+        .offer-item p {
+            margin: 0;
+            color: #333333;
+            font-size: .95rem;
+            line-height: 1.4;
+        }
 
-        .mobile-title { display: flex; flex-direction: column; line-height: 1.05; }
-        .mobile-title span { display: block; }
-        .acc-btn-left { display: flex; align-items: center; gap: 12px; }
-        .accordion-title { display: flex; flex-direction: column; }
+        .offers-footer-note {
+            margin-top: 50px;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .desktop-title {
+            display: inline;
+        }
+
+        .mobile-title {
+            display: none;
+            flex-direction: column;
+            line-height: 1.05;
+        }
+
+        .mobile-title span {
+            display: block;
+        }
+
+        .acc-btn-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .accordion-title {
+            display: flex;
+            flex-direction: column;
+        }
 
         .about-toggle-wrapper {
             display: flex;
@@ -333,7 +513,7 @@
             border: none;
             border-radius: 60px;
             background: #2e3aa1;
-            color: #fff;
+            color: #ffffff;
             cursor: pointer;
             font-size: 18px;
             font-weight: 800;
@@ -345,8 +525,14 @@
             box-shadow: 0 20px 40px rgba(46, 58, 161, .25);
         }
 
-        .about-toggle-arrow { font-size: 22px; transition: transform .3s ease; }
-        .about-toggle-btn.active .about-toggle-arrow { transform: rotate(180deg); }
+        .about-toggle-arrow {
+            font-size: 22px;
+            transition: transform .3s ease;
+        }
+
+        .about-toggle-btn.active .about-toggle-arrow {
+            transform: rotate(180deg);
+        }
 
         .about-more-wrapper {
             max-height: 0;
@@ -376,24 +562,61 @@
         }
 
         @media (min-width: 1200px) {
-            .mobile-title { display: none; }
-            .cards-wrapper { height: 480px; }
-            .card { position: absolute; width: 275px; height: 320px; }
-            .card.c1 { top: 40px; left: 0; }
-            .card.c2 { top: 130px; left: 230px; }
-            .card.c3 { top: 30px; left: 460px; }
-            .card.card-main { top: 110px; left: 690px; }
-            .card.c5 { top: 60px; left: 925px; }
-            .desktop-title { display: none; }
+            .cards-wrapper {
+                height: 480px;
+            }
+
+            .card {
+                position: absolute;
+                width: 275px;
+                height: 320px;
+            }
+
+            .card.c1 {
+                top: 40px;
+                left: 0;
+            }
+
+            .card.c2 {
+                top: 130px;
+                left: 230px;
+            }
+
+            .card.c3 {
+                top: 30px;
+                left: 460px;
+            }
+
+            .card.card-main {
+                top: 110px;
+                left: 690px;
+            }
+
+            .card.c5 {
+                top: 60px;
+                left: 925px;
+            }
         }
 
         @media (max-width: 991px) {
-            .design-cards-row { grid-template-columns: repeat(2, 1fr); }
-            .offer-item { width: 40%; }
-            .desktop-title { display: none; }
+            .design-cards-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .offer-item {
+                width: 40%;
+            }
         }
 
         @media (max-width: 767px) {
+            .desktop-title {
+                display: none;
+            }
+
+            .mobile-title {
+                display: flex;
+            }
+
             .t-card {
                 position: relative;
                 width: 50% !important;
@@ -401,8 +624,6 @@
                 height: auto !important;
                 padding: 10px;
             }
-
-            .desktop-title { display: none; }
 
             .t-card img {
                 top: 30px !important;
@@ -416,11 +637,25 @@
                 line-height: 1.1;
             }
 
-            .tc-1 { transform: rotate(-7deg) !important; }
-            .tc-2 { transform: rotate(6deg) !important; }
-            .tc-3 { transform: rotate(-5deg) !important; }
-            .tc-4 { transform: rotate(7deg) !important; }
-            .tc-5 { transform: rotate(-6deg) !important; }
+            .tc-1 {
+                transform: rotate(-7deg) !important;
+            }
+
+            .tc-2 {
+                transform: rotate(6deg) !important;
+            }
+
+            .tc-3 {
+                transform: rotate(-5deg) !important;
+            }
+
+            .tc-4 {
+                transform: rotate(7deg) !important;
+            }
+
+            .tc-5 {
+                transform: rotate(-6deg) !important;
+            }
 
             .about-toggle-btn {
                 width: 100%;
@@ -444,11 +679,11 @@
 <div class="container-1200">
     <section class="banner-section">
         <picture>
-            @if($settings && $settings->mobile_banner_image)
+            @if ($settings && $settings->mobile_banner_image)
                 <source media="(max-width: 768px)" srcset="{{ asset('storage/' . $settings->mobile_banner_image) }}">
             @endif
 
-            @if($settings && $settings->banner_image)
+            @if ($settings && $settings->banner_image)
                 <img src="{{ asset('storage/' . $settings->banner_image) }}" alt="Banner">
             @endif
         </picture>
@@ -459,6 +694,7 @@
     <div class="container-1200">
         <div class="title-block">
             <div id="bgText">НАПРЯМИ ДІЯЛЬНОСТІ &nbsp; НАПРЯМИ ДІЯЛЬНОСТІ</div>
+
             <h2>ГОЛОВНІ НАПРЯМИ ДІЯЛЬНОСТІ:</h2>
         </div>
 
@@ -495,6 +731,7 @@
     <div class="container-1200">
         <div class="title-block">
             <div id="bgTextSecondary">ПРО НАС &nbsp; ПРО НАС &nbsp; ПРО НАС &nbsp; ПРО НАС</div>
+
             <h2>ПРО НАС</h2>
         </div>
 
@@ -647,7 +884,7 @@
                                         <p>
                                             Участь у всеукраїнських форумах, нові знайомства та корисні контакти.
                                             Розвиток кар'єрних можливостей у форматі зустрічей TEDx та Speed Friending
-                                            з успішними підприємцями
+                                            з успішними підприємцями.
                                         </p>
                                     </div>
                                 </div>
@@ -659,7 +896,7 @@
                                         <p>
                                             Організовуємо заходи з емоційного розвантаження, психологічні консультації
                                             та практики ментального здоров'я. Проводимо заняття з йоги,
-                                            танців та спортивні івенти
+                                            танців та спортивні івенти.
                                         </p>
                                     </div>
 
@@ -670,7 +907,7 @@
                                             Безпечний і відкритий простір для навчання, роботи чи спілкування.
                                             Ми не лише чекаємо на тебе в Молодіжному хабі в Полтаві,
                                             а й регулярно виїжджаємо в громади Полтавської області,
-                                            щоб бути ближчими до молоді
+                                            щоб бути ближчими до молоді.
                                         </p>
                                     </div>
                                 </div>
@@ -707,6 +944,8 @@
 </div>
 
 @include('structure.structure')
+
+@include('events.index', ['events' => $events])
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
