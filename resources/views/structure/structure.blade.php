@@ -20,7 +20,7 @@
             </h2>
 
             <div id="mainFlower" class="interactive-flower">
-                <img src="/images/flower.svg" alt="Декоративна квітка" width="75" height="75">
+                <img src="/images/icons/flower.svg" alt="Декоративна квітка" width="75" height="75">
             </div>
         </div>
 
@@ -264,8 +264,8 @@
         width: 28px;
         height: 28px;
         background-color: #2B24C1;
-        -webkit-mask: url('/images/arrow-right.svg') center / contain no-repeat;
-        mask: url('/images/arrow-right.svg') center / contain no-repeat;
+        -webkit-mask: url('/images/icons/arrow.svg') center / contain no-repeat;
+        mask: url('/images/icons/arrow.svg') center / contain no-repeat;
         transition: transform .3s cubic-bezier(.25, 1, .5, 1), background-color .3s ease;
         will-change: transform;
     }

@@ -8,6 +8,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -54,6 +55,26 @@ class EventSummaryForm
                             ])
                             ->default(EventSummary::STATUS_DRAFT)
                             ->required(),
+
+                        TextInput::make('smm_title')
+                            ->label('Заголовок для соцмереж')
+                            ->maxLength(255)
+                            ->helperText('Необов’язково. За замовчуванням буде назва заходу.'),
+
+                        Textarea::make('smm_description')
+                            ->label('Короткий опис для соцмереж')
+                            ->rows(3)
+                            ->maxLength(200)
+                            ->helperText('Необов’язково. За замовчуванням буде текст підсумку.')
+                            ->columnSpanFull(),
+
+                        FileUpload::make('smm_image')
+                            ->label('Обкладинка для посилання')
+                            ->image()
+                            ->disk('public')
+                            ->directory('smm/summaries')
+                            ->helperText('Рекомендований розмір: 1200 × 630 px. Якщо не додавати, буде використано фото заходу.')
+                            ->columnSpanFull(),
 
                     ])
                     ->mutateRelationshipDataBeforeCreateUsing(function (array $data): array {

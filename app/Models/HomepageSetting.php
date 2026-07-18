@@ -24,5 +24,8 @@ class HomepageSetting extends Model
         'youtube_url',
         'tiktok_enabled',
         'tiktok_url',
+        'smm_title',
+        'smm_description',
+        'smm_image',
     ];
 }

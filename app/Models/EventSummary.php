@@ -18,6 +18,9 @@ class EventSummary extends Model
         'status',
         'user_id',
         'published_at',
+        'smm_title',
+        'smm_description',
+        'smm_image',
     ];
 
     protected $casts = [

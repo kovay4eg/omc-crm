@@ -83,6 +83,8 @@
     </style>
 </head>
 <body>
+    <x-accessibility-controls />
+
     <main class="maintenance-page">
         <section class="maintenance-card" aria-labelledby="maintenanceTitle">
             <img class="maintenance-logo" src="{{ $maintenanceLogo }}" alt="Обласний молодіжний центр">

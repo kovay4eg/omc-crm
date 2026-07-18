@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventSummaryController;
 use App\Http\Middleware\EnsureFrontendIsAvailable;
@@ -13,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware([EnsureFrontendIsAvailable::class, TrackSiteVisit::class])->group(function () {
     Route::get('/', [HomeController::class, 'index']);
+
+    Route::get('/events/{event}', [EventController::class, 'show'])
+        ->name('events.show');
 
     Route::get('/event-summaries/{eventSummary}', [EventSummaryController::class, 'show'])
         ->name('event-summaries.show');

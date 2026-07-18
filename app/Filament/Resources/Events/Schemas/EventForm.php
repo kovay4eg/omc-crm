@@ -8,6 +8,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 
@@ -56,6 +57,32 @@ class EventForm
                 ->image()
                 ->directory('events')
                 ->nullable(),
+
+            Section::make('Поширення у соціальних мережах')
+                ->description('Необов’язково. Якщо залишити поля порожніми, для прев’ю буде використано назву, опис і фото заходу.')
+                ->schema([
+                    TextInput::make('smm_title')
+                        ->label('Заголовок для соцмереж')
+                        ->maxLength(255)
+                        ->helperText('Рекомендовано до 70 символів.'),
+
+                    Textarea::make('smm_description')
+                        ->label('Короткий опис для соцмереж')
+                        ->rows(3)
+                        ->maxLength(200)
+                        ->helperText('Рекомендовано до 200 символів.')
+                        ->columnSpanFull(),
+
+                    FileUpload::make('smm_image')
+                        ->label('Обкладинка для посилання')
+                        ->image()
+                        ->disk('public')
+                        ->directory('smm/events')
+                        ->helperText('Рекомендований розмір: 1200 × 630 px. Якщо не додавати, буде використано афішу заходу.')
+                        ->columnSpanFull(),
+                ])
+                ->columns(2)
+                ->columnSpanFull(),
 
             Toggle::make('has_registration_button')
                 ->label('Показувати кнопку "Записатись"')

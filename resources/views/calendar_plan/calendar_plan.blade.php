@@ -1,3 +1,7 @@
+@if (request()->routeIs('calendar-plan'))
+    <x-accessibility-controls />
+@endif
+
 <section id="calendar-plan-section" class="calendar-plan-section">
 
 <style>

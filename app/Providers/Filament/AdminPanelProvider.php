@@ -31,6 +31,7 @@ use App\Filament\Resources\CalendarPlans\CalendarPlanResource;
 // СТОРІНКИ
 use App\Filament\Pages\HomepageSettings;
 use App\Filament\Pages\FooterSettings;
+use App\Filament\Pages\HelpGuide;
 use App\Models\HomepageSetting;
 
 class AdminPanelProvider extends PanelProvider
@@ -78,6 +79,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Pages\Dashboard::class,
                 HomepageSettings::class,
                 FooterSettings::class,
+                HelpGuide::class,
             ])
 
             ->resources([

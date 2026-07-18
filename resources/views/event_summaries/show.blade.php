@@ -3,7 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $summary->event->title }} — Підсумок заходу</title>
+    @php
+        $summarySmmSettings = \App\Models\HomepageSetting::first();
+        $summarySmmTitle = $summary->smm_title ?: 'Підсумок заходу: ' . $summary->event->title;
+        $summarySmmDescription = $summary->smm_description ?: \Illuminate\Support\Str::limit(
+            preg_replace('/\s+/', ' ', trim($summary->summary)),
+            200,
+        );
+        $summarySmmImage = $summary->smm_image
+            ?: $summary->images->first()?->image
+            ?: $summary->event->image
+            ?: $summarySmmSettings?->smm_image
+            ?: $summarySmmSettings?->banner_image
+            ?: $summarySmmSettings?->logo;
+    @endphp
+    <x-social-meta
+        :title="$summarySmmTitle"
+        :description="$summarySmmDescription"
+        :image="$summarySmmImage"
+        :url="route('event-summaries.show', ['eventSummary' => $summary])"
+        type="article"
+    />
 
     <link href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -98,6 +118,14 @@
                             </a>
                         @endforeach
                     </div>
+                @endif
+
+                @if (! $isPreview)
+                    <x-share-buttons
+                        :url="route('event-summaries.show', ['eventSummary' => $summary])"
+                        :title="$summarySmmTitle"
+                        :description="$summarySmmDescription"
+                    />
                 @endif
 
                 <a href="{{ url('/#event-summaries-section') }}" class="summary-back">

@@ -3,7 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ОМЦ</title>
+    @php
+        $homepageSmmTitle = $settings?->smm_title ?: 'Обласний молодіжний центр Полтавської обласної ради';
+        $homepageSmmDescription = $settings?->smm_description ?: 'Молодіжні можливості, події та ініціативи Полтавщини.';
+        $homepageSmmImage = $settings?->smm_image ?: $settings?->banner_image ?: $settings?->logo;
+    @endphp
+    <x-social-meta
+        :title="$homepageSmmTitle"
+        :description="$homepageSmmDescription"
+        :image="$homepageSmmImage"
+        :url="url('/')"
+    />
 
     <link href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">

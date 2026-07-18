@@ -1,6 +1,14 @@
 @php
     $settings = \App\Models\HomepageSetting::first();
+    $isStandalonePublicPage = request()->routeIs(
+        'event-summaries.*',
+        'events.show',
+        'reporting',
+        'calendar-plan',
+    );
 @endphp
+
+<x-accessibility-controls />
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -383,19 +391,20 @@
                 </div>
             </div>
 
-            <a href="{{ request()->routeIs('event-summaries.*') ? url('/#structure-section') : '#structure-section' }}">
+            <a href="{{ $isStandalonePublicPage ? url('/#structure-section') : '#structure-section' }}">
                 Де ми можемо зустрітися?
             </a>
 
             <a
-                href="{{ request()->routeIs('event-summaries.*') ? url('/#events-section') : '#events-section' }}"
+                href="{{ $isStandalonePublicPage ? url('/#events-section') : '#events-section' }}"
                 id="eventsNavLink"
+                class="{{ request()->routeIs('events.show') ? 'active' : '' }}"
             >
                 Анонси заходів
             </a>
 
             <a
-                href="{{ request()->routeIs('event-summaries.*') ? url('/#event-summaries-section') : '#event-summaries-section' }}"
+                href="{{ $isStandalonePublicPage ? url('/#event-summaries-section') : '#event-summaries-section' }}"
                 id="eventSummariesNavLink"
                 class="{{ request()->routeIs('event-summaries.*') ? 'active' : '' }}"
             >
@@ -403,7 +412,7 @@
             </a>
 
             <a
-                href="{{ request()->routeIs('event-summaries.*') ? url('/#contacts-section') : '#contacts-section' }}"
+                href="{{ $isStandalonePublicPage ? url('/#contacts-section') : '#contacts-section' }}"
                 id="contactsNavLink"
             >
                 Контакти

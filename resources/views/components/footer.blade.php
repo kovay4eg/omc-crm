@@ -109,23 +109,25 @@
 
     .site-footer-partners {
         display: grid;
-        flex: 0 1 440px;
-        grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
-        gap: 20px;
+        flex: 0 1 620px;
+        grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+        gap: 24px;
         align-items: center;
     }
 
     .site-footer-partner-logo {
         display: grid;
-        min-height: 54px;
+        min-width: 128px;
+        min-height: 72px;
         place-items: center;
     }
 
     .site-footer-partner-logo img {
         display: block;
-        width: 100%;
-        max-width: 98px;
-        max-height: 54px;
+        width: clamp(128px, 11vw, 150px);
+        min-width: 128px;
+        max-width: 150px;
+        max-height: 72px;
         object-fit: contain;
     }
 
@@ -144,8 +146,20 @@
 
         .site-footer-partners {
             width: 100%;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
             gap: 14px;
+        }
+
+        .site-footer-partner-logo {
+            min-width: 112px;
+            min-height: 64px;
+        }
+
+        .site-footer-partner-logo img {
+            width: min(100%, 132px);
+            min-width: 112px;
+            max-width: 132px;
+            max-height: 64px;
         }
     }
 </style>

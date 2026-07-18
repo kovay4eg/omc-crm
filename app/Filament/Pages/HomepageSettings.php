@@ -12,6 +12,8 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Textarea;
+use Filament\Schemas\Components\Section;
 
 class HomepageSettings extends Page implements HasForms
 {
@@ -88,6 +90,33 @@ class HomepageSettings extends Page implements HasForms
                     ->directory('homepage')
                     ->visibility('public')
                     ->preserveFilenames(),
+
+                Section::make('SMM і прев’ю посилань')
+                    ->description('Ці дані бачать люди у Facebook, Telegram, Viber та інших сервісах, коли поширюють головне посилання сайту.')
+                    ->schema([
+                        TextInput::make('smm_title')
+                            ->label('Заголовок для соцмереж')
+                            ->maxLength(255)
+                            ->helperText('За замовчуванням використовується назва ОМЦ.'),
+
+                        Textarea::make('smm_description')
+                            ->label('Короткий опис для соцмереж')
+                            ->rows(3)
+                            ->maxLength(200)
+                            ->helperText('Рекомендовано до 200 символів.')
+                            ->columnSpanFull(),
+
+                        FileUpload::make('smm_image')
+                            ->label('Головна SMM-обкладинка')
+                            ->image()
+                            ->disk('public')
+                            ->directory('smm')
+                            ->visibility('public')
+                            ->helperText('Рекомендований розмір: 1200 × 630 px. Якщо не додавати, буде використано банер головної сторінки.')
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
 
                 TextInput::make('contact_address')
                     ->label('Адреса')
@@ -169,6 +198,10 @@ class HomepageSettings extends Page implements HasForms
         $settings->mobile_banner_image = $data['mobile_banner_image'] ?? null;
 
         $settings->logo = $data['logo'] ?? null;
+
+        $settings->smm_title = $data['smm_title'] ?? null;
+        $settings->smm_description = $data['smm_description'] ?? null;
+        $settings->smm_image = $data['smm_image'] ?? null;
 
         $settings->contact_address = $data['contact_address'] ?? null;
         $settings->contact_phone = $data['contact_phone'] ?? null;

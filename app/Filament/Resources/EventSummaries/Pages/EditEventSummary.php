@@ -40,6 +40,9 @@ class EditEventSummary extends EditRecord
         $this->summaryBeforeSave = $summary?->only([
             'summary',
             'status',
+            'smm_title',
+            'smm_description',
+            'smm_image',
         ]) ?? [];
 
         $this->imageIdsBeforeSave = $summary?->images->modelKeys() ?? [];
@@ -115,6 +118,18 @@ class EditEventSummary extends EditRecord
             ];
         }
 
+        foreach (['smm_title', 'smm_description', 'smm_image'] as $field) {
+            if (
+                $this->summaryExistedBeforeSave
+                && ($this->summaryBeforeSave[$field] ?? null) !== $summary->{$field}
+            ) {
+                $changes[$field] = [
+                    'old' => $this->summaryBeforeSave[$field] ?? null,
+                    'new' => $summary->{$field},
+                ];
+            }
+        }
+
         $imageIdsAfterSave = $summary->images->modelKeys();
 
         $addedImages = array_values(array_diff(
@@ -188,6 +203,16 @@ class EditEventSummary extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('open_smm_page')
+                ->label('Відкрити SMM-сторінку')
+                ->icon(Heroicon::ArrowTopRightOnSquare)
+                ->color('gray')
+                ->url(fn (): string => route('event-summaries.show', [
+                    'eventSummary' => $this->record->summary,
+                ]))
+                ->openUrlInNewTab()
+                ->visible(fn (): bool => $this->record->summary?->isPublished() === true),
+
             Action::make('preview')
                 ->label('Попередній перегляд')
                 ->icon(Heroicon::Eye)

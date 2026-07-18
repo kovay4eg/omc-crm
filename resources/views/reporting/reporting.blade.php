@@ -6,6 +6,10 @@ $reports = Report::orderBy('year', 'desc')->get();
 
 @endphp
 
+@if (request()->routeIs('reporting'))
+    <x-accessibility-controls />
+@endif
+
 <section id="reports-section" class="reports-section">
 
 <style>

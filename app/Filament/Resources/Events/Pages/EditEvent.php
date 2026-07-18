@@ -89,6 +89,21 @@ class EditEvent extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('open_smm_page')
+                ->label('Відкрити SMM-сторінку')
+                ->icon('heroicon-o-arrow-top-right-on-square')
+                ->color('gray')
+                ->url(fn (): string => route('events.show', [
+                    'event' => $this->record,
+                ]))
+                ->openUrlInNewTab()
+                ->visible(fn (): bool => $this->record->event_date->gte(today())
+                    && in_array($this->record->status, [
+                        EventStatus::Published,
+                        EventStatus::Rescheduled,
+                        EventStatus::Cancelled,
+                    ], true)),
+
             Actions\DeleteAction::make()
                 ->label('Видалити івент')
                 ->color('danger')

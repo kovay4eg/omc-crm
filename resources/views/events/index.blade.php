@@ -307,9 +307,24 @@
     .event-card-footer {
         display: flex;
         align-items: center;
-        justify-content: flex-end;
+        justify-content: space-between;
+        gap: 10px;
         min-height: 38px;
         margin-top: 12px;
+    }
+
+    .event-details-link {
+        color: #2924c8;
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+        text-transform: uppercase;
+    }
+
+    .event-details-link:hover,
+    .event-details-link:focus-visible {
+        color: #17128e;
+        text-decoration: underline;
     }
 
     .event-action-shell {
@@ -755,8 +770,12 @@
                                     </div>
                                 </div>
 
-                                @if ($showRegisterControl)
-                                    <div class="event-card-footer">
+                                <div class="event-card-footer">
+                                    <a class="event-details-link" href="{{ route('events.show', ['event' => $event]) }}">
+                                        Детальніше
+                                    </a>
+
+                                    @if ($showRegisterControl)
                                         @if ($registrationBlocked)
                                             <span class="event-action-shell event-action-shell--disabled">
                                                 <button
@@ -793,8 +812,8 @@
                                                 Реєстрація
                                             </a>
                                         @endif
-                                    </div>
-                                @endif
+                                    @endif
+                                </div>
                             </div>
                         </article>
                     </div>

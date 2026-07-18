@@ -32,6 +32,10 @@ class Event extends Model
         'rescheduled_at',
         'reschedule_reason',
         'reschedule_public',
+
+        'smm_title',
+        'smm_description',
+        'smm_image',
     ];
 
     protected $casts = [
