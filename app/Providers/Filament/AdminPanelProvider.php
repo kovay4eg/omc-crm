@@ -30,6 +30,8 @@ use App\Filament\Resources\CalendarPlans\CalendarPlanResource;
 
 // СТОРІНКИ
 use App\Filament\Pages\HomepageSettings;
+use App\Filament\Pages\FooterSettings;
+use App\Models\HomepageSetting;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -39,6 +41,15 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName('ОМЦ')
+            ->brandLogo(function (): string {
+                $logo = HomepageSetting::query()->value('logo');
+
+                return $logo
+                    ? asset('storage/' . $logo)
+                    : asset('storage/homepage/Лого ПОМЦ.png');
+            })
+            ->brandLogoHeight('3.5rem')
 
             ->assets([
                 Css::make(
@@ -66,6 +77,7 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 \App\Filament\Pages\Dashboard::class,
                 HomepageSettings::class,
+                FooterSettings::class,
             ])
 
             ->resources([

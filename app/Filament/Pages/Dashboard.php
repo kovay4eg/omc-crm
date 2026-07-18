@@ -44,6 +44,7 @@ class Dashboard extends BaseDashboard
     protected function getHeaderWidgets(): array
     {
         return [
+            \App\Filament\Widgets\MaintenanceModeControl::class,
             \App\Filament\Widgets\Clock::class,
             \App\Filament\Widgets\Weather::class,
             \App\Filament\Widgets\StatsOverview::class,

@@ -83,10 +83,6 @@
         position: relative;
     }
 
-    .event-grid-item--extra {
-        display: none;
-    }
-
     .event-card {
         position: relative;
         display: flex;
@@ -681,7 +677,7 @@
                             || ($isGoogleForm && empty($event->google_form_url));
                     @endphp
 
-                    <div class="col-12 col-md-6 col-lg-4 event-grid-item {{ $loop->index >= 3 ? 'event-grid-item--extra' : '' }}">
+                    <div class="col-12 col-md-6 col-lg-4 event-grid-item">
                         <article class="event-card {{ $isCancelled ? 'is-cancelled' : '' }}">
                             @if ($isRescheduled)
                                 <span
@@ -805,11 +801,6 @@
                 @endforeach
             </div>
 
-            @if ($events->count() > 3)
-                <button type="button" class="events-show-all" id="eventsShowAll">
-                    Всі анонси
-                </button>
-            @endif
         @else
             <div class="events-empty">
                 Наразі немає запланованих заходів.
@@ -906,7 +897,6 @@
         const modalEventName = document.getElementById('eventModalEventName');
         const submitButton = document.getElementById('eventModalSubmit');
         const toast = document.getElementById('eventToast');
-        const showAllButton = document.getElementById('eventsShowAll');
         const eventsSection = document.getElementById('events-section');
         const watermarkTrack = document.getElementById('eventsWatermarkTrack');
 
@@ -1057,14 +1047,5 @@
             }
         });
 
-        if (showAllButton) {
-            showAllButton.addEventListener('click', () => {
-                document.querySelectorAll('.event-grid-item--extra').forEach(item => {
-                    item.style.display = '';
-                });
-
-                showAllButton.remove();
-            });
-        }
     });
 </script>

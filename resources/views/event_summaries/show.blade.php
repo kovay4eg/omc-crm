@@ -37,6 +37,8 @@
     </style>
 </head>
 <body>
+    <x-preloader />
+
     <x-header />
 
     <main class="summary-page">
@@ -104,5 +106,7 @@
             </section>
         </div>
     </main>
+
+    <x-footer />
 </body>
 </html>

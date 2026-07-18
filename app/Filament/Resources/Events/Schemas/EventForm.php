@@ -93,6 +93,10 @@ class EventForm
 
             Toggle::make('show_available_slots')
                 ->label('Показувати кількість місць на сайті')
+                ->visible(fn ($get) =>
+                    $get('has_registration_button')
+                    && $get('registration_type') !== 'external'
+                )
                 ->default(true),
 
             Select::make('status')

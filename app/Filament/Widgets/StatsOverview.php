@@ -2,48 +2,55 @@
 
 namespace App\Filament\Widgets;
 
+use App\Enums\EventStatus;
+use App\Models\Event;
+use App\Models\SiteVisit;
+use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use App\Models\Event;
-use App\Models\User;
 
 class StatsOverview extends BaseWidget
 {
-    protected ?string $pollingInterval = '10s';
+    protected ?string $pollingInterval = '30s';
 
     protected function getStats(): array
     {
-        return [
+        $today = now('Europe/Kyiv')->toDateString();
+        $onlineSince = now('Europe/Kyiv')->subMinutes(5);
 
-            Stat::make('Всього івентів', Event::count())
-                ->description('Всього')
+        return [
+            Stat::make('Всього заходів', Event::count())
+                ->description('Усі записи')
                 ->icon('heroicon-o-calendar')
                 ->color('primary'),
 
-            Stat::make('Опубліковані івенти', Event::where('status', 'published')->count())
-                ->description('Активні')
+            Stat::make('Актуальні заходи', Event::query()
+                ->whereDate('event_date', '>=', $today)
+                ->whereIn('status', [EventStatus::Published->value, EventStatus::Rescheduled->value])
+                ->count())
+                ->description('Опубліковані або перенесені')
                 ->icon('heroicon-o-check-circle')
                 ->color('success'),
 
-            Stat::make('Чернетки івентів', Event::where('status', 'draft')->count())
+            Stat::make('Чернетки заходів', Event::where('status', EventStatus::Draft->value)->count())
                 ->description('Не опубліковані')
                 ->icon('heroicon-o-pencil-square')
                 ->color('warning'),
 
             Stat::make('Користувачі адмін-панелі', User::count())
-                ->description('В системі')
+                ->description('Облікові записи в системі')
                 ->icon('heroicon-o-users')
                 ->color('info'),
 
-            Stat::make('Відвідувачі сьогодні на сайті', rand(50, 200))
-                ->description('Mock')
+            Stat::make('Відвідувачі сьогодні', SiteVisit::whereDate('visited_on', $today)->count())
+                ->description('Унікальні сесії за день')
                 ->icon('heroicon-o-chart-bar')
                 ->color('success'),
 
-            Stat::make('Онлайн зараз на сайті', rand(1, 15))
-                ->description('Mock')
+            Stat::make('Онлайн зараз', SiteVisit::where('last_seen_at', '>=', $onlineSince)->count())
+                ->description('Активність за останні 5 хв.')
                 ->icon('heroicon-o-signal')
-                ->color('danger'),
+                ->color('primary'),
         ];
     }
 }

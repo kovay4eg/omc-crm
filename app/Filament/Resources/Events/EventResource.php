@@ -10,6 +10,7 @@ use App\Models\Event;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class EventResource extends Resource
 {
@@ -24,6 +25,13 @@ class EventResource extends Resource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-m-calendar';
 
     protected static ?string $recordTitleAttribute = 'title';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereDate('event_date', '>=', today())
+            ->orderBy('event_date');
+    }
 
     public static function form(Schema $schema): Schema
     {

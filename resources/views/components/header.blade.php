@@ -403,8 +403,8 @@
             </a>
 
             <a
-                href="/contacts"
-                class="{{ request()->is('contacts') ? 'active' : '' }}"
+                href="{{ request()->routeIs('event-summaries.*') ? url('/#contacts-section') : '#contacts-section' }}"
+                id="contactsNavLink"
             >
                 Контакти
             </a>
@@ -483,6 +483,7 @@
     const aboutDropdown = document.getElementById('aboutDropdown');
     const eventsNavLink = document.getElementById('eventsNavLink');
     const eventSummariesNavLink = document.getElementById('eventSummariesNavLink');
+    const contactsNavLink = document.getElementById('contactsNavLink');
 
     const sectionNavigation = [
         {
@@ -492,6 +493,10 @@
         {
             link: eventSummariesNavLink,
             sectionId: 'event-summaries-section',
+        },
+        {
+            link: contactsNavLink,
+            sectionId: 'contacts-section',
         },
     ];
 

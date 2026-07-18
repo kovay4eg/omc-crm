@@ -39,10 +39,21 @@ class HomepageSettings extends Page implements HasForms
     {
         $settings = HomepageSetting::first();
 
-        $formData = [];
+        $formData = [
+            'contact_address' => 'м. Полтава, просп. Віталія Грицаєнка, 25',
+            'contact_phone' => '+380 (095) 580-90-62',
+            'contact_email' => 'poltomc@gmail.com',
+            'google_maps_url' => 'https://www.google.com/maps?q=%D0%BC.%20%D0%9F%D0%BE%D0%BB%D1%82%D0%B0%D0%B2%D0%B0%2C%20%D0%BF%D1%80%D0%BE%D1%81%D0%BF.%20%D0%92%D1%96%D1%82%D0%B0%D0%BB%D1%96%D1%8F%20%D0%93%D1%80%D0%B8%D1%86%D0%B0%D1%94%D0%BD%D0%BA%D0%B0%2C%2025&output=embed',
+        ];
 
         if ($settings) {
-            $formData = $settings->toArray();
+            $formData = array_merge(
+                $formData,
+                array_filter(
+                    $settings->toArray(),
+                    fn ($value) => $value !== null,
+                ),
+            );
         }
 
         $this->form->fill($formData);
@@ -77,6 +88,26 @@ class HomepageSettings extends Page implements HasForms
                     ->directory('homepage')
                     ->visibility('public')
                     ->preserveFilenames(),
+
+                TextInput::make('contact_address')
+                    ->label('Адреса')
+                    ->maxLength(255),
+
+                TextInput::make('contact_phone')
+                    ->label('Телефон адміністратора')
+                    ->tel()
+                    ->maxLength(50),
+
+                TextInput::make('contact_email')
+                    ->label('Email для звернень')
+                    ->email()
+                    ->maxLength(255),
+
+                TextInput::make('google_maps_url')
+                    ->label('Посилання Google Maps')
+                    ->url()
+                    ->maxLength(2048)
+                    ->helperText('Посилання використовується для вбудованої карти на сайті.'),
 
                 Toggle::make('facebook_enabled')
                     ->label('Facebook')
@@ -138,6 +169,11 @@ class HomepageSettings extends Page implements HasForms
         $settings->mobile_banner_image = $data['mobile_banner_image'] ?? null;
 
         $settings->logo = $data['logo'] ?? null;
+
+        $settings->contact_address = $data['contact_address'] ?? null;
+        $settings->contact_phone = $data['contact_phone'] ?? null;
+        $settings->contact_email = $data['contact_email'] ?? null;
+        $settings->google_maps_url = $data['google_maps_url'] ?? null;
 
         $settings->facebook_enabled = !empty($data['facebook_enabled']);
         $settings->facebook_url = $data['facebook_url'] ?? null;

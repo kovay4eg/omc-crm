@@ -672,6 +672,8 @@
     $settings = \App\Models\HomepageSetting::first();
 @endphp
 
+<x-preloader />
+
 <div style="height:195px;"></div>
 
 <x-header />
@@ -949,6 +951,10 @@
 
 @include('event_summaries.index', ['eventSummaries' => $eventSummaries])
 
+@include('contacts.index', ['settings' => $settings])
+
+<x-footer />
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const mainCards = document.querySelectorAll('.card');
@@ -975,7 +981,7 @@ document.addEventListener('DOMContentLoaded', () => {
         structure: document.querySelector('#navMenu > a[href="#structure-section"]'),
         events: document.querySelector('#navMenu > a[href="#events-section"]'),
         results: document.querySelector('#navMenu > a[href="#event-summaries-section"]'),
-        contacts: document.querySelector('#navMenu > a[href="/contacts"]')
+        contacts: document.querySelector('#navMenu > a[href="#contacts-section"]')
     };
 
     const navigationSections = [
@@ -986,7 +992,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { selector: '#calendar-plan-section', menu: 'about' },
         { selector: '#structure-section', menu: 'structure' },
         { selector: '#events-section', menu: 'events' },
-        { selector: '#event-summaries-section', menu: 'results' }
+        { selector: '#event-summaries-section', menu: 'results' },
+        { selector: '#contacts-section', menu: 'contacts' }
     ];
 
     accordionButtons.forEach(button => {

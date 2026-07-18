@@ -4,17 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SiteSetting extends Model
+class FooterSetting extends Model
 {
     protected $fillable = [
-        'team_banner',
-        'maintenance_mode',
+        'partner_logos',
     ];
 
     protected function casts(): array
     {
         return [
-            'maintenance_mode' => 'boolean',
+            'partner_logos' => 'array',
         ];
     }
 }

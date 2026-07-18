@@ -6,10 +6,8 @@ use App\Models\Event;
 use App\Models\EventSummary;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -57,28 +55,6 @@ class EventSummaryForm
                             ->default(EventSummary::STATUS_DRAFT)
                             ->required(),
 
-                        Repeater::make('images')
-                            ->label('Фотогалерея')
-                            ->relationship()
-                            ->orderColumn('sort_order')
-                            ->schema([
-                                FileUpload::make('image')
-                                    ->label('Фото')
-                                    ->image()
-                                    ->disk('public')
-                                    ->directory('event-summaries')
-                                    ->imagePreviewHeight('140')
-                                    ->required(),
-
-                                TextInput::make('alt_text')
-                                    ->label('Короткий опис фото')
-                                    ->maxLength(255),
-                            ])
-                            ->columns(2)
-                            ->addActionLabel('Додати фото')
-                            ->reorderableWithButtons()
-                            ->collapsible()
-                            ->columnSpanFull(),
                     ])
                     ->mutateRelationshipDataBeforeCreateUsing(function (array $data): array {
                         $data['user_id'] = auth()->id();
@@ -88,11 +64,11 @@ class EventSummaryForm
                     ->columns(2)
                     ->columnSpanFull(),
 
-                Section::make('Швидке додавання фото')
-                    ->description('Можна вибрати одразу кілька фото. Після збереження вони з’являться у фотогалереї нижче.')
+                Section::make('Фотогалерея')
+                    ->description('Необов’язково. Можна вибрати одразу кілька фото — після збереження вони з’являться у галереї.')
                     ->schema([
                         FileUpload::make('new_images')
-                            ->label('Нові фото')
+                            ->label('Фото')
                             ->image()
                             ->multiple()
                             ->reorderable()

@@ -4,17 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SiteSetting extends Model
+class SiteVisit extends Model
 {
     protected $fillable = [
-        'team_banner',
-        'maintenance_mode',
+        'session_hash',
+        'visited_on',
+        'last_seen_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'maintenance_mode' => 'boolean',
+            'visited_on' => 'date',
+            'last_seen_at' => 'datetime',
         ];
     }
 }
