@@ -6,6 +6,7 @@ use App\Enums\EventStatus;
 use App\Models\CalendarPlan;
 use App\Models\Department;
 use App\Models\Event;
+use App\Models\EventSummary;
 use App\Models\HomepageSetting;
 use App\Models\Report;
 use App\Models\SiteSetting;
@@ -48,6 +49,24 @@ class HomeController extends Controller
                     && !$event->is_full;
             });
 
+        $eventSummaries = EventSummary::query()
+            ->with([
+                'event',
+                'images',
+            ])
+            ->where('status', EventSummary::STATUS_PUBLISHED)
+            ->whereHas('event', function ($query) {
+                $query
+                    ->whereDate('event_date', '<', today())
+                    ->whereIn('status', [
+                        EventStatus::Published->value,
+                        EventStatus::Rescheduled->value,
+                    ]);
+            })
+            ->get()
+            ->sortByDesc(fn (EventSummary $summary) => $summary->event->event_date)
+            ->values();
+
         return view('index', [
             'settings' => $settings,
             'departments' => $departments,
@@ -56,6 +75,7 @@ class HomeController extends Controller
             'reports' => $reports,
             'calendarPlans' => $calendarPlans,
             'events' => $events,
+            'eventSummaries' => $eventSummaries,
         ]);
     }
 }

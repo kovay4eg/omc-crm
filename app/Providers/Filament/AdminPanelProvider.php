@@ -20,6 +20,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 // РЕСУРСИ
 use App\Filament\Resources\Events\EventResource;
+use App\Filament\Resources\EventSummaries\EventSummaryResource;
 use App\Filament\Resources\UserResource;
 use App\Filament\Resources\SystemLogs\SystemLogResource;
 use App\Filament\Resources\Employees\EmployeeResource;
@@ -69,6 +70,7 @@ class AdminPanelProvider extends PanelProvider
 
             ->resources([
                 EventResource::class,
+                EventSummaryResource::class,
                 UserResource::class,
                 SystemLogResource::class,
                 EmployeeResource::class,

@@ -4,6 +4,9 @@ namespace App\Models;
 
 use App\Enums\EventStatus;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Event extends Model
 {
@@ -41,18 +44,23 @@ class Event extends Model
         'status' => EventStatus::class,
     ];
 
-    public function registrations()
+    public function registrations(): HasMany
     {
         return $this->hasMany(Registration::class);
     }
 
-    public function histories()
+    public function histories(): HasMany
     {
         return $this->hasMany(EventHistory::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function summary(): HasOne
+    {
+        return $this->hasOne(EventSummary::class);
     }
 }

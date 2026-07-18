@@ -2,11 +2,20 @@
 
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\EventSummaryController;
+use App\Models\Event;
+use App\Models\EventSummary;
 use App\Models\CalendarPlan;
 use App\Models\Report;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index']);
+
+Route::get('/event-summaries/{eventSummary}', [EventSummaryController::class, 'show'])
+    ->name('event-summaries.show');
+
+Route::middleware('auth')->get('/admin/event-summaries/{event}/preview', [EventSummaryController::class, 'preview'])
+    ->name('event-summaries.preview');
 
 Route::post('/exit-preview', function () {
     session()->forget('preview_role');

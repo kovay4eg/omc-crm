@@ -947,6 +947,8 @@
 
 @include('events.index', ['events' => $events])
 
+@include('event_summaries.index', ['eventSummaries' => $eventSummaries])
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const mainCards = document.querySelectorAll('.card');
@@ -971,8 +973,8 @@ document.addEventListener('DOMContentLoaded', () => {
         home: document.querySelector('#navMenu > a[href="/"]'),
         about: document.querySelector('#aboutDropdown .nav-btn'),
         structure: document.querySelector('#navMenu > a[href="#structure-section"]'),
-        events: document.querySelector('#navMenu > a[href="/events"]'),
-        results: document.querySelector('#navMenu > a[href="/results"]'),
+        events: document.querySelector('#navMenu > a[href="#events-section"]'),
+        results: document.querySelector('#navMenu > a[href="#event-summaries-section"]'),
         contacts: document.querySelector('#navMenu > a[href="/contacts"]')
     };
 
@@ -982,7 +984,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { selector: '#statut-section', menu: 'about' },
         { selector: '#reports-section', menu: 'about' },
         { selector: '#calendar-plan-section', menu: 'about' },
-        { selector: '#structure-section', menu: 'structure' }
+        { selector: '#structure-section', menu: 'structure' },
+        { selector: '#events-section', menu: 'events' },
+        { selector: '#event-summaries-section', menu: 'results' }
     ];
 
     accordionButtons.forEach(button => {

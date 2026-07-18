@@ -383,17 +383,21 @@
                 </div>
             </div>
 
-            <a href="#structure-section">
+            <a href="{{ request()->routeIs('event-summaries.*') ? url('/#structure-section') : '#structure-section' }}">
                 Де ми можемо зустрітися?
             </a>
 
-            <a href="#events-section" id="eventsNavLink">
+            <a
+                href="{{ request()->routeIs('event-summaries.*') ? url('/#events-section') : '#events-section' }}"
+                id="eventsNavLink"
+            >
                 Анонси заходів
             </a>
 
             <a
-                href="/results"
-                class="{{ (request()->is('results') || request()->is('results/*')) ? 'active' : '' }}"
+                href="{{ request()->routeIs('event-summaries.*') ? url('/#event-summaries-section') : '#event-summaries-section' }}"
+                id="eventSummariesNavLink"
+                class="{{ request()->routeIs('event-summaries.*') ? 'active' : '' }}"
             >
                 Підсумки заходів
             </a>
@@ -478,9 +482,21 @@
     const header = document.getElementById('header');
     const aboutDropdown = document.getElementById('aboutDropdown');
     const eventsNavLink = document.getElementById('eventsNavLink');
+    const eventSummariesNavLink = document.getElementById('eventSummariesNavLink');
 
-    function activateEventsMenu() {
-        if (!nav || !eventsNavLink) {
+    const sectionNavigation = [
+        {
+            link: eventsNavLink,
+            sectionId: 'events-section',
+        },
+        {
+            link: eventSummariesNavLink,
+            sectionId: 'event-summaries-section',
+        },
+    ];
+
+    function activateSectionMenu(activeLink) {
+        if (!nav || !activeLink) {
             return;
         }
 
@@ -494,23 +510,27 @@
             aboutButton.classList.remove('active');
         }
 
-        eventsNavLink.classList.add('active');
+        activeLink.classList.add('active');
     }
 
-    function isEventsSectionActive() {
-        const eventsSection = document.getElementById('events-section');
-
-        if (!eventsSection || !header) {
-            return false;
+    function getActiveSectionLink() {
+        if (!header || window.location.pathname !== '/') {
+            return null;
         }
 
-        const position = eventsSection.getBoundingClientRect();
         const activationPoint = header.offsetHeight + 30;
 
-        return (
-            position.top <= activationPoint
-            && position.bottom > activationPoint
-        );
+        return sectionNavigation.find(({ sectionId }) => {
+            const section = document.getElementById(sectionId);
+
+            if (!section) {
+                return false;
+            }
+
+            const position = section.getBoundingClientRect();
+
+            return position.top <= activationPoint && position.bottom > activationPoint;
+        })?.link ?? null;
     }
 
     function updateHeaderState() {
@@ -522,14 +542,18 @@
             }
         }
 
-        if (isEventsSectionActive()) {
-            window.requestAnimationFrame(activateEventsMenu);
+        const activeSectionLink = getActiveSectionLink();
+
+        if (activeSectionLink) {
+            window.requestAnimationFrame(() => activateSectionMenu(activeSectionLink));
 
             return;
         }
 
-        if (eventsNavLink) {
-            eventsNavLink.classList.remove('active');
+        if (window.location.pathname === '/') {
+            sectionNavigation.forEach(({ link }) => {
+                link?.classList.remove('active');
+            });
         }
     }
 
@@ -549,11 +573,15 @@
         });
     }
 
-    if (eventsNavLink) {
-        eventsNavLink.addEventListener('click', event => {
-            const eventsSection = document.getElementById('events-section');
+    sectionNavigation.forEach(({ link, sectionId }) => {
+        if (!link) {
+            return;
+        }
 
-            if (!eventsSection) {
+        link.addEventListener('click', event => {
+            const section = document.getElementById(sectionId);
+
+            if (!section) {
                 return;
             }
 
@@ -563,7 +591,7 @@
 
             const targetPosition =
                 window.scrollY
-                + eventsSection.getBoundingClientRect().top
+                + section.getBoundingClientRect().top
                 - headerOffset;
 
             window.scrollTo({
@@ -571,14 +599,16 @@
                 behavior: 'smooth',
             });
 
-            history.replaceState(null, '', '#events-section');
+            history.replaceState(null, '', `#${sectionId}`);
+
+            activateSectionMenu(link);
 
             if (window.innerWidth <= 768 && burger && nav) {
                 burger.classList.remove('active');
                 nav.classList.remove('active');
             }
         });
-    }
+    });
 
     window.addEventListener('scroll', updateHeaderState, {
         passive: true,
