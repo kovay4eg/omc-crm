@@ -195,7 +195,15 @@
         display: none;
         width: 28px;
         height: 20px;
+        padding: 0;
+        border: 0;
+        background: transparent;
         cursor: pointer;
+    }
+
+    .burger-control,
+    .burger-hint {
+        display: none;
     }
 
     .burger span {
@@ -233,6 +241,18 @@
         transform: rotate(-45deg);
     }
 
+    @keyframes burger-hint-pulse {
+        0%, 18%, 36%, 100% {
+            box-shadow: 0 0 0 0 rgba(43, 60, 255, 0);
+            transform: translateY(0);
+        }
+
+        9%, 27% {
+            box-shadow: 0 0 0 7px rgba(43, 60, 255, .12);
+            transform: translateY(-1px);
+        }
+    }
+
     /* Перемикаємося на бургер до того, як навігація може перейти у другий рядок. */
     @media (max-width: 1100px) {
         .header-inner {
@@ -240,12 +260,34 @@
             padding-left: 20px;
         }
 
-        .burger {
+        .burger-control {
             position: absolute;
             top: 50%;
             right: 25px;
-            display: block;
+            z-index: 1300;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             transform: translateY(-50%);
+        }
+
+        .burger {
+            display: block;
+        }
+
+        .burger-hint {
+            display: none;
+            padding: 6px 8px;
+            border: 1px solid rgba(43, 60, 255, .2);
+            border-radius: 999px;
+            background: rgba(244, 245, 255, .92);
+            color: #2b3cff;
+            font-family: 'Inter', sans-serif;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .08em;
+            line-height: 1;
+            text-transform: uppercase;
         }
 
         .logo img {
@@ -292,6 +334,12 @@
             text-align: center;
         }
 
+        .nav-item.open {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
         .nav > a,
         .nav-btn {
             justify-content: center;
@@ -317,9 +365,24 @@
             backdrop-filter: none;
         }
 
-        .nav-item.open .dropdown-menu {
+        .nav-item.open .dropdown-menu,
+        .nav-item.open:hover .dropdown-menu {
+            position: static;
             display: flex !important;
+            width: 100% !important;
+            max-width: 100% !important;
             gap: 2px;
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+        }
+
+        .nav-item:not(.open) .dropdown-menu,
+        .nav-item:not(.open):hover .dropdown-menu {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: none !important;
         }
 
         .nav-item.open .nav-btn svg {
@@ -361,6 +424,25 @@
         }
     }
 
+    @media (min-width: 769px) and (max-width: 1100px) {
+        .burger-hint {
+            display: inline-flex;
+            animation: burger-hint-pulse 5s ease-in-out infinite;
+        }
+
+        .burger-control.is-active .burger-hint {
+            animation-play-state: paused;
+            background: #2b3cff;
+            color: #fff;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .burger-hint {
+            animation: none !important;
+        }
+    }
+
     html {
         scroll-behavior: smooth;
     }
@@ -386,10 +468,13 @@
             </a>
         </div>
 
-        <div class="burger" id="burger">
-            <span></span>
-            <span></span>
-            <span></span>
+        <div class="burger-control" id="burgerControl">
+            <span class="burger-hint" aria-hidden="true">Меню</span>
+            <button class="burger" id="burger" type="button" aria-label="Відкрити меню" aria-expanded="false" aria-controls="navMenu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
 
         <nav class="nav" id="navMenu">
@@ -524,6 +609,7 @@
 <script>
     const mobileNavigationBreakpoint = 1100;
     const burger = document.getElementById('burger');
+    const burgerControl = document.getElementById('burgerControl');
     const nav = document.getElementById('navMenu');
     const header = document.getElementById('header');
     const aboutDropdown = document.getElementById('aboutDropdown');
@@ -613,6 +699,8 @@
         burger.addEventListener('click', () => {
             burger.classList.toggle('active');
             nav.classList.toggle('active');
+            burgerControl?.classList.toggle('is-active', nav.classList.contains('active'));
+            burger.setAttribute('aria-expanded', String(nav.classList.contains('active')));
 
             if (!nav.classList.contains('active')) {
                 aboutDropdown?.classList.remove('open');
@@ -638,6 +726,8 @@
             if (window.innerWidth <= mobileNavigationBreakpoint && burger) {
                 burger.classList.remove('active');
                 nav.classList.remove('active');
+                burgerControl?.classList.remove('is-active');
+                burger.setAttribute('aria-expanded', 'false');
                 aboutDropdown?.classList.remove('open');
                 aboutMenuButton?.setAttribute('aria-expanded', 'false');
             }
@@ -677,6 +767,8 @@
             if (window.innerWidth <= mobileNavigationBreakpoint && burger && nav) {
                 burger.classList.remove('active');
                 nav.classList.remove('active');
+                burgerControl?.classList.remove('is-active');
+                burger.setAttribute('aria-expanded', 'false');
             }
         });
     });

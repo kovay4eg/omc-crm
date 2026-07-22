@@ -19,6 +19,7 @@
 <style>
     .site-footer {
         background: #f0f1ff;
+        padding-bottom: 84px;
     }
 
     .site-footer-inner {
@@ -153,6 +154,10 @@
     }
 
     @media (max-width: 767px) {
+        .site-footer {
+            padding-bottom: 72px;
+        }
+
         .site-footer-inner {
             display: grid;
             min-height: 0;

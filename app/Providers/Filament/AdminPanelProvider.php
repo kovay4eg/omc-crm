@@ -43,7 +43,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName('ОМЦ')
-            ->favicon(asset('favicon.svg'))
+            ->favicon(asset('favicon-omc.png'))
             ->brandLogo(function (): string {
                 $logo = HomepageSetting::query()->value('logo');
 

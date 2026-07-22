@@ -107,7 +107,7 @@
             <div class="panel-inner-content pt-2 pb-5">
                 <div class="d-flex justify-content-between align-items-start mb-4">
                     <h2 class="main-title text-uppercase fw-extrabold text-blue">Молодіжний хаб</h2>
-                    <button class="btn-close-view" onclick="resetView()"></button>
+                    <button class="btn-close-view" type="button" onclick="resetView(true)" aria-label="Закрити інформацію про простір"></button>
                 </div>
 
                 <div class="row mb-5">
@@ -142,7 +142,7 @@
             <div class="panel-inner-content pt-2 pb-5">
                 <div class="d-flex justify-content-between align-items-start mb-4">
                     <h2 class="main-title text-uppercase fw-extrabold text-blue">Аудіовізуальна студія «КОНТЕНТА»</h2>
-                    <button class="btn-close-view" onclick="resetView()"></button>
+                    <button class="btn-close-view" type="button" onclick="resetView(true)" aria-label="Закрити інформацію про простір"></button>
                 </div>
 
                 <div class="row mb-5">
@@ -172,7 +172,7 @@
             <div class="panel-inner-content pt-2 pb-5">
                 <div class="d-flex justify-content-between align-items-start mb-4">
                     <h2 class="main-title text-uppercase fw-extrabold text-blue">Мобільна молодіжна робота</h2>
-                    <button class="btn-close-view" onclick="resetView()"></button>
+                    <button class="btn-close-view" type="button" onclick="resetView(true)" aria-label="Закрити інформацію про простір"></button>
                 </div>
 
                 <div class="row mb-5">
@@ -690,6 +690,7 @@
     }
 
     let activeViewId = null;
+    let activeCardElement = null;
     let isScrollingToView = false;
     let panelAutoCloseFrame = null;
     let panelScrollTimer = null;
@@ -773,6 +774,7 @@
         cardElement.setAttribute('aria-expanded', 'true');
         targetView.classList.remove('d-none');
         activeViewId = targetId;
+        activeCardElement = cardElement;
 
         requestAnimationFrame(() => {
             targetView.classList.add('active');
@@ -784,9 +786,10 @@
         }
     }
 
-    function resetView() {
+    function resetView(returnToCard = false) {
         const panels = document.querySelectorAll('.view-panel');
         const cards = document.querySelectorAll('.meeting-card');
+        const cardToReturn = returnToCard ? activeCardElement : null;
 
         panels.forEach(panel => {
             panel.classList.remove('active');
@@ -799,10 +802,26 @@
         });
 
         activeViewId = null;
+        activeCardElement = null;
         isScrollingToView = false;
         window.clearTimeout(panelScrollTimer);
 
         setWatermarkText('ДЕ МИ МОЖЕМО ЗУСТРІТИСЯ');
+
+        if (!cardToReturn || !document.documentElement.contains(cardToReturn)) {
+            return;
+        }
+
+        const headerHeight = document.getElementById('header')?.offsetHeight ?? 0;
+        const targetPosition = window.scrollY + cardToReturn.getBoundingClientRect().top - headerHeight - 24;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        window.requestAnimationFrame(() => {
+            window.scrollTo({
+                top: Math.max(0, targetPosition),
+                behavior: reduceMotion ? 'auto' : 'smooth',
+            });
+        });
     }
 
     window.addEventListener(
