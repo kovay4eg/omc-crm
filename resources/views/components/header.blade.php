@@ -452,19 +452,19 @@
     <div class="container-1200 header-inner">
         <div class="logo">
             <a href="/">
-                @if (!empty($settings?->logo))
-                    <img
-                        src="{{ asset('storage/' . $settings->logo) }}"
-                        alt="Логотип"
-                        draggable="false"
-                    >
-                @else
-                    <img
-                        src="/images/logo.png"
-                        alt="Логотип"
-                        draggable="false"
-                    >
-                @endif
+                @php
+                    $defaultLogo = !empty($settings?->logo)
+                        ? asset('storage/' . $settings->logo)
+                        : asset('images/logo.png');
+                @endphp
+                <img
+                    id="siteLogo"
+                    src="{{ $defaultLogo }}"
+                    data-logo-default="{{ $defaultLogo }}"
+                    data-logo-dark="{{ asset('images/logo-white.png') }}"
+                    alt="Логотип"
+                    draggable="false"
+                >
             </a>
         </div>
 
@@ -617,6 +617,22 @@
     const eventsNavLink = document.getElementById('eventsNavLink');
     const eventSummariesNavLink = document.getElementById('eventSummariesNavLink');
     const contactsNavLink = document.getElementById('contactsNavLink');
+    const siteLogo = document.getElementById('siteLogo');
+
+    function syncContrastLogo() {
+        if (!siteLogo) {
+            return;
+        }
+
+        const isDarkTheme = document.documentElement.dataset.omcA11yTheme === 'dark';
+        const logoSource = isDarkTheme
+            ? siteLogo.dataset.logoDark
+            : siteLogo.dataset.logoDefault;
+
+        if (logoSource && siteLogo.getAttribute('src') !== logoSource) {
+            siteLogo.setAttribute('src', logoSource);
+        }
+    }
 
     const sectionNavigation = [
         {
@@ -777,5 +793,8 @@
         passive: true,
     });
 
+    window.addEventListener('omc-accessibility-change', syncContrastLogo);
+
+    syncContrastLogo();
     updateHeaderState();
 </script>

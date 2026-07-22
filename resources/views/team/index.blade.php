@@ -37,11 +37,12 @@
     top:50%;
     left:50%;
     transform:translate(-50%, -50%);
-    font-size:clamp(80px, 15vw, 220px);
+    font-size:clamp(64px, 11vw, 160px);
     font-weight:800;
     line-height:1;
-    color:#E8EAFB;
-    opacity:.45;
+    color:#eef0ff;
+    opacity:1;
+    letter-spacing:-.05em;
     white-space:nowrap;
     pointer-events:none;
     z-index:0;
@@ -109,7 +110,7 @@
     align-items:center;
     justify-content:space-between;
     padding:26px 0;
-    border-bottom:1px solid #d9d9d9;
+    border-bottom:1px solid rgba(43, 36, 193, .12);
     cursor:pointer;
 }
 
@@ -143,14 +144,13 @@
 .arrow .icon-arrow-custom{
     width:32px;
     height:32px;
-    content:url("/images/icons/arrow.svg");
     display:block;
-    transition:all .4s ease;
+    background:url("/images/icons/arrow-inactive.svg") center / contain no-repeat;
+    transition:transform .25s ease, background-image .25s ease;
 }
 
 .dept-row.active .icon-arrow-custom{
-    transform:rotate(90deg);
-    filter:invert(18%) sepia(51%) saturate(5436%) hue-rotate(229deg) brightness(91%) contrast(92%);
+    background-image:url("/images/icons/arrow-active.svg");
 }
 
 /* =========================

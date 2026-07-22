@@ -110,11 +110,11 @@
         gap: 12px;
         align-items: start;
         padding: 17px 0;
-        border-top: 1px solid #d9d7f7;
+        border-top: 1px solid rgba(43, 36, 193, .12);
     }
 
     .contacts-list-item:last-child {
-        border-bottom: 1px solid #d9d7f7;
+        border-bottom: 1px solid rgba(43, 36, 193, .12);
     }
 
     .contacts-list-icon {

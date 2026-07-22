@@ -66,10 +66,11 @@
             left: 0;
             z-index: 0;
             width: 250vw;
-            color: #dbe3ff;
-            font-size: clamp(80px, 15vw, 180px);
+            color: #eef0ff;
+            font-size: clamp(64px, 11vw, 160px);
             font-weight: 800;
-            opacity: .45;
+            opacity: 1;
+            letter-spacing: -.05em;
             white-space: nowrap;
             pointer-events: none;
             transform: translateY(-50%);
@@ -183,7 +184,7 @@
         .custom-accordion .accordion-item {
             margin-bottom: 10px;
             border: none;
-            border-bottom: 1px solid #f3d9da;
+            border-bottom: 1px solid rgba(43, 36, 193, .12);
             background: transparent;
         }
 
@@ -218,13 +219,14 @@
         .icon-arrow-custom {
             width: 32px;
             height: 32px;
-            content: url("/images/icons/arrow.svg");
-            transition: all .4s ease;
+            display: block;
+            flex: 0 0 auto;
+            background: url("/images/icons/arrow-inactive.svg") center / contain no-repeat;
+            transition: transform .25s ease, background-image .25s ease;
         }
 
         .accordion-button:not(.collapsed) .icon-arrow-custom {
-            transform: rotate(90deg);
-            filter: invert(18%) sepia(51%) saturate(5436%) hue-rotate(229deg) brightness(91%) contrast(92%);
+            background-image: url("/images/icons/arrow-active.svg");
         }
 
         .design-intro-text {

@@ -39,12 +39,14 @@
         left: 50%;
         transform: translate(-50%, -50%);
 
-        font-size: clamp(80px, 15vw, 200px);
+        font-size: clamp(64px, 11vw, 160px);
         font-weight: 800;
 
-        color: var(--calendar-bg-light-blue);
+        color: #eef0ff;
 
-        opacity: 0.5;
+        opacity: 1;
+
+        letter-spacing: -.05em;
 
         white-space: nowrap;
 

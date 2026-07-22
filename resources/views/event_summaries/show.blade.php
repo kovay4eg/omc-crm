@@ -34,7 +34,7 @@
         body { background: #fff; color: #171717; font-family: 'Commissioner', sans-serif; }
         .summary-page { min-height: 100vh; padding: 150px 0 100px; }
         .summary-container { position: relative; max-width: 1200px; margin: 0 auto; padding: 0 15px; }
-        .summary-watermark { position: absolute; top: 86px; left: 0; width: 100vw; overflow: hidden; color: #eef0ff; font-size: clamp(65px, 11vw, 160px); font-weight: 800; letter-spacing: -.05em; line-height: 1; white-space: nowrap; pointer-events: none; }
+        .summary-watermark { position: absolute; top: 86px; left: 0; width: 100vw; overflow: hidden; color: #eef0ff; font-size: clamp(64px, 11vw, 160px); font-weight: 800; letter-spacing: -.05em; line-height: 1; white-space: nowrap; pointer-events: none; }
         .summary-title { position: relative; z-index: 1; margin: 0 0 36px; color: #2d35c8; font-size: clamp(24px, 3vw, 36px); font-weight: 800; text-transform: uppercase; }
         .summary-preview-note { position: relative; z-index: 2; display: inline-block; margin-bottom: 20px; padding: 9px 14px; border-radius: 999px; background: #fff1bf; color: #734f00; font-size: 14px; font-weight: 700; }
         .summary-event-card { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(220px, .8fr) minmax(0, 1.5fr); overflow: hidden; border-radius: 20px; background: #e9e9ff; }

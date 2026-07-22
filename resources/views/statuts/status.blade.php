@@ -44,11 +44,12 @@ if ($statute && !empty($statute->file)) {
     top:50%;
     left:50%;
     transform:translate(-50%, -50%);
-    font-size:clamp(80px, 15vw, 220px);
+    font-size:clamp(64px, 11vw, 160px);
     font-weight:800;
     line-height:1;
-    color:#E8EAFB;
-    opacity:.45;
+    color:#eef0ff;
+    opacity:1;
+    letter-spacing:-.05em;
     white-space:nowrap;
     pointer-events:none;
     z-index:0;

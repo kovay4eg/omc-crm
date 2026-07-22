@@ -133,7 +133,7 @@
 
     .site-footer-credit {
         padding: 18px 15px 22px;
-        border-top: 1px solid rgba(45, 53, 200, .14);
+        border-top: 1px solid rgba(43, 36, 193, .12);
         color: #8b8da8;
         font-size: 12px;
         font-weight: 600;
@@ -255,7 +255,7 @@
         <div class="site-footer-credit__line">
             <span>Website developed by Roman Koshovyi</span>
             <span aria-hidden="true">•</span>
-            <span>Design by Karina Shupyk</span>
+            <span>Design by Karyna Shupyk</span>
         </div>
         <span class="site-footer-credit__year">© {{ now()->year }}</span>
     </div>

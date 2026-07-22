@@ -22,7 +22,7 @@
         {{-- Заголовок --}}
         <div class="title-container position-relative mb-4 py-2 d-flex justify-content-between align-items-center">
             {{-- Фоновий рухомий текст --}}
-            <div class="bg-watermark-wrapper d-none d-lg-block" aria-hidden="true">
+            <div class="bg-watermark-wrapper d-block" aria-hidden="true">
                 <div id="bgWatermark" class="bg-watermark-track text-uppercase">
                     <span class="bg-watermark-text">ДЕ МИ МОЖЕМО ЗУСТРІТИСЯ</span>
                     <span class="bg-watermark-text">ДЕ МИ МОЖЕМО ЗУСТРІТИСЯ</span>
@@ -321,13 +321,13 @@
         display: block;
         flex: 0 0 auto;
         padding-right: 2rem;
-        font-size: 8vw;
-        font-weight: 900;
+        font-size: clamp(64px, 11vw, 160px);
+        font-weight: 800;
         line-height: 1;
-        color: #2B24C1;
-        opacity: .06;
+        color: #eef0ff;
+        opacity: 1;
         white-space: nowrap;
-        letter-spacing: 2px;
+        letter-spacing: -.05em;
     }
 
     .title-container .main-title {
@@ -346,10 +346,8 @@
     .arrow-mask-icon {
         width: 28px;
         height: 28px;
-        background-color: #2B24C1;
-        -webkit-mask: url('/images/icons/arrow.svg') center / contain no-repeat;
-        mask: url('/images/icons/arrow.svg') center / contain no-repeat;
-        transition: transform .3s cubic-bezier(.25, 1, .5, 1), background-color .3s ease;
+        background: url('/images/icons/arrow-inactive.svg') center / contain no-repeat;
+        transition: transform .3s cubic-bezier(.25, 1, .5, 1), background-image .25s ease, filter .25s ease;
         will-change: transform;
     }
 
@@ -385,12 +383,12 @@
     }
 
     .meeting-card.card-active .card-num {
-        -webkit-text-stroke: 1.5px #fff !important;
+        -webkit-text-stroke: 1.25px #fff !important;
     }
 
     .meeting-card.card-active .arrow-mask-icon {
-        transform: rotate(90deg) !important;
-        background-color: #fff !important;
+        background-image: url('/images/icons/arrow-active.svg') !important;
+        filter: brightness(0) invert(1);
     }
 
     .meeting-card:hover:not(.card-active) .arrow-mask-icon {
@@ -414,12 +412,13 @@
     }
 
     .card-num {
-        margin-bottom: .3rem;
-        font-size: 2.6rem;
-        font-weight: 900;
+        margin-bottom: .45rem;
+        font-size: 2.5rem;
+        font-weight: 500;
         line-height: 1;
         color: transparent;
-        -webkit-text-stroke: 1.5px #2B24C1;
+        -webkit-text-stroke: 1.25px #2B24C1;
+        letter-spacing: -.08em;
     }
 
     .card-title {

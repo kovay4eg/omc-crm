@@ -134,9 +134,10 @@ final class MediaStorage
             'name' => $name,
             'size' => $storage->size($location['path']),
             'type' => $storage->mimeType($location['path']),
-            'url' => $location['disk'] === 'public'
-                ? $storage->url($location['path'])
-                : ($legacyUrl ?: $storage->url($location['path'])),
+            // Для вже збережених записів використовуємо контрольований маршрут.
+            // Він працює і для старих, і для нових шляхів зберігання та не
+            // залежить від символічного посилання public/storage на сервері.
+            'url' => $legacyUrl ?: $storage->url($location['path']),
         ];
     }
 

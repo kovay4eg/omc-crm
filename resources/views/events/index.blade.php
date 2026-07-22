@@ -3,7 +3,7 @@
         --events-blue: #2f2ac8;
         --events-blue-dark: #201cae;
         --events-lilac: #eeecff;
-        --events-line: #d9d7f7;
+        --events-line: rgba(43, 36, 193, .12);
         --events-text: #171717;
     }
 
@@ -26,20 +26,22 @@
 
     .events-hero {
         position: relative;
+        display: flex;
+        align-items: center;
         min-height: 120px;
         margin-bottom: 30px;
     }
 
     .events-watermark {
         position: absolute;
-        top: 154px;
-        left: 0;
+        top: 50%;
+        left: 50%;
         z-index: 0;
         width: 100vw;
         height: 180px;
         overflow: hidden;
         pointer-events: none;
-        transform: translateY(-50%);
+        transform: translate3d(-50%, -50%, 0);
         user-select: none;
     }
 
@@ -48,8 +50,9 @@
         top: 50%;
         left: 50%;
         width: max-content;
-        color: #eeedff;
-        font-size: clamp(54px, 9.3vw, 142px);
+        color: #eef0ff;
+        font-size: clamp(64px, 11vw, 160px);
+        letter-spacing: -.05em;
         font-weight: 800;
         line-height: 1;
         white-space: nowrap;
@@ -66,7 +69,7 @@
         position: relative;
         z-index: 1;
         margin: 0;
-        padding-top: 39px;
+        padding-top: 0;
         color: var(--events-blue);
         font-size: clamp(26px, 3vw, 43px);
         font-weight: 800;
@@ -624,12 +627,7 @@
         }
 
         .events-watermark {
-            top: 121px;
             height: 150px;
-        }
-
-        .events-title {
-            padding-top: 33px;
         }
 
         .event-modal-dialog {
@@ -639,16 +637,15 @@
 </style>
 
 <section id="events-section" class="events-page">
-    <div class="events-watermark" aria-hidden="true">
-        <div class="events-watermark-track" id="eventsWatermarkTrack">
-            <span class="events-watermark-text">
-                АНОНСИ ЗАХОДІВ&nbsp;&nbsp;АНОНСИ ЗАХОДІВ&nbsp;&nbsp;АНОНСИ ЗАХОДІВ&nbsp;&nbsp;АНОНСИ ЗАХОДІВ&nbsp;&nbsp;АНОНСИ ЗАХОДІВ
-            </span>
-        </div>
-    </div>
-
     <div class="events-container">
         <section class="events-hero" aria-labelledby="events-title">
+            <div class="events-watermark" aria-hidden="true">
+                <div class="events-watermark-track" id="eventsWatermarkTrack">
+                    <span class="events-watermark-text">
+                        АНОНСИ ЗАХОДІВ&nbsp;&nbsp;АНОНСИ ЗАХОДІВ&nbsp;&nbsp;АНОНСИ ЗАХОДІВ&nbsp;&nbsp;АНОНСИ ЗАХОДІВ&nbsp;&nbsp;АНОНСИ ЗАХОДІВ
+                    </span>
+                </div>
+            </div>
             <h1 class="events-title" id="events-title">
                 Анонси заходів
             </h1>

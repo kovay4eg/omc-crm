@@ -135,6 +135,7 @@
             root.dataset.omcA11yFont = settings.font;
             root.dataset.omcA11yTheme = settings.theme;
             try { window.localStorage.setItem(storageKey, JSON.stringify(settings)); } catch (error) {}
+            window.dispatchEvent(new CustomEvent('omc-accessibility-change', { detail: settings }));
         }
 
         applySettings(readSettings());
