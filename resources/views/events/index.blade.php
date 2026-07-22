@@ -719,7 +719,7 @@
                             <div class="event-image">
                                 @if ($event->image)
                                     <img
-                                        src="{{ asset('storage/' . $event->image) }}"
+                                        src="{{ route('events.image', ['event' => $event]) }}"
                                         alt="{{ $event->title }}"
                                     >
                                 @else

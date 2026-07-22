@@ -43,7 +43,7 @@
         <div id="mainGridView" class="row g-4 mb-5">
             {{-- Картка 01 --}}
             <div class="col-12 col-md-4">
-                <div class="meeting-card h-100" onclick="switchView('hub-view', 'МОЛОДІЖНИЙ ХАБ', this)">
+                <div class="meeting-card h-100" role="button" tabindex="0" aria-controls="hub-view" aria-expanded="false" onclick="switchView('hub-view', 'МОЛОДІЖНИЙ ХАБ', this)" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchView('hub-view', 'МОЛОДІЖНИЙ ХАБ', this); }">
                     <div class="card-img-box">
                         <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80" alt="Молодіжний хаб">
                     </div>
@@ -63,7 +63,7 @@
 
             {{-- Картка 02 --}}
             <div class="col-12 col-md-4">
-                <div class="meeting-card h-100" onclick="switchView('studio-view', 'КОНТЕНТА', this)">
+                <div class="meeting-card h-100" role="button" tabindex="0" aria-controls="studio-view" aria-expanded="false" onclick="switchView('studio-view', 'КОНТЕНТА', this)" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchView('studio-view', 'КОНТЕНТА', this); }">
                     <div class="card-img-box">
                         <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80" alt="Аудіовізуальна студія">
                     </div>
@@ -83,7 +83,7 @@
 
             {{-- Картка 03 --}}
             <div class="col-12 col-md-4">
-                <div class="meeting-card h-100" onclick="switchView('mobile-view', 'МОБІЛЬНА РОБОТА', this)">
+                <div class="meeting-card h-100" role="button" tabindex="0" aria-controls="mobile-view" aria-expanded="false" onclick="switchView('mobile-view', 'МОБІЛЬНА РОБОТА', this)" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchView('mobile-view', 'МОБІЛЬНА РОБОТА', this); }">
                     <div class="card-img-box">
                         <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80" alt="Мобільна молодіжна робота">
                     </div>
@@ -371,6 +371,11 @@
         box-shadow: 0 15px 35px rgba(43, 36, 193, .08);
     }
 
+    .meeting-card:focus-visible {
+        outline: 3px solid #2B24C1;
+        outline-offset: 4px;
+    }
+
     .meeting-card.card-active {
         background-color: #2B24C1 !important;
     }
@@ -426,6 +431,7 @@
 
     .view-panel {
         opacity: 0;
+        scroll-margin-top: 118px;
         transform: translateY(15px);
         transition: opacity .4s ease, transform .4s ease;
     }
@@ -683,6 +689,61 @@
         requestAnimationFrame(updateWatermarkPosition);
     }
 
+    let activeViewId = null;
+    let isScrollingToView = false;
+    let panelAutoCloseFrame = null;
+    let panelScrollTimer = null;
+
+    function scrollToOpenedView(panel) {
+        const headerHeight = document.getElementById('header')?.offsetHeight ?? 0;
+        const targetPosition = window.scrollY + panel.getBoundingClientRect().top - headerHeight - 24;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        isScrollingToView = true;
+        window.clearTimeout(panelScrollTimer);
+
+        window.scrollTo({
+            top: Math.max(0, targetPosition),
+            behavior: reduceMotion ? 'auto' : 'smooth',
+        });
+
+        panelScrollTimer = window.setTimeout(() => {
+            isScrollingToView = false;
+        }, reduceMotion ? 0 : 1000);
+    }
+
+    function closeViewWhenScrolledAway() {
+        panelAutoCloseFrame = null;
+
+        if (isScrollingToView || !activeViewId) {
+            return;
+        }
+
+        const activePanel = document.getElementById(activeViewId);
+
+        if (!activePanel || activePanel.classList.contains('d-none')) {
+            return;
+        }
+
+        const headerHeight = document.getElementById('header')?.offsetHeight ?? 0;
+        const panelPosition = activePanel.getBoundingClientRect();
+
+        if (
+            panelPosition.bottom < headerHeight + 24
+            || panelPosition.top > window.innerHeight - 80
+        ) {
+            resetView();
+        }
+    }
+
+    function schedulePanelAutoClose() {
+        if (panelAutoCloseFrame !== null) {
+            return;
+        }
+
+        panelAutoCloseFrame = window.requestAnimationFrame(closeViewWhenScrolledAway);
+    }
+
     function switchView(targetId, watermarkText, cardElement) {
         const targetView = document.getElementById(targetId);
         const cards = document.querySelectorAll('.meeting-card');
@@ -698,7 +759,10 @@
             return;
         }
 
-        cards.forEach(card => card.classList.remove('card-active'));
+        cards.forEach(card => {
+            card.classList.remove('card-active');
+            card.setAttribute('aria-expanded', 'false');
+        });
 
         panels.forEach(panel => {
             panel.classList.remove('active');
@@ -706,10 +770,13 @@
         });
 
         cardElement.classList.add('card-active');
+        cardElement.setAttribute('aria-expanded', 'true');
         targetView.classList.remove('d-none');
+        activeViewId = targetId;
 
         requestAnimationFrame(() => {
             targetView.classList.add('active');
+            scrollToOpenedView(targetView);
         });
 
         if (watermarkText) {
@@ -726,14 +793,24 @@
             panel.classList.add('d-none');
         });
 
-        cards.forEach(card => card.classList.remove('card-active'));
+        cards.forEach(card => {
+            card.classList.remove('card-active');
+            card.setAttribute('aria-expanded', 'false');
+        });
+
+        activeViewId = null;
+        isScrollingToView = false;
+        window.clearTimeout(panelScrollTimer);
 
         setWatermarkText('ДЕ МИ МОЖЕМО ЗУСТРІТИСЯ');
     }
 
     window.addEventListener(
         'scroll',
-        updateWatermarkPosition,
+        () => {
+            updateWatermarkPosition();
+            schedulePanelAutoClose();
+        },
         { passive: true }
     );
 

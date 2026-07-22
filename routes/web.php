@@ -5,6 +5,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventSummaryController;
 use App\Http\Controllers\EmployeePhotoController;
+use App\Http\Controllers\EventImageController;
 use App\Http\Middleware\EnsureFrontendIsAvailable;
 use App\Http\Middleware\TrackSiteVisit;
 use App\Models\Event;
@@ -18,6 +19,9 @@ Route::middleware([EnsureFrontendIsAvailable::class, TrackSiteVisit::class])->gr
 
     Route::get('/team/employees/{employee}/photo', [EmployeePhotoController::class, 'show'])
         ->name('employees.photo');
+
+    Route::get('/events/{event}/image', [EventImageController::class, 'show'])
+        ->name('events.image');
 
     Route::get('/events/{event}', [EventController::class, 'show'])
         ->name('events.show');

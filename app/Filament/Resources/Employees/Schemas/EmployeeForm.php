@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Employees\Schemas;
 
+use App\Support\MediaStorage;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
@@ -45,6 +46,16 @@ class EmployeeForm
                     ->disk('public')
                     ->visibility('public')
                     ->directory('employees')
+                    ->fetchFileInformation(false)
+                    ->getUploadedFileUsing(static function (FileUpload $component, string $file, string|array|null $storedFileNames): ?array {
+                        $record = $component->getRecord();
+
+                        return MediaStorage::uploadedFileDetails(
+                            $file,
+                            $storedFileNames,
+                            $record ? route('employees.photo', ['employee' => $record]) : null,
+                        );
+                    })
 
                     // 🔥 ПРОПОРЦІЯ ЯК НА САЙТІ
                     ->imageCropAspectRatio('3:4')
@@ -61,13 +72,7 @@ class EmployeeForm
                     // 🔥 ПРЕВʼЮ
                     ->imagePreviewHeight('250')
 
-                    // 🔥 FALLBACK
-                    ->default(null)
-                    ->avatar(fn ($state) =>
-                        $state
-                            ? asset('storage/' . $state)
-                            : asset('images/default-avatar.png')
-                    ),
+                    ->avatar(),
 
                 TextInput::make('sort')
                     ->numeric()

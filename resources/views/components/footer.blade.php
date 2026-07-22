@@ -109,26 +109,47 @@
 
     .site-footer-partners {
         display: grid;
-        flex: 0 1 620px;
-        grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
-        gap: 24px;
+        flex: 0 1 720px;
+        grid-template-columns: repeat(3, minmax(140px, 1fr));
+        gap: 28px;
         align-items: center;
     }
 
     .site-footer-partner-logo {
         display: grid;
-        min-width: 128px;
-        min-height: 72px;
+        min-width: 0;
+        min-height: 88px;
         place-items: center;
     }
 
     .site-footer-partner-logo img {
         display: block;
-        width: clamp(128px, 11vw, 150px);
-        min-width: 128px;
-        max-width: 150px;
-        max-height: 72px;
+        width: clamp(148px, 13vw, 190px);
+        max-width: 100%;
+        max-height: 88px;
         object-fit: contain;
+    }
+
+    .site-footer-credit {
+        padding: 18px 15px 22px;
+        border-top: 1px solid rgba(45, 53, 200, .14);
+        color: #8b8da8;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.6;
+        text-align: center;
+    }
+
+    .site-footer-credit__line {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0 9px;
+    }
+
+    .site-footer-credit__year {
+        display: block;
+        margin-top: 5px;
     }
 
     @media (max-width: 767px) {
@@ -146,20 +167,26 @@
 
         .site-footer-partners {
             width: 100%;
-            grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
-            gap: 14px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px 12px;
         }
 
         .site-footer-partner-logo {
-            min-width: 112px;
-            min-height: 64px;
+            min-width: 0;
+            min-height: 72px;
         }
 
         .site-footer-partner-logo img {
-            width: min(100%, 132px);
-            min-width: 112px;
-            max-width: 132px;
-            max-height: 64px;
+            width: min(100%, 118px);
+            min-width: 0;
+            max-width: 118px;
+            max-height: 72px;
+        }
+
+        .site-footer-credit {
+            padding-top: 16px;
+            padding-bottom: 18px;
+            font-size: 11px;
         }
     }
 </style>
@@ -217,5 +244,14 @@
                 @endforeach
             </section>
         @endif
+    </div>
+
+    <div class="site-footer-credit">
+        <div class="site-footer-credit__line">
+            <span>Website developed by Roman Koshovyi</span>
+            <span aria-hidden="true">•</span>
+            <span>Design by Karina Shupyk</span>
+        </div>
+        <span class="site-footer-credit__year">© {{ now()->year }}</span>
     </div>
 </footer>

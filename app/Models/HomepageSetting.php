@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\DeletesMediaFiles;
 use Illuminate\Database\Eloquent\Model;
 
 class HomepageSetting extends Model
 {
+    use DeletesMediaFiles;
+
     protected $fillable = [
         'banner_image',
         'mobile_banner_image',
@@ -28,4 +31,9 @@ class HomepageSetting extends Model
         'smm_description',
         'smm_image',
     ];
+
+    protected function mediaFields(): array
+    {
+        return ['banner_image', 'mobile_banner_image', 'logo', 'smm_image'];
+    }
 }

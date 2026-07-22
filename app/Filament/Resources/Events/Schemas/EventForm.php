@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Events\Schemas;
 
+use App\Support\MediaStorage;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -55,7 +56,19 @@ class EventForm
             FileUpload::make('image')
                 ->label('Фото')
                 ->image()
+                ->disk('public')
+                ->visibility('public')
                 ->directory('events')
+                ->fetchFileInformation(false)
+                ->getUploadedFileUsing(static function (FileUpload $component, string $file, string|array|null $storedFileNames): ?array {
+                    $record = $component->getRecord();
+
+                    return MediaStorage::uploadedFileDetails(
+                        $file,
+                        $storedFileNames,
+                        $record ? route('events.image', ['event' => $record]) : null,
+                    );
+                })
                 ->nullable(),
 
             Section::make('Поширення у соціальних мережах')
@@ -77,6 +90,7 @@ class EventForm
                         ->label('Обкладинка для посилання')
                         ->image()
                         ->disk('public')
+                        ->visibility('public')
                         ->directory('smm/events')
                         ->helperText('Рекомендований розмір: 1200 × 630 px. Якщо не додавати, буде використано афішу заходу.')
                         ->columnSpanFull(),

@@ -22,6 +22,11 @@
         transition: .3s ease;
     }
 
+    .header,
+    .header * {
+        box-sizing: border-box;
+    }
+
     .header.scrolled {
         background: rgba(255, 255, 255, .8);
         box-shadow: 0 5px 20px rgba(0, 0, 0, .05);
@@ -228,7 +233,8 @@
         transform: rotate(-45deg);
     }
 
-    @media (max-width: 768px) {
+    /* Перемикаємося на бургер до того, як навігація може перейти у другий рядок. */
+    @media (max-width: 1100px) {
         .header-inner {
             padding-right: 20px;
             padding-left: 20px;
@@ -252,38 +258,51 @@
         .nav {
             position: absolute;
             top: 100%;
-            left: 0;
+            left: 50%;
             z-index: 1100;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            width: 100%;
+            align-items: stretch;
+            width: 100vw;
+            max-width: 100vw;
             max-height: calc(100vh - 96px);
             gap: 20px;
             padding: 35px 0 30px;
+            overflow-x: hidden;
             overflow-y: auto;
             background: #fff;
             box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
             opacity: 0;
-            transform: translateY(-20px);
+            transform: translateX(-50%) translateY(-20px);
             pointer-events: none;
             transition: .35s ease;
         }
 
         .nav.active {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateX(-50%) translateY(0);
             pointer-events: auto;
         }
 
         .nav-item {
-            flex-direction: column;
+            display: block;
+            min-width: 0;
+            max-width: 100%;
+            width: 100%;
+            text-align: center;
+        }
+
+        .nav > a,
+        .nav-btn {
+            justify-content: center;
             width: 100%;
         }
 
         .dropdown-menu {
             position: static;
             display: none;
+            min-width: 0 !important;
+            max-width: 100% !important;
             width: 100%;
             margin-top: 10px;
             padding: 10px 0;
@@ -318,6 +337,8 @@
             color: #222;
             font-size: 16px;
             text-align: center;
+            white-space: normal;
+            overflow-wrap: anywhere;
         }
 
         .socials {
@@ -501,6 +522,7 @@
 </header>
 
 <script>
+    const mobileNavigationBreakpoint = 1100;
     const burger = document.getElementById('burger');
     const nav = document.getElementById('navMenu');
     const header = document.getElementById('header');
@@ -601,7 +623,7 @@
 
     if (aboutDropdown && aboutMenuButton) {
         aboutMenuButton.addEventListener('click', event => {
-            if (window.innerWidth <= 768) {
+            if (window.innerWidth <= mobileNavigationBreakpoint) {
                 event.preventDefault();
 
                 const isOpen = aboutDropdown.classList.toggle('open');
@@ -613,7 +635,7 @@
 
     nav?.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
-            if (window.innerWidth <= 768 && burger) {
+            if (window.innerWidth <= mobileNavigationBreakpoint && burger) {
                 burger.classList.remove('active');
                 nav.classList.remove('active');
                 aboutDropdown?.classList.remove('open');
@@ -652,7 +674,7 @@
 
             activateSectionMenu(link);
 
-            if (window.innerWidth <= 768 && burger && nav) {
+            if (window.innerWidth <= mobileNavigationBreakpoint && burger && nav) {
                 burger.classList.remove('active');
                 nav.classList.remove('active');
             }

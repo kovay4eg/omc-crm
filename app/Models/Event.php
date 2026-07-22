@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\EventStatus;
+use App\Models\Concerns\DeletesMediaFiles;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Event extends Model
 {
+    use DeletesMediaFiles;
+
     protected $fillable = [
         'title',
         'description',
@@ -66,5 +69,10 @@ class Event extends Model
     public function summary(): HasOne
     {
         return $this->hasOne(EventSummary::class);
+    }
+
+    protected function mediaFields(): array
+    {
+        return ['image', 'smm_image'];
     }
 }

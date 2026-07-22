@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\DeletesMediaFiles;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class EventSummary extends Model
 {
+    use DeletesMediaFiles;
+
     public const STATUS_DRAFT = 'draft';
 
     public const STATUS_PUBLISHED = 'published';
@@ -52,5 +55,10 @@ class EventSummary extends Model
     public function isPublished(): bool
     {
         return $this->status === self::STATUS_PUBLISHED;
+    }
+
+    protected function mediaFields(): array
+    {
+        return ['smm_image'];
     }
 }

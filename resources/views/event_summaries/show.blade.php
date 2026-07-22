@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <x-favicon />
     @php
         $summarySmmSettings = \App\Models\HomepageSetting::first();
         $summarySmmTitle = $summary->smm_title ?: 'Підсумок заходу: ' . $summary->event->title;
@@ -78,7 +79,7 @@
             <article class="summary-event-card">
                 <div class="summary-event-poster">
                     @if ($summary->event->image)
-                        <img src="{{ asset('storage/' . $summary->event->image) }}" alt="Афіша заходу {{ $summary->event->title }}">
+                        <img src="{{ route('events.image', ['event' => $summary->event]) }}" alt="Афіша заходу {{ $summary->event->title }}">
                     @else
                         <div class="summary-event-placeholder">Афіша заходу</div>
                     @endif

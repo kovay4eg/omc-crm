@@ -49,6 +49,8 @@ class StatuteResource extends Resource
 
                 FileUpload::make('file')
                     ->label('Файл статуту')
+                    ->disk('public')
+                    ->visibility('public')
                     ->directory('statutes')
                     ->acceptedFileTypes([
                         'application/pdf',

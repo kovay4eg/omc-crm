@@ -12,6 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <x-favicon />
     <x-social-meta
         :title="$smmTitle"
         :description="$smmDescription"
@@ -64,7 +65,7 @@
             <article class="event-detail-card">
                 <div class="event-detail-poster">
                     @if ($event->image)
-                        <img src="{{ asset('storage/' . $event->image) }}" alt="Афіша заходу {{ $event->title }}">
+                        <img src="{{ route('events.image', ['event' => $event]) }}" alt="Афіша заходу {{ $event->title }}">
                     @else
                         <div class="event-detail-placeholder">Афіша заходу</div>
                     @endif

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <x-favicon />
     @php
         $homepageSmmTitle = $settings?->smm_title ?: 'Обласний молодіжний центр Полтавської обласної ради';
         $homepageSmmDescription = $settings?->smm_description ?: 'Молодіжні можливості, події та ініціативи Полтавщини.';
@@ -209,12 +210,9 @@
             height: 32px;
             margin-right: 15px;
             content: url("/images/icons/flower.svg");
-            transition: transform .6s cubic-bezier(.34, 1.56, .64, 1);
+            transform: rotate(var(--flower-scroll-rotation, 0deg));
+            transition: transform .12s linear;
             will-change: transform;
-        }
-
-        .flower-spin {
-            transform: rotate(360deg) !important;
         }
 
         .icon-arrow-custom {
@@ -1019,49 +1017,60 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', function () {
             const flower = this.querySelector('.icon-flower');
 
-            if (!flower) {
+            if (!flower || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
                 return;
             }
 
-            flower.classList.add('flower-spin');
+            const rotation = window.scrollY * .45;
 
-            setTimeout(() => {
-                if (this.classList.contains('collapsed')) {
-                    flower.classList.remove('flower-spin');
-                }
-            }, 600);
+            flower.animate(
+                [
+                    { transform: `rotate(${rotation}deg)` },
+                    { transform: `rotate(${rotation + 360}deg)` },
+                ],
+                {
+                    duration: 560,
+                    easing: 'cubic-bezier(.34, 1.56, .64, 1)',
+                },
+            );
         });
     });
 
-    window.addEventListener(
-        'scroll',
-        () => {
-            const scrollPosition = window.scrollY;
+    let aboutScrollAnimationFrame = null;
 
-            flowers.forEach(flower => {
-                const parentButton = flower.closest('.accordion-button');
+    function updateAboutScrollEffects() {
+        aboutScrollAnimationFrame = null;
 
-                if (
-                    parentButton
-                    && parentButton.classList.contains('collapsed')
-                ) {
-                    flower.style.transform =
-                        `rotate(${scrollPosition * .2}deg)`;
-                }
-            });
+        const scrollPosition = window.scrollY;
 
-            if (bgText1) {
-                bgText1.style.transform =
-                    `translateY(-50%) translateX(-${scrollPosition * .3}px)`;
-            }
+        flowers.forEach(flower => {
+            flower.style.setProperty(
+                '--flower-scroll-rotation',
+                `${scrollPosition * .45}deg`,
+            );
+        });
 
-            if (bgText2) {
-                bgText2.style.transform =
-                    `translateY(-50%) translateX(-${scrollPosition * .3}px)`;
-            }
-        },
-        { passive: true }
-    );
+        if (bgText1) {
+            bgText1.style.transform =
+                `translateY(-50%) translateX(-${scrollPosition * .3}px)`;
+        }
+
+        if (bgText2) {
+            bgText2.style.transform =
+                `translateY(-50%) translateX(-${scrollPosition * .3}px)`;
+        }
+    }
+
+    function scheduleAboutScrollEffects() {
+        if (aboutScrollAnimationFrame !== null) {
+            return;
+        }
+
+        aboutScrollAnimationFrame = window.requestAnimationFrame(updateAboutScrollEffects);
+    }
+
+    window.addEventListener('scroll', scheduleAboutScrollEffects, { passive: true });
+    updateAboutScrollEffects();
 
     const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {

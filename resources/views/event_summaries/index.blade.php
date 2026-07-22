@@ -196,7 +196,7 @@
                             <div class="event-summary-card-poster">
                                 @if ($summary->event->image)
                                     <img
-                                        src="{{ asset('storage/' . $summary->event->image) }}"
+                                        src="{{ route('events.image', ['event' => $summary->event]) }}"
                                         alt="Афіша заходу {{ $summary->event->title }}"
                                     >
                                 @else

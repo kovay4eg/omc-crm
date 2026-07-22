@@ -72,6 +72,7 @@ class EventSummaryForm
                             ->label('Обкладинка для посилання')
                             ->image()
                             ->disk('public')
+                            ->visibility('public')
                             ->directory('smm/summaries')
                             ->helperText('Рекомендований розмір: 1200 × 630 px. Якщо не додавати, буде використано фото заходу.')
                             ->columnSpanFull(),
@@ -95,6 +96,7 @@ class EventSummaryForm
                             ->reorderable()
                             ->appendFiles()
                             ->disk('public')
+                            ->visibility('public')
                             ->directory('event-summaries')
                             ->maxFiles(30)
                             ->helperText('Оберіть усі фото в одному вікні вибору файлів.')

@@ -25,6 +25,8 @@ class CalendarPlanForm
 
                 FileUpload::make('file')
                     ->label('Файл календарного плану')
+                    ->disk('public')
+                    ->visibility('public')
                     ->directory('calendar-plans')
                     ->acceptedFileTypes([
                         'application/pdf',

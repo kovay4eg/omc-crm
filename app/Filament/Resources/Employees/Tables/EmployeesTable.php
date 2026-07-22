@@ -45,6 +45,8 @@ class EmployeesTable
 
                             ->disk('public')
 
+                            ->visibility('public')
+
                             ->directory('team')
 
                             ->imageEditor()

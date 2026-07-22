@@ -52,6 +52,7 @@ class ReportResource extends Resource
                 FileUpload::make('file')
                     ->label('Файл звітності')
                     ->disk('public')
+                    ->visibility('public')
                     ->directory('reports')
                     ->acceptedFileTypes([
                         'application/pdf',

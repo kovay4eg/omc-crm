@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\FooterSetting;
+use App\Support\MediaStorage;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -52,10 +53,15 @@ class FooterSettings extends Page implements HasForms
                     ->reorderable()
                     ->appendFiles()
                     ->maxFiles(5)
+                    ->maxParallelUploads(1)
                     ->disk('public')
                     ->directory('footer-partners')
                     ->visibility('public')
-                    ->helperText('Необов’язково. Можна додати до 5 логотипів і змінити їх порядок.'),
+                    ->fetchFileInformation(false)
+                    ->getUploadedFileUsing(static function (FileUpload $component, string $file, string|array|null $storedFileNames): ?array {
+                        return MediaStorage::uploadedFileDetails($file, $storedFileNames);
+                    })
+                    ->helperText('Необов’язково. До 5 логотипів. Файли завантажуються по одному, щоб не зависати на повільному інтернеті.'),
             ])
             ->statePath('data');
     }
