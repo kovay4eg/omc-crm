@@ -273,6 +273,14 @@
         padding-top:80px;
     }
 
+    /* Декоративний фон має залишатися видимим і в мобільній версії. */
+    .team-hero-bg{
+        display:block;
+        visibility:visible;
+        opacity:1;
+        font-size:clamp(64px, 19vw, 94px);
+    }
+
     .team-title{
         font-size:34px;
         margin-bottom:20px;

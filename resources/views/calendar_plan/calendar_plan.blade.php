@@ -284,6 +284,14 @@
             padding: 80px 0 40px;
         }
 
+        /* Декоративний фон має залишатися видимим і в мобільній версії. */
+        .calendar-bg-text {
+            display: block;
+            visibility: visible;
+            opacity: 1;
+            font-size: clamp(64px, 19vw, 94px);
+        }
+
         .calendar-hero {
             min-height: 160px;
             margin-bottom: 30px;

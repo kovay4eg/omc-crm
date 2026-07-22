@@ -632,6 +632,18 @@
     }
 
     @media (max-width: 575.98px) {
+        .bg-watermark-wrapper {
+            display: block !important;
+            overflow: hidden;
+        }
+
+        .bg-watermark-text {
+            display: block;
+            visibility: visible;
+            opacity: 1;
+            font-size: clamp(64px, 19vw, 94px);
+        }
+
         .booking-line {
             padding-top: 1rem !important;
             padding-bottom: 1rem !important;
@@ -659,6 +671,8 @@
 </style>
 
 <script>
+    let watermarkAnimationFrame = null;
+
     function updateWatermarkPosition() {
         const watermark = document.getElementById('bgWatermark');
         const firstText = watermark?.querySelector('.bg-watermark-text');
@@ -673,9 +687,20 @@
             return;
         }
 
-        const scrollOffset = (window.scrollY * 0.25) % textWidth;
+        const scrollOffset = (window.scrollY * 0.45) % textWidth;
 
-        watermark.style.transform = `translateX(${-textWidth - scrollOffset}px)`;
+        watermark.style.transform = `translate3d(${-textWidth - scrollOffset}px, 0, 0)`;
+    }
+
+    function scheduleWatermarkPosition() {
+        if (watermarkAnimationFrame !== null) {
+            return;
+        }
+
+        watermarkAnimationFrame = window.requestAnimationFrame(() => {
+            watermarkAnimationFrame = null;
+            updateWatermarkPosition();
+        });
     }
 
     function setWatermarkText(text) {
@@ -826,7 +851,7 @@
     window.addEventListener(
         'scroll',
         () => {
-            updateWatermarkPosition();
+            scheduleWatermarkPosition();
             schedulePanelAutoClose();
         },
         { passive: true }
@@ -834,13 +859,13 @@
 
     window.addEventListener(
         'resize',
-        updateWatermarkPosition
+        scheduleWatermarkPosition
     );
 
     document.addEventListener(
         'DOMContentLoaded',
         () => {
-            updateWatermarkPosition();
+            scheduleWatermarkPosition();
         }
     );
 </script>

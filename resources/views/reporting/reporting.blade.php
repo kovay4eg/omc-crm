@@ -272,6 +272,14 @@ $reports = Report::orderBy('year', 'desc')->get();
             padding: 80px 0 40px;
         }
 
+        /* Декоративний фон має залишатися видимим і в мобільній версії. */
+        .reports-bg-text {
+            display: block;
+            visibility: visible;
+            opacity: 1;
+            font-size: clamp(64px, 19vw, 94px);
+        }
+
         .reports-hero {
             min-height: 160px;
             margin-bottom: 30px;
