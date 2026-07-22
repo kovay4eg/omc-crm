@@ -1,3 +1,18 @@
+@php
+    $bookingSettings = $settings ?? \App\Models\HomepageSetting::query()->first();
+    $bookingAddress = $bookingSettings?->contact_address ?: 'м. Полтава, просп. Віталія Грицаєнка, 25';
+    $bookingPhone = $bookingSettings?->contact_phone ?: '+380 (095) 580-90-62';
+    $bookingEmail = $bookingSettings?->contact_email ?: 'poltomc@gmail.com';
+    $bookingPhoneLink = preg_replace('/[^0-9+]/', '', $bookingPhone);
+    $bookingSocialNetworks = [
+        ['enabled' => $bookingSettings?->facebook_enabled, 'url' => $bookingSettings?->facebook_url, 'name' => 'Facebook', 'icon' => 'facebook.svg'],
+        ['enabled' => $bookingSettings?->instagram_enabled, 'url' => $bookingSettings?->instagram_url, 'name' => 'Instagram', 'icon' => 'instagram.svg'],
+        ['enabled' => $bookingSettings?->telegram_enabled, 'url' => $bookingSettings?->telegram_url, 'name' => 'Telegram', 'icon' => 'telegram.svg'],
+        ['enabled' => $bookingSettings?->youtube_enabled, 'url' => $bookingSettings?->youtube_url, 'name' => 'YouTube', 'icon' => 'youtube.svg'],
+        ['enabled' => $bookingSettings?->tiktok_enabled, 'url' => $bookingSettings?->tiktok_url, 'name' => 'TikTok', 'icon' => 'tiktok.svg'],
+    ];
+@endphp
+
 {{-- Головний контейнер секції "Де ми можемо зустрітися?" --}}
 <section
     id="structure-section"
@@ -183,18 +198,86 @@
         </div>
 
         {{-- Нижня лінія бронювання --}}
-        <div class="booking-line d-flex justify-content-between align-items-center py-4 border-top border-bottom mt-4">
+        <button
+            type="button"
+            class="booking-line booking-line-trigger d-flex w-100 justify-content-between align-items-center py-4 border-top border-bottom mt-4"
+            data-bs-toggle="modal"
+            data-bs-target="#bookingContactModal"
+            aria-label="Відкрити контакти для бронювання простору"
+        >
             <div class="d-flex align-items-center gap-3">
                 <div class="star-icon">✦</div>
                 <span class="booking-text text-uppercase fw-bold">Можливість забронювати простір</span>
             </div>
 
-            <a href="#" class="arrow-link">
-                <div class="arrow-mask-icon static-arrow"></div>
-            </a>
-        </div>
+            <div class="arrow-mask-icon static-arrow" aria-hidden="true"></div>
+        </button>
     </div>
 </section>
+
+<div class="modal fade booking-modal" id="bookingContactModal" tabindex="-1" aria-labelledby="bookingContactModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0">
+            <div class="modal-header border-0 pb-0">
+                <div>
+                    <p class="booking-modal__eyebrow mb-1">БРОНЮВАННЯ ПРОСТОРУ</p>
+                    <h2 class="booking-modal__title mb-0" id="bookingContactModalTitle">Зв’яжіться з нами</h2>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+            </div>
+
+            <div class="modal-body pt-3">
+                <p class="booking-modal__intro">Напишіть або зателефонуйте адміністратору, щоб узгодити дату, формат і доступність простору.</p>
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="booking-modal__contact">
+                            <span class="booking-modal__icon" aria-hidden="true">⌖</span>
+                            <div>
+                                <span class="booking-modal__label">Адреса</span>
+                                <span class="booking-modal__value">{{ $bookingAddress }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <a class="booking-modal__contact booking-modal__contact--link h-100" href="tel:{{ $bookingPhoneLink }}">
+                            <span class="booking-modal__icon" aria-hidden="true">☎</span>
+                            <span>
+                                <span class="booking-modal__label">Телефон</span>
+                                <span class="booking-modal__value">{{ $bookingPhone }}</span>
+                            </span>
+                        </a>
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <a class="booking-modal__contact booking-modal__contact--link h-100" href="mailto:{{ $bookingEmail }}">
+                            <span class="booking-modal__icon" aria-hidden="true">✉</span>
+                            <span>
+                                <span class="booking-modal__label">Електронна пошта</span>
+                                <span class="booking-modal__value booking-modal__email">{{ $bookingEmail }}</span>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+
+                @if (collect($bookingSocialNetworks)->contains(fn ($network) => $network['enabled'] && $network['url']))
+                    <div class="booking-modal__socials mt-4" aria-label="Соціальні мережі">
+                        <span class="booking-modal__label d-block w-100">Соціальні мережі</span>
+
+                        @foreach ($bookingSocialNetworks as $network)
+                            @if ($network['enabled'] && $network['url'])
+                                <a href="{{ $network['url'] }}" target="_blank" rel="noopener noreferrer" class="booking-modal__social-link" aria-label="{{ $network['name'] }}">
+                                    <img src="{{ asset('icons/' . $network['icon']) }}" alt="">
+                                </a>
+                            @endif
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap');
@@ -387,6 +470,19 @@
         transform: translateX(12px);
     }
 
+    .booking-line-trigger {
+        border-right: 0;
+        border-left: 0;
+        background: transparent;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .booking-line-trigger:focus-visible {
+        outline: 3px solid #2B24C1;
+        outline-offset: 5px;
+    }
+
     .star-icon {
         color: #2B24C1;
         font-size: 1.5rem;
@@ -394,6 +490,121 @@
 
     .booking-text {
         color: #2B24C1;
+    }
+
+    .booking-modal .modal-content {
+        border-radius: 24px;
+        background: #f7f7ff;
+        box-shadow: 0 24px 70px rgba(24, 23, 96, .22);
+    }
+
+    .booking-modal .modal-header,
+    .booking-modal .modal-body {
+        padding-right: clamp(1.25rem, 4vw, 2rem);
+        padding-left: clamp(1.25rem, 4vw, 2rem);
+    }
+
+    .booking-modal__eyebrow,
+    .booking-modal__label {
+        color: #666a9c;
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+    }
+
+    .booking-modal__title {
+        color: #2B24C1;
+        font-size: clamp(1.45rem, 4vw, 2rem);
+        font-weight: 900;
+    }
+
+    .booking-modal__intro {
+        margin-bottom: 1.25rem;
+        color: #27283f;
+        font-family: 'Commissioner', sans-serif;
+        font-size: .98rem;
+        line-height: 1.55;
+    }
+
+    .booking-modal__contact {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid #dfdffc;
+        border-radius: 16px;
+        background: #fff;
+        color: #20213d;
+        text-decoration: none;
+    }
+
+    .booking-modal__contact--link {
+        transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .booking-modal__contact--link:hover {
+        border-color: #2B24C1;
+        box-shadow: 0 8px 20px rgba(43, 36, 193, .1);
+        color: #20213d;
+        transform: translateY(-2px);
+    }
+
+    .booking-modal__icon {
+        display: grid;
+        width: 32px;
+        height: 32px;
+        flex: 0 0 auto;
+        place-items: center;
+        border-radius: 50%;
+        background: #ecebff;
+        color: #2B24C1;
+        font-family: Arial, sans-serif;
+        font-weight: 900;
+    }
+
+    .booking-modal__value {
+        display: block;
+        margin-top: 3px;
+        overflow-wrap: anywhere;
+        color: #20213d;
+        font-family: 'Commissioner', sans-serif;
+        font-size: .94rem;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+
+    .booking-modal__socials {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .booking-modal__social-link {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        place-items: center;
+        border: 1px solid #d8d7fa;
+        border-radius: 50%;
+        background: #fff;
+        transition: transform .2s ease, background .2s ease;
+    }
+
+    .booking-modal__social-link:hover {
+        background: #ecebff;
+        transform: translateY(-3px);
+    }
+
+    .booking-modal__social-link img {
+        width: 19px;
+        height: 19px;
+        object-fit: contain;
+    }
+
+    body.modal-open .omc-a11y-widget {
+        z-index: 1040;
     }
 
     .main-title {
@@ -412,6 +623,32 @@
 
         .card-content {
             min-height: auto;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .booking-line {
+            padding-top: 1rem !important;
+            padding-bottom: 1rem !important;
+        }
+
+        .booking-line-trigger > div:first-child {
+            min-width: 0;
+            gap: .65rem !important;
+        }
+
+        .booking-text {
+            font-size: .73rem;
+            line-height: 1.35;
+        }
+
+        .star-icon {
+            font-size: 1.2rem;
+        }
+
+        .arrow-mask-icon.static-arrow {
+            width: 31px;
+            height: 31px;
         }
     }
 </style>

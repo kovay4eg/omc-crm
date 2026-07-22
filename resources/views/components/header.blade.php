@@ -251,13 +251,14 @@
 
         .nav {
             position: absolute;
-            top: 95px;
+            top: 100%;
             left: 0;
+            z-index: 1100;
             display: flex;
             flex-direction: column;
             align-items: center;
             width: 100%;
-            max-height: 80vh;
+            max-height: calc(100vh - 96px);
             gap: 20px;
             padding: 35px 0 30px;
             overflow-y: auto;
@@ -298,11 +299,25 @@
         }
 
         .nav-item.open .dropdown-menu {
-            display: flex;
+            display: flex !important;
+            gap: 2px;
         }
 
+        .nav-item.open .nav-btn svg {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu a,
         .dropdown-menu a:hover {
-            padding-left: 20px;
+            display: flex;
+            width: 100%;
+            min-height: 46px;
+            align-items: center;
+            justify-content: center;
+            padding: 11px 20px;
+            color: #222;
+            font-size: 16px;
+            text-align: center;
         }
 
         .socials {
@@ -362,7 +377,7 @@
             </a>
 
             <div class="nav-item" id="aboutDropdown">
-                <button class="nav-btn" type="button">
+                <button class="nav-btn" id="aboutMenuButton" type="button" aria-expanded="false" aria-controls="aboutSubmenu">
                     Про нас
 
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px;">
@@ -370,7 +385,7 @@
                     </svg>
                 </button>
 
-                <div class="dropdown-menu">
+                <div class="dropdown-menu" id="aboutSubmenu">
                     <a href="#about-section">Про нас</a>
 
                     <a href="#team-section" class="about-hidden-link">
@@ -490,6 +505,7 @@
     const nav = document.getElementById('navMenu');
     const header = document.getElementById('header');
     const aboutDropdown = document.getElementById('aboutDropdown');
+    const aboutMenuButton = document.getElementById('aboutMenuButton');
     const eventsNavLink = document.getElementById('eventsNavLink');
     const eventSummariesNavLink = document.getElementById('eventSummariesNavLink');
     const contactsNavLink = document.getElementById('contactsNavLink');
@@ -575,17 +591,36 @@
         burger.addEventListener('click', () => {
             burger.classList.toggle('active');
             nav.classList.toggle('active');
-        });
-    }
 
-    if (aboutDropdown) {
-        aboutDropdown.addEventListener('click', function (event) {
-            if (window.innerWidth <= 768 && event.target.closest('.nav-btn')) {
-                event.preventDefault();
-                this.classList.toggle('open');
+            if (!nav.classList.contains('active')) {
+                aboutDropdown?.classList.remove('open');
+                aboutMenuButton?.setAttribute('aria-expanded', 'false');
             }
         });
     }
+
+    if (aboutDropdown && aboutMenuButton) {
+        aboutMenuButton.addEventListener('click', event => {
+            if (window.innerWidth <= 768) {
+                event.preventDefault();
+
+                const isOpen = aboutDropdown.classList.toggle('open');
+
+                aboutMenuButton.setAttribute('aria-expanded', String(isOpen));
+            }
+        });
+    }
+
+    nav?.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 768 && burger) {
+                burger.classList.remove('active');
+                nav.classList.remove('active');
+                aboutDropdown?.classList.remove('open');
+                aboutMenuButton?.setAttribute('aria-expanded', 'false');
+            }
+        });
+    });
 
     sectionNavigation.forEach(({ link, sectionId }) => {
         if (!link) {

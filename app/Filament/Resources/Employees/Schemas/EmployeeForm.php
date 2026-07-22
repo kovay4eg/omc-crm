@@ -42,6 +42,8 @@ class EmployeeForm
                 FileUpload::make('photo')
                     ->label('Фото')
                     ->image()
+                    ->disk('public')
+                    ->visibility('public')
                     ->directory('employees')
 
                     // 🔥 ПРОПОРЦІЯ ЯК НА САЙТІ

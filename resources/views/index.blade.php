@@ -237,9 +237,6 @@
         }
 
         .design-cards-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
             margin-bottom: 30px;
         }
 
@@ -249,6 +246,7 @@
             flex-direction: column;
             justify-content: flex-end;
             min-height: 380px;
+            height: 100%;
             padding: 30px;
             border-radius: 24px;
             background: #e8eafb;
@@ -609,16 +607,21 @@
         }
 
         @media (max-width: 991px) {
-            .design-cards-row {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
             .offer-item {
                 width: 40%;
             }
         }
 
         @media (max-width: 767px) {
+            .design-info-card {
+                min-height: 300px;
+                padding: 24px;
+            }
+
+            .design-info-card h4 {
+                font-size: 1.1rem;
+            }
+
             .desktop-title {
                 display: none;
             }
@@ -766,23 +769,29 @@
                             <strong>Полтавський обласний молодіжний центр (ПОМЦ)</strong> — це динамічна платформа для розвитку, творчості та професійного зростання молоді нашого регіону. Ми віримо, що молодь — це активне сьогодення Полтавщини.
                         </p>
 
-                        <div class="design-cards-row">
-                            <div class="design-info-card">
-                                <img src="/icons/microphone.svg" class="icon-mic-img">
-                                <h4>НАША МІСІЯ</h4>
-                                <p>Ми формуємо безпечне та відкрите середовище, де кожна молода людина має голос, підтримку та реальний шанс діяти.</p>
+                        <div class="row g-3 design-cards-row">
+                            <div class="col-12 col-md-6 col-xl-4">
+                                <article class="design-info-card">
+                                    <img src="/icons/microphone.svg" class="icon-mic-img" alt="">
+                                    <h4>НАША МІСІЯ</h4>
+                                    <p>Ми формуємо безпечне та відкрите середовище, де кожна молода людина має голос, підтримку та реальний шанс діяти.</p>
+                                </article>
                             </div>
 
-                            <div class="design-info-card">
-                                <img src="/icons/microphone.svg" class="icon-mic-img">
-                                <h4>ОФІЦІЙНА ІНФОРМАЦІЯ</h4>
-                                <p>Установа забезпечує реалізацію молодіжної політики в регіоні через неформальну освіту та волонтерство.</p>
+                            <div class="col-12 col-md-6 col-xl-4">
+                                <article class="design-info-card">
+                                    <img src="/icons/microphone.svg" class="icon-mic-img" alt="">
+                                    <h4>ОФІЦІЙНА ІНФОРМАЦІЯ</h4>
+                                    <p>Установа забезпечує реалізацію молодіжної політики в регіоні через неформальну освіту та волонтерство.</p>
+                                </article>
                             </div>
 
-                            <div class="design-info-card">
-                                <img src="/icons/microphone.svg" class="icon-mic-img">
-                                <h4>УПРАВЛІННЯ</h4>
-                                <p>Установа перебуває у підпорядкуванні Управління молоді та спорту Полтавської ОДА.</p>
+                            <div class="col-12 col-md-6 col-xl-4">
+                                <article class="design-info-card">
+                                    <img src="/icons/microphone.svg" class="icon-mic-img" alt="">
+                                    <h4>УПРАВЛІННЯ</h4>
+                                    <p>Установа перебуває у підпорядкуванні Управління молоді та спорту Полтавської ОДА.</p>
+                                </article>
                             </div>
                         </div>
 

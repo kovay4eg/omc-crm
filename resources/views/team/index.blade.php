@@ -381,8 +381,8 @@
                         $clean = trim(str_replace('відділ ', '', $name));
                     @endphp
 
-                    @if($clean === 'адміністрація установи')
-                        {{ mb_strtoupper($clean) }}
+                    @if(in_array($clean, ['адміністрація', 'адміністрація установи'], true))
+                        АДМІНІСТРАЦІЯ
                     @else
                         ВІДДІЛ {{ mb_strtoupper($clean) }}
                     @endif
@@ -415,8 +415,10 @@
                                 @if($employee->photo)
 
                                     <img
-                                        src="{{ asset('storage/' . $employee->photo) }}"
+                                        src="{{ route('employees.photo', $employee) }}"
                                         alt="{{ $employee->first_name }}"
+                                        loading="lazy"
+                                        onerror="this.onerror=null; this.src='{{ asset('images/default-avatar.png') }}';"
                                     >
 
                                 @else
