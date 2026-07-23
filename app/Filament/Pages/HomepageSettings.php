@@ -72,6 +72,7 @@ class HomepageSettings extends Page implements HasForms
                     ->disk('public')
                     ->directory('homepage')
                     ->visibility('public')
+                    ->fetchFileInformation(false)
                     ->preserveFilenames()
                     ->required(),
 
@@ -81,6 +82,7 @@ class HomepageSettings extends Page implements HasForms
                     ->disk('public')
                     ->directory('homepage')
                     ->visibility('public')
+                    ->fetchFileInformation(false)
                     ->preserveFilenames(),
 
                 FileUpload::make('logo')
@@ -89,6 +91,7 @@ class HomepageSettings extends Page implements HasForms
                     ->disk('public')
                     ->directory('homepage')
                     ->visibility('public')
+                    ->fetchFileInformation(false)
                     ->preserveFilenames(),
 
                 Section::make('SMM і прев’ю посилань')

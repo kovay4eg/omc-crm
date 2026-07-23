@@ -42,7 +42,7 @@
         {{-- Сітка карток --}}
         <div id="mainGridView" class="row g-4 mb-5">
             {{-- Картка 01 --}}
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-sm-6 col-lg-3">
                 <div class="meeting-card h-100" role="button" tabindex="0" aria-controls="hub-view" aria-expanded="false" onclick="switchView('hub-view', 'МОЛОДІЖНИЙ ХАБ', this)" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchView('hub-view', 'МОЛОДІЖНИЙ ХАБ', this); }">
                     <div class="card-img-box">
                         <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80" alt="Молодіжний хаб">
@@ -62,7 +62,7 @@
             </div>
 
             {{-- Картка 02 --}}
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-sm-6 col-lg-3">
                 <div class="meeting-card h-100" role="button" tabindex="0" aria-controls="studio-view" aria-expanded="false" onclick="switchView('studio-view', 'КОНТЕНТА', this)" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchView('studio-view', 'КОНТЕНТА', this); }">
                     <div class="card-img-box">
                         <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80" alt="Аудіовізуальна студія">
@@ -82,7 +82,7 @@
             </div>
 
             {{-- Картка 03 --}}
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-sm-6 col-lg-3">
                 <div class="meeting-card h-100" role="button" tabindex="0" aria-controls="mobile-view" aria-expanded="false" onclick="switchView('mobile-view', 'МОБІЛЬНА РОБОТА', this)" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchView('mobile-view', 'МОБІЛЬНА РОБОТА', this); }">
                     <div class="card-img-box">
                         <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80" alt="Мобільна молодіжна робота">
@@ -92,6 +92,26 @@
                         <div>
                             <img class="card-number-art" src="/images/icons/structure-number-03.svg" width="118" height="74" alt="03">
                             <h4 class="card-title">МОБІЛЬНА МОЛОДІЖНА РОБОТА</h4>
+                        </div>
+
+                        <div class="arrow-container">
+                            <div class="arrow-mask-icon"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Картка 04 --}}
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="meeting-card h-100" role="button" tabindex="0" aria-controls="career-view" aria-expanded="false" onclick="switchView('career-view', 'КАР’ЄРНИЙ ЦЕНТР', this)" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchView('career-view', 'КАР’ЄРНИЙ ЦЕНТР', this); }">
+                    <div class="card-img-box">
+                        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80" alt="Кар'єрний центр">
+                    </div>
+
+                    <div class="card-content d-flex justify-content-between align-items-end">
+                        <div>
+                            <img class="card-number-art" src="/images/icons/structure-number-04.svg" width="118" height="74" alt="04">
+                            <h4 class="card-title">КАР’ЄРНИЙ ЦЕНТР</h4>
                         </div>
 
                         <div class="arrow-container">
@@ -179,6 +199,40 @@
                     <div class="col-12 col-lg-10">
                         <p class="lead-text mb-3">
                             Команда Полтавського обласного молодіжного центру активно впроваджує напрямок мобільної молодіжної роботи – формат для роботи ОТГ та виїздів.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="photo-grid mb-5">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <div class="red-block" style="height: 240px;"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="red-block" style="height: 240px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Контент 04: Кар'єрний центр --}}
+        <div id="career-view" class="view-panel d-none">
+            <div class="panel-inner-content pt-2 pb-5">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <h2 class="main-title text-uppercase fw-extrabold text-blue">Кар’єрний центр</h2>
+                    <button class="btn-close-view" type="button" onclick="resetView(true)" aria-label="Закрити інформацію про простір"></button>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-12 col-lg-10">
+                        <p class="lead-text mb-3">
+                            <strong>Кар’єрний центр</strong> допомагає молоді визначати професійні цілі, розвивати навички та впевнено робити наступний крок у власній кар’єрі.
+                        </p>
+
+                        <p class="sub-text text-muted">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer facilisis, mauris in tincidunt rhoncus, erat mi suscipit nisi, vitae sagittis turpis libero vitae erat. Curabitur vitae sem quis nibh pretium varius.
                         </p>
                     </div>
                 </div>
