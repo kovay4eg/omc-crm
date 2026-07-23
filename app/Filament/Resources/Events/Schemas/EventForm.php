@@ -125,6 +125,8 @@ class EventForm
                     FileUpload::make('smm_image')
                         ->label('Обкладинка для посилання')
                         ->image()
+                        ->previewable(false)
+                        ->fetchFileInformation(false)
                         ->disk('public')
                         ->visibility('public')
                         ->directory('smm/events')

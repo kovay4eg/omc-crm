@@ -2,6 +2,7 @@
     'title' => 'Обласний молодіжний центр Полтавської обласної ради',
     'description' => 'Молодіжні можливості, події та ініціативи Полтавщини.',
     'image' => null,
+    'imageType' => null,
     'url' => null,
     'type' => 'website',
 ])
@@ -43,6 +44,9 @@
     <meta property="og:image" content="{{ $metaImage }}">
     <meta property="og:image:secure_url" content="{{ $metaImage }}">
     <meta property="og:image:alt" content="{{ $metaTitle }}">
+    @if ($imageType)
+        <meta property="og:image:type" content="{{ $imageType }}">
+    @endif
 @endif
 
 <meta name="twitter:card" content="{{ $metaImage ? 'summary_large_image' : 'summary' }}">

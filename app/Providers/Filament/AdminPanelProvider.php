@@ -51,6 +51,7 @@ class AdminPanelProvider extends PanelProvider
                     ? asset('storage/' . $logo)
                     : asset('storage/homepage/Лого ПОМЦ.png');
             })
+            ->darkModeBrandLogo(asset('images/logo-white.png'))
             ->brandLogoHeight('3.5rem')
 
             ->assets([

@@ -50,7 +50,7 @@
 
                     <div class="card-content d-flex justify-content-between align-items-end">
                         <div>
-                            <div class="card-num">01</div>
+                            <img class="card-number-art" src="/images/icons/structure-number-01.svg" width="103" height="74" alt="01">
                             <h4 class="card-title">МОЛОДІЖНИЙ ХАБ</h4>
                         </div>
 
@@ -70,7 +70,7 @@
 
                     <div class="card-content d-flex justify-content-between align-items-end">
                         <div>
-                            <div class="card-num">02</div>
+                            <img class="card-number-art" src="/images/icons/structure-number-02.svg" width="116" height="73" alt="02">
                             <h4 class="card-title">АУДІОВІЗУАЛЬНА СТУДІЯ «КОНТЕНТА»</h4>
                         </div>
 
@@ -90,7 +90,7 @@
 
                     <div class="card-content d-flex justify-content-between align-items-end">
                         <div>
-                            <div class="card-num">03</div>
+                            <img class="card-number-art" src="/images/icons/structure-number-03.svg" width="118" height="74" alt="03">
                             <h4 class="card-title">МОБІЛЬНА МОЛОДІЖНА РОБОТА</h4>
                         </div>
 
@@ -334,8 +334,8 @@
         color: #2B24C1;
     }
 
-    .title-container {
-        margin-bottom: 2.5rem !important;
+    #mainGridView {
+        margin-top: 1rem;
     }
 
     .interactive-flower {
@@ -386,8 +386,8 @@
         color: #fff !important;
     }
 
-    .meeting-card.card-active .card-num {
-        -webkit-text-stroke: 2px #fff !important;
+    .meeting-card.card-active .card-number-art {
+        filter: brightness(0) invert(1);
     }
 
     .meeting-card.card-active .arrow-mask-icon {
@@ -415,17 +415,13 @@
         padding: 1.5rem;
     }
 
-    .card-num {
+    .card-number-art {
+        display: block;
+        width: auto;
+        max-width: 100%;
+        height: 74px;
         margin-bottom: .55rem;
-        font-family: 'Commissioner', sans-serif;
-        font-size: 96px;
-        font-weight: 800;
-        line-height: .9;
-        color: transparent;
-        -webkit-text-stroke: 2px #131DA4;
-        letter-spacing: 0;
-        font-kerning: none;
-        text-rendering: geometricPrecision;
+        transition: filter .3s ease;
     }
 
     .card-title {
@@ -625,10 +621,6 @@
     }
 
     @media (max-width: 991.98px) {
-        .title-container {
-            margin-bottom: 2.5rem !important;
-        }
-
         .main-title {
             font-size: 28px;
         }
@@ -637,15 +629,14 @@
             min-height: auto;
         }
 
-        .card-num {
-            font-size: clamp(50px, 10vw, 76px);
+        .card-number-art {
+            height: clamp(50px, 10vw, 74px);
         }
     }
 
     @media (max-width: 575.98px) {
-        .card-num {
-            font-size: clamp(48px, 18vw, 68px);
-            -webkit-text-stroke-width: 1.5px;
+        .card-number-art {
+            height: clamp(48px, 18vw, 68px);
         }
 
         .bg-watermark-wrapper {

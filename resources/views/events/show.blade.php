@@ -5,6 +5,9 @@
     $isCancelled = $event->status === \App\Enums\EventStatus::Cancelled;
     $isRescheduled = $event->status === \App\Enums\EventStatus::Rescheduled;
     $isExternalRegistration = $event->registration_type === 'external';
+    $shareVersion = $event->updated_at?->timestamp ?? $event->getKey();
+    $eventShareUrl = secure_url('events/' . $event->getKey() . '?share=' . $shareVersion);
+    $eventShareImageUrl = secure_url('events/' . $event->getKey() . '/share-image.jpg?v=' . $shareVersion);
 @endphp
 
 <!DOCTYPE html>
@@ -16,8 +19,9 @@
     <x-social-meta
         :title="$smmTitle"
         :description="$smmDescription"
-        :image="$smmImage"
-        :url="route('events.show', ['event' => $event])"
+        :image="$eventShareImageUrl"
+        image-type="image/jpeg"
+        :url="$eventShareUrl"
         type="article"
     />
 
@@ -110,7 +114,7 @@
             </article>
 
             <x-share-buttons
-                :url="route('events.show', ['event' => $event])"
+                :url="$eventShareUrl"
                 :title="$smmTitle"
                 :description="$smmDescription"
             />
