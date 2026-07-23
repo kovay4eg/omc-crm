@@ -13,6 +13,12 @@
         html[data-omc-a11y-font='large'] { font-size: 125%; }
     }
 
+    /* Модуль має лишатися у межах екрана, навіть коли весь сайт збільшено. */
+    @supports (zoom: 1) {
+        html[data-omc-a11y-font='medium'] .omc-a11y-widget { zoom: .892857; }
+        html[data-omc-a11y-font='large'] .omc-a11y-widget { zoom: .8; }
+    }
+
     /* Контрастні режими навмисно перефарбовують весь публічний вміст. */
     html[data-omc-a11y-theme='light'] body,
     html[data-omc-a11y-theme='light'] body :where(*, *::before, *::after) {
@@ -49,7 +55,7 @@
     .omc-a11y-launcher svg { width: 22px; height: 22px; flex: 0 0 auto; }
     .omc-a11y-launcher[aria-expanded='true'], .omc-a11y-widget:hover .omc-a11y-launcher, .omc-a11y-widget:focus-within .omc-a11y-launcher { animation-play-state: paused; }
     @keyframes omc-a11y-attention { 0%, 10%, 20%, 100% { transform: scale(1); box-shadow: 0 8px 25px rgba(17,24,39,.2); } 5%, 15% { transform: scale(1.055); box-shadow: 0 10px 31px rgba(47,54,201,.46); } }
-    .omc-a11y-panel { position: absolute; right: 0; bottom: calc(100% + 12px); width: min(350px, calc(100vw - 32px)); padding: 18px; border: 2px solid #2f36c9; border-radius: 18px; background: #fff; box-shadow: 0 18px 45px rgba(17,24,39,.25); color: #171717; }
+    .omc-a11y-panel { position: absolute; right: 0; bottom: calc(100% + 12px); box-sizing: border-box; width: min(350px, calc(100vw - 32px)); max-height: calc(100dvh - 92px); overflow-y: auto; overscroll-behavior: contain; padding: 18px; border: 2px solid #2f36c9; border-radius: 18px; background: #fff; box-shadow: 0 18px 45px rgba(17,24,39,.25); color: #171717; }
     .omc-a11y-panel[hidden] { display: none !important; }
     .omc-a11y-panel__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
     .omc-a11y-panel__title { margin: 0; color: #181c79; font-size: 18px; font-weight: 800; line-height: 1.15; }
@@ -77,7 +83,7 @@
     html[data-omc-a11y-theme='dark'] .omc-a11y-widget .omc-a11y-option[aria-pressed='true'] { color: #000 !important; background: #ffff00 !important; }
 
     @media (prefers-reduced-motion: reduce) { .omc-a11y-launcher { animation: none !important; } }
-    @media (max-width: 575px) { .omc-a11y-widget { right: 12px; bottom: 12px; } .omc-a11y-launcher { min-height: 45px; padding: 9px 12px; font-size: 12px; } .omc-a11y-panel { right: -1px; padding: 15px; } }
+    @media (max-width: 575px) { .omc-a11y-widget { right: 12px; bottom: 12px; } .omc-a11y-launcher { min-height: 45px; padding: 9px 12px; font-size: 12px; } .omc-a11y-panel { right: 0; width: min(350px, calc(100vw - 24px)); max-height: calc(100dvh - 76px); padding: 15px; } }
 </style>
 
 <div class="omc-a11y-widget" data-omc-a11y-widget>

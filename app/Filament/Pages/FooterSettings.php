@@ -49,6 +49,7 @@ class FooterSettings extends Page implements HasForms
                 FileUpload::make('partner_logos')
                     ->label('Логотипи партнерів або спонсорів')
                     ->image()
+                    ->previewable(false)
                     ->multiple()
                     ->reorderable()
                     ->appendFiles()

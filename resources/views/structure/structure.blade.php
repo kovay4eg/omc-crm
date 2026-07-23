@@ -383,7 +383,7 @@
     }
 
     .meeting-card.card-active .card-num {
-        -webkit-text-stroke: 1.25px #fff !important;
+        -webkit-text-stroke: 2px #fff !important;
     }
 
     .meeting-card.card-active .arrow-mask-icon {
@@ -412,13 +412,14 @@
     }
 
     .card-num {
-        margin-bottom: .45rem;
-        font-size: 2.5rem;
-        font-weight: 500;
-        line-height: 1;
+        margin-bottom: .55rem;
+        font-family: 'Commissioner', sans-serif;
+        font-size: 96px;
+        font-weight: 800;
+        line-height: .9;
         color: transparent;
-        -webkit-text-stroke: 1.25px #2B24C1;
-        letter-spacing: -.08em;
+        -webkit-text-stroke: 2px #131DA4;
+        letter-spacing: 0;
     }
 
     .card-title {
@@ -629,9 +630,18 @@
         .card-content {
             min-height: auto;
         }
+
+        .card-num {
+            font-size: clamp(50px, 10vw, 76px);
+        }
     }
 
     @media (max-width: 575.98px) {
+        .card-num {
+            font-size: clamp(48px, 18vw, 68px);
+            -webkit-text-stroke-width: 1.5px;
+        }
+
         .bg-watermark-wrapper {
             display: block !important;
             overflow: hidden;

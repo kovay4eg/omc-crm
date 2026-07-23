@@ -308,6 +308,11 @@
         height:260px;
     }
 
+    /* На широкій мобільній картці показуємо верх фото, щоб не зрізати обличчя. */
+    .employee-photo img:not(.employee-placeholder){
+        object-position:center top;
+    }
+
     .employee-name{
         font-size:17px;
     }

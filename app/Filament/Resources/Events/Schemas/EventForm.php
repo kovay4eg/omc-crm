@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Events\Schemas;
 use App\Support\MediaStorage;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -12,6 +13,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class EventForm
 {
@@ -21,7 +23,17 @@ class EventForm
             TextInput::make('title')
                 ->label('Назва')
                 ->required()
-                ->maxLength(255),
+                ->maxLength(255)
+                ->live(onBlur: true)
+                ->afterStateUpdated(static function (?string $state, callable $get, callable $set): void {
+                    $autoValue = $get('_smm_title_autofill');
+                    $currentValue = $get('smm_title');
+
+                    if (blank($currentValue) || $currentValue === $autoValue) {
+                        $set('smm_title', $state);
+                        $set('_smm_title_autofill', $state);
+                    }
+                }),
 
             TextInput::make('notify_email')
                 ->label('Email для сповіщень про реєстрацію')
@@ -31,7 +43,18 @@ class EventForm
             Textarea::make('description')
                 ->label('Опис')
                 ->required()
-                ->rows(4),
+                ->rows(4)
+                ->live(onBlur: true)
+                ->afterStateUpdated(static function (?string $state, callable $get, callable $set): void {
+                    $description = filled($state) ? Str::limit(trim($state), 200, '') : null;
+                    $autoValue = $get('_smm_description_autofill');
+                    $currentValue = $get('smm_description');
+
+                    if (blank($currentValue) || $currentValue === $autoValue) {
+                        $set('smm_description', $description);
+                        $set('_smm_description_autofill', $description);
+                    }
+                }),
 
             DateTimePicker::make('event_date')
                 ->label('Дата події')
@@ -69,10 +92,23 @@ class EventForm
                         $record ? route('events.image', ['event' => $record]) : null,
                     );
                 })
+                ->afterStateUpdated(static function (?string $state, callable $get, callable $set): void {
+                    $autoValue = $get('_smm_image_autofill');
+                    $currentValue = $get('smm_image');
+
+                    if (blank($currentValue) || $currentValue === $autoValue) {
+                        $set('smm_image', $state);
+                        $set('_smm_image_autofill', $state);
+                    }
+                })
                 ->nullable(),
 
+            Hidden::make('_smm_title_autofill')->dehydrated(false),
+            Hidden::make('_smm_description_autofill')->dehydrated(false),
+            Hidden::make('_smm_image_autofill')->dehydrated(false),
+
             Section::make('Поширення у соціальних мережах')
-                ->description('Необов’язково. Якщо залишити поля порожніми, для прев’ю буде використано назву, опис і фото заходу.')
+                ->description('Поля заповнюються з назви, опису та фото заходу. За потреби їх можна відредагувати окремо.')
                 ->schema([
                     TextInput::make('smm_title')
                         ->label('Заголовок для соцмереж')

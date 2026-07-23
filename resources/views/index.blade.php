@@ -715,27 +715,27 @@
 
         <div class="cards-wrapper">
             <div class="card c1">
-                <img src="/images/cards/education.png">
+                <img src="/images/cards/education.svg" alt="">
                 <p>НЕФОРМАЛЬНА ОСВІТА, ЯКОЇ БРАКУЄ В ПІДРУЧНИКАХ</p>
             </div>
 
             <div class="card c2">
-                <img src="/images/cards/career.png">
+                <img src="/images/cards/career.svg" alt="">
                 <p>ВПЕВНЕНИЙ КАР'ЄРНИЙ СТАРТ ТА ПРОФОРІЄНТАЦІЯ</p>
             </div>
 
             <div class="card c3">
-                <img src="/images/cards/community.png">
+                <img src="/images/cards/community.svg" alt="">
                 <p>РОЗВИТОК МОЛОДІЖНИХ РАД ТА ПІДТРИМКА ІНІЦІАТИВ</p>
             </div>
 
             <div class="card card-main">
-                <img src="/images/cards/health.png">
+                <img src="/images/cards/health.svg" alt="">
                 <p>ЗДОРОВИЙ СПОСІБ ЖИТТЯ ТА МЕНТАЛЬНА СТІЙКІСТЬ</p>
             </div>
 
             <div class="card c5">
-                <img src="/images/cards/patriotic.png">
+                <img src="/images/cards/patriotic.svg" alt="">
                 <p>ПАТРІОТИЧНЕ ВИХОВАННЯ ТА ЗМІСТОВНЕ ДОЗВІЛЛЯ</p>
             </div>
         </div>
