@@ -24,6 +24,9 @@ Route::middleware([EnsureFrontendIsAvailable::class, TrackSiteVisit::class])->gr
     Route::get('/events/{event}/image', [EventImageController::class, 'show'])
         ->name('events.image');
 
+    Route::get('/events/{event}/smm-image', [EventImageController::class, 'showSmmImage'])
+        ->name('events.smm-image');
+
     Route::get('/events/{event}/share-image.jpg', [EventShareImageController::class, 'show'])
         ->name('events.share-image');
 

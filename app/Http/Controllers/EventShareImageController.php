@@ -27,39 +27,51 @@ class EventShareImageController extends Controller
         );
 
         $settings = HomepageSetting::first();
-        $sourcePath = $event->smm_image
-            ?: $event->image
-            ?: $settings?->smm_image
-            ?: $settings?->banner_image
-            ?: $settings?->logo;
+        $sourcePaths = array_filter([
+            $event->smm_image,
+            $event->image,
+            $settings?->smm_image,
+            $settings?->banner_image,
+            $settings?->logo,
+        ]);
 
-        abort_if(blank($sourcePath), 404);
+        $jpeg = null;
 
-        $media = MediaStorage::find($sourcePath);
+        foreach ($sourcePaths as $sourcePath) {
+            $media = MediaStorage::find($sourcePath);
 
-        abort_if($media === null, 404);
+            if ($media === null) {
+                continue;
+            }
 
-        $source = @file_get_contents($media['absolute_path']);
-        $image = $source === false ? false : @imagecreatefromstring($source);
+            $source = @file_get_contents($media['absolute_path']);
+            $image = $source === false ? false : @imagecreatefromstring($source);
 
-        abort_if($image === false, 404);
+            if ($image === false) {
+                continue;
+            }
 
-        $width = imagesx($image);
-        $height = imagesy($image);
-        $canvas = imagecreatetruecolor($width, $height);
+            $width = imagesx($image);
+            $height = imagesy($image);
+            $canvas = imagecreatetruecolor($width, $height);
 
-        imagefill($canvas, 0, 0, imagecolorallocate($canvas, 255, 255, 255));
-        imagecopy($canvas, $image, 0, 0, 0, 0, $width, $height);
-        imageinterlace($canvas, true);
+            imagefill($canvas, 0, 0, imagecolorallocate($canvas, 255, 255, 255));
+            imagecopy($canvas, $image, 0, 0, 0, 0, $width, $height);
+            imageinterlace($canvas, true);
 
-        ob_start();
-        imagejpeg($canvas, null, 90);
-        $jpeg = ob_get_clean();
+            ob_start();
+            imagejpeg($canvas, null, 90);
+            $jpeg = ob_get_clean();
 
-        imagedestroy($canvas);
-        imagedestroy($image);
+            imagedestroy($canvas);
+            imagedestroy($image);
 
-        abort_if($jpeg === false, 404);
+            if ($jpeg !== false) {
+                break;
+            }
+        }
+
+        abort_if($jpeg === false || $jpeg === null, 404);
 
         return response($jpeg, 200, [
             'Content-Type' => 'image/jpeg',

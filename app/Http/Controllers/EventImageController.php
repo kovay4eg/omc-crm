@@ -30,4 +30,15 @@ class EventImageController extends Controller
 
         return MediaStorage::response($event->image);
     }
+
+    /**
+     * Віддає окрему SMM-обкладинку для повторного відкриття у Filament.
+     * Це не залежить від символічного посилання public/storage.
+     */
+    public function showSmmImage(Event $event)
+    {
+        abort_unless(auth()->check() && filled($event->smm_image), 404);
+
+        return MediaStorage::response($event->smm_image);
+    }
 }

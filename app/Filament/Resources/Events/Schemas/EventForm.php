@@ -130,7 +130,17 @@ class EventForm
                         ->disk('public')
                         ->visibility('public')
                         ->directory('smm/events')
-                        ->helperText('Рекомендований розмір: 1200 × 630 px. Якщо не додавати, буде використано афішу заходу.')
+                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                        ->getUploadedFileUsing(static function (FileUpload $component, string $file, string|array|null $storedFileNames): ?array {
+                            $record = $component->getRecord();
+
+                            return MediaStorage::uploadedFileDetails(
+                                $file,
+                                $storedFileNames,
+                                $record ? route('events.smm-image', ['event' => $record]) : null,
+                            );
+                        })
+                        ->helperText('Рекомендований розмір: 1200 × 630 px. JPG, PNG або WebP. Якщо не додавати, буде використано афішу заходу.')
                         ->columnSpanFull(),
                 ])
                 ->columns(2)
