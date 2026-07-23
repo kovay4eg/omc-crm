@@ -357,7 +357,7 @@
        @if(isset($settings) && !empty($settings->team_banner))
 
             <img
-                src="{{ asset('storage/' . $settings->team_banner) }}"
+                src="{{ \App\Support\MediaUrl::storage($settings->team_banner) }}"
                 class="team-banner-image"
                 alt="Team Photo"
             >

@@ -329,7 +329,7 @@ $reports = Report::orderBy('year', 'desc')->get();
                 <div class="col-md-4 col-6">
 
                     <a
-                        href="{{ asset('storage/' . $report->file) }}"
+                        href="{{ \App\Support\MediaUrl::storage($report->file) }}"
                         target="_blank"
                         class="report-card-link"
                     >

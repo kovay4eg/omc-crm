@@ -1,8 +1,8 @@
 @php
     $preloaderSettings = \App\Models\HomepageSetting::first();
     $preloaderLogo = $preloaderSettings?->logo
-        ? asset('storage/' . $preloaderSettings->logo)
-        : asset('storage/homepage/Лого ПОМЦ.png');
+        ? \App\Support\MediaUrl::storage($preloaderSettings->logo)
+        : \App\Support\MediaUrl::storage('homepage/Лого ПОМЦ.png');
 @endphp
 
 <script>document.documentElement.classList.add('is-site-loading');</script>

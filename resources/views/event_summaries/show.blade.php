@@ -108,12 +108,12 @@
                         @foreach ($summary->images as $image)
                             <a
                                 class="summary-gallery-item"
-                                href="{{ asset('storage/' . $image->image) }}"
+                                href="{{ \App\Support\MediaUrl::storage($image->image) }}"
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
                                 <img
-                                    src="{{ asset('storage/' . $image->image) }}"
+                                    src="{{ \App\Support\MediaUrl::storage($image->image) }}"
                                     alt="{{ $image->alt_text ?: 'Фото з заходу ' . $summary->event->title }}"
                                 >
                             </a>

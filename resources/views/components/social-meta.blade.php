@@ -24,7 +24,7 @@
     if ($image) {
         $metaImage = \Illuminate\Support\Str::startsWith($image, ['http://', 'https://'])
             ? $image
-            : asset('storage/' . ltrim($image, '/'));
+            : \App\Support\MediaUrl::storage($image);
     }
 @endphp
 

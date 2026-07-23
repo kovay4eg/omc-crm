@@ -454,7 +454,7 @@
             <a href="/">
                 @php
                     $defaultLogo = !empty($settings?->logo)
-                        ? asset('storage/' . $settings->logo)
+                        ? \App\Support\MediaUrl::storage($settings->logo)
                         : asset('images/logo.png');
                 @endphp
                 <img

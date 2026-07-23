@@ -691,15 +691,20 @@
 
 <x-header />
 
+@php
+    $bannerUrl = \App\Support\MediaUrl::storage($settings?->banner_image);
+    $mobileBannerUrl = \App\Support\MediaUrl::storage($settings?->mobile_banner_image);
+@endphp
+
 <div class="container-1200">
     <section class="banner-section">
         <picture>
-            @if ($settings && $settings->mobile_banner_image)
-                <source media="(max-width: 768px)" srcset="{{ asset('storage/' . $settings->mobile_banner_image) }}">
+            @if ($mobileBannerUrl)
+                <source media="(max-width: 768px)" srcset="{{ $mobileBannerUrl }}">
             @endif
 
-            @if ($settings && $settings->banner_image)
-                <img src="{{ asset('storage/' . $settings->banner_image) }}" alt="Banner">
+            @if ($bannerUrl)
+                <img src="{{ $bannerUrl }}" alt="Banner">
             @endif
         </picture>
     </section>

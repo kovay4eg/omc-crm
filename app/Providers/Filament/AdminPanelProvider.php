@@ -33,6 +33,7 @@ use App\Filament\Pages\HomepageSettings;
 use App\Filament\Pages\FooterSettings;
 use App\Filament\Pages\HelpGuide;
 use App\Models\HomepageSetting;
+use App\Support\MediaUrl;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -48,8 +49,8 @@ class AdminPanelProvider extends PanelProvider
                 $logo = HomepageSetting::query()->value('logo');
 
                 return $logo
-                    ? asset('storage/' . $logo)
-                    : asset('storage/homepage/Лого ПОМЦ.png');
+                    ? MediaUrl::storage($logo)
+                    : MediaUrl::storage('homepage/Лого ПОМЦ.png');
             })
             ->darkModeBrandLogo(asset('images/logo-white.png'))
             ->brandLogoHeight('3.5rem')

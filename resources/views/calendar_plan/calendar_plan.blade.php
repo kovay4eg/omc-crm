@@ -341,7 +341,7 @@
                 <div class="col-md-4 col-6">
 
                     <a
-                        href="{{ asset('storage/' . $plan->file) }}"
+                        href="{{ \App\Support\MediaUrl::storage($plan->file) }}"
                         target="_blank"
                         class="calendar-card-link"
                     >

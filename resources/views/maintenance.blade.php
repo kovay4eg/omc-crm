@@ -1,7 +1,7 @@
 @php
     $maintenanceLogo = $settings?->logo
-        ? asset('storage/' . $settings->logo)
-        : asset('storage/homepage/Лого ПОМЦ.png');
+        ? \App\Support\MediaUrl::storage($settings->logo)
+        : \App\Support\MediaUrl::storage('homepage/Лого ПОМЦ.png');
 
     $maintenanceSocialNetworks = [
         ['enabled' => $settings?->facebook_enabled, 'url' => $settings?->facebook_url, 'name' => 'Facebook', 'icon' => 'facebook.svg'],

@@ -8,7 +8,7 @@ $pdfUrl = null;
 
 if ($statute && !empty($statute->file)) {
 
-    $pdfUrl = asset('storage/' . $statute->file);
+    $pdfUrl = \App\Support\MediaUrl::storage($statute->file);
 
 }
 
