@@ -252,12 +252,12 @@
         </div>
 
         {{-- Нижня лінія бронювання --}}
-        <button
-            type="button"
+        <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLSfRuWf0dl4nbCIeIG2v-ydhW-vOWcw_LQO9N6vRg0t39Hnnzw/viewform?usp=sharing&amp;ouid=100529983015306117863"
+            target="_blank"
+            rel="noopener noreferrer"
             class="booking-line booking-line-trigger d-flex w-100 justify-content-between align-items-center py-4 border-top border-bottom mt-4"
-            data-bs-toggle="modal"
-            data-bs-target="#bookingContactModal"
-            aria-label="Відкрити контакти для бронювання простору"
+            aria-label="Відкрити Google Форму для бронювання простору"
         >
             <div class="d-flex align-items-center gap-3">
                 <div class="star-icon">✦</div>
@@ -265,7 +265,7 @@
             </div>
 
             <div class="arrow-mask-icon static-arrow" aria-hidden="true"></div>
-        </button>
+        </a>
     </div>
 </section>
 
@@ -538,6 +538,7 @@
         background: transparent;
         text-align: left;
         cursor: pointer;
+        text-decoration: none;
     }
 
     .booking-line-trigger:focus-visible {
