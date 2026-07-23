@@ -334,6 +334,10 @@
         color: #2B24C1;
     }
 
+    .title-container {
+        margin-bottom: 2.5rem !important;
+    }
+
     .interactive-flower {
         display: none;
     }
@@ -420,6 +424,8 @@
         color: transparent;
         -webkit-text-stroke: 2px #131DA4;
         letter-spacing: 0;
+        font-kerning: none;
+        text-rendering: geometricPrecision;
     }
 
     .card-title {
