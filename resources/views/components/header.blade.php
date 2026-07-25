@@ -253,6 +253,16 @@
         }
     }
 
+    @keyframes burger-hint-arrow {
+        0%, 18%, 36%, 100% {
+            transform: translateX(0);
+        }
+
+        9%, 27% {
+            transform: translateX(4px);
+        }
+    }
+
     /* Перемикаємося на бургер до того, як навігація може перейти у другий рядок. */
     @media (max-width: 1100px) {
         .header-inner {
@@ -276,7 +286,8 @@
         }
 
         .burger-hint {
-            display: none;
+            display: inline-flex;
+            align-items: center;
             padding: 6px 8px;
             border: 1px solid rgba(43, 60, 255, .2);
             border-radius: 999px;
@@ -288,6 +299,16 @@
             letter-spacing: .08em;
             line-height: 1;
             text-transform: uppercase;
+            animation: burger-hint-pulse 5s ease-in-out infinite;
+        }
+
+        .burger-hint::after {
+            margin-left: 4px;
+            content: '→';
+            font-size: 15px;
+            font-weight: 700;
+            line-height: .7;
+            animation: burger-hint-arrow 5s ease-in-out infinite;
         }
 
         .logo img {
@@ -309,7 +330,7 @@
             max-width: 100vw;
             max-height: calc(100vh - 96px);
             gap: 20px;
-            padding: 35px 0 30px;
+            padding: 35px 0 calc(120px + env(safe-area-inset-bottom));
             overflow-x: hidden;
             overflow-y: auto;
             background: #fff;
@@ -343,7 +364,9 @@
         .nav > a,
         .nav-btn {
             justify-content: center;
-            width: 100%;
+            align-self: center;
+            width: fit-content;
+            max-width: calc(100% - 32px);
         }
 
         .dropdown-menu {
@@ -410,8 +433,11 @@
 
         .mobile-socials {
             display: flex;
+            align-self: center;
+            justify-content: center;
+            width: 100%;
             gap: 20px;
-            margin-top: 15px;
+            margin-top: auto;
         }
 
         .mobile-socials img {
@@ -424,12 +450,7 @@
         }
     }
 
-    @media (min-width: 769px) and (max-width: 1100px) {
-        .burger-hint {
-            display: inline-flex;
-            animation: burger-hint-pulse 5s ease-in-out infinite;
-        }
-
+    @media (max-width: 1100px) {
         .burger-control.is-active .burger-hint {
             animation-play-state: paused;
             background: #2b3cff;
@@ -438,7 +459,8 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .burger-hint {
+        .burger-hint,
+        .burger-hint::after {
             animation: none !important;
         }
     }
