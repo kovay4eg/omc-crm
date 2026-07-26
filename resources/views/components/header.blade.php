@@ -282,7 +282,7 @@
         }
 
         .burger {
-            display: block;
+            display: flex;
         }
 
         .burger-hint {
@@ -349,6 +349,7 @@
 
         .nav-item {
             display: block;
+            justify-content: center;
             min-width: 0;
             max-width: 100%;
             width: 100%;
@@ -359,6 +360,13 @@
             display: flex;
             flex-direction: column;
             align-items: stretch;
+        }
+
+        /* Кнопка «Про нас» лишається по центру, навіть коли відкрито підменю. */
+        .nav-item.open .nav-btn {
+            align-self: center;
+            width: fit-content !important;
+            margin: 0 auto;
         }
 
         .nav > a,
