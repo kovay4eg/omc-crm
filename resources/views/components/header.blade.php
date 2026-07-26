@@ -348,7 +348,7 @@
         }
 
         .nav-item {
-            display: block;
+            display: flex;
             justify-content: center;
             min-width: 0;
             max-width: 100%;
