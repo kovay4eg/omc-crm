@@ -189,6 +189,26 @@
         display: none;
     }
 
+    /* Легке обмеження копіювання діє лише на публічних сторінках. */
+    body.omc-public-copy-protection,
+    body.omc-public-copy-protection img,
+    body.omc-public-copy-protection svg {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    /* Форми залишаємо повністю зручними: відвідувач має змогу заповнювати й редагувати поля. */
+    body.omc-public-copy-protection input,
+    body.omc-public-copy-protection textarea,
+    body.omc-public-copy-protection select,
+    body.omc-public-copy-protection option,
+    body.omc-public-copy-protection [contenteditable='true'] {
+        -webkit-touch-callout: default;
+        -webkit-user-select: text;
+        user-select: text;
+    }
+
     .burger {
         position: relative;
         z-index: 1300;
@@ -648,6 +668,61 @@
     const eventSummariesNavLink = document.getElementById('eventSummariesNavLink');
     const contactsNavLink = document.getElementById('contactsNavLink');
     const siteLogo = document.getElementById('siteLogo');
+
+    // Обмеження працюють лише у фронтенді: Filament має власний layout і не використовує цей компонент.
+    document.body?.classList.add('omc-public-copy-protection');
+
+    const isEditableTarget = target =>
+        target instanceof Element
+        && Boolean(target.closest('input, textarea, select, option, [contenteditable="true"]'));
+
+    document.addEventListener('contextmenu', event => {
+        if (!isEditableTarget(event.target)) {
+            event.preventDefault();
+        }
+    });
+
+    document.addEventListener('selectstart', event => {
+        if (!isEditableTarget(event.target)) {
+            event.preventDefault();
+        }
+    });
+
+    document.addEventListener('copy', event => {
+        if (!isEditableTarget(event.target)) {
+            event.preventDefault();
+        }
+    });
+
+    document.addEventListener('cut', event => {
+        if (!isEditableTarget(event.target)) {
+            event.preventDefault();
+        }
+    });
+
+    document.addEventListener('dragstart', event => {
+        if (event.target instanceof Element && event.target.closest('img, picture, svg, a')) {
+            event.preventDefault();
+        }
+    });
+
+    document.addEventListener('keydown', event => {
+        if (isEditableTarget(event.target)) {
+            return;
+        }
+
+        if (event.key === 'PrintScreen') {
+            event.preventDefault();
+
+            return;
+        }
+
+        const key = event.key.toLowerCase();
+
+        if ((event.ctrlKey || event.metaKey) && ['c', 'x', 's', 'u', 'p'].includes(key)) {
+            event.preventDefault();
+        }
+    });
 
     function syncContrastLogo() {
         if (!siteLogo) {
