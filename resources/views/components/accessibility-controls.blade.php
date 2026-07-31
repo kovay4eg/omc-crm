@@ -106,6 +106,45 @@
     html[data-omc-a11y-theme='light'] .omc-a11y-widget .omc-a11y-option[aria-pressed='true'] { color: #fff !important; background: #001ee6 !important; }
     html[data-omc-a11y-theme='dark'] .omc-a11y-widget .omc-a11y-option[aria-pressed='true'] { color: #000 !important; background: #ffff00 !important; }
 
+    /* Панель налаштувань — окрема контрастна поверхня. Без цього глобальне
+       правило білого тексту робить її підписи невидимими на світлому тлі. */
+    html[data-omc-a11y-theme='dark'] .omc-a11y-panel {
+        background: #000 !important;
+        color: #fff !important;
+        border-color: #fff !important;
+        box-shadow: 0 18px 45px rgba(255,255,255,.16) !important;
+    }
+    html[data-omc-a11y-theme='dark'] .omc-a11y-panel :is(.omc-a11y-panel__title, .omc-a11y-panel__subtitle, .omc-a11y-label, .omc-a11y-status) {
+        color: #fff !important;
+    }
+    html[data-omc-a11y-theme='dark'] .omc-a11y-panel .omc-a11y-option--light {
+        color: #000 !important;
+        background: #fff !important;
+        border-color: #fff !important;
+    }
+    html[data-omc-a11y-theme='dark'] .omc-a11y-panel .omc-a11y-option--dark {
+        color: #fff !important;
+        background: #000 !important;
+        border-color: #fff !important;
+    }
+    html[data-omc-a11y-theme='dark'] .omc-a11y-panel .omc-a11y-option[aria-pressed='true'] {
+        color: #000 !important;
+        background: #ffff00 !important;
+        border-color: #ffff00 !important;
+    }
+
+    /* У банері синій текст після звичайного grayscale стає майже чорним.
+       Підсвічуємо лише це зображення, зберігаючи читабельними чорні написи в ньому. */
+    html[data-omc-a11y-theme='dark'] .banner-section img {
+        filter: grayscale(1) brightness(2.35) contrast(1.05) !important;
+    }
+
+    /* Перший логотип партнера має чорну графіку, тому на чорному тлі зникає.
+       Змінюємо тільки його, не втручаючись у вигляд інших партнерських логотипів. */
+    html[data-omc-a11y-theme='dark'] .site-footer-partners .site-footer-partner-logo:first-child img {
+        filter: grayscale(1) brightness(0) invert(1) !important;
+    }
+
     @media (prefers-reduced-motion: reduce) { .omc-a11y-launcher { animation: none !important; } }
     @media (max-width: 575px) { .omc-a11y-widget { right: 12px; bottom: 12px; } .omc-a11y-launcher { min-height: 45px; padding: 9px 12px; font-size: 12px; } .omc-a11y-panel { right: 0; width: min(350px, calc(100vw - 24px)); max-height: calc(100dvh - 76px); padding: 15px; } }
 </style>
