@@ -2,11 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Enums\EventStatus;
+use App\Models\Concerns\DeletesMediaFiles;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Event extends Model
 {
+    use DeletesMediaFiles;
+
     protected $fillable = [
         'title',
         'description',
@@ -21,19 +27,23 @@ class Event extends Model
         'show_available_slots',
         'user_id',
 
-        // cancel
         'cancel_reason',
         'cancel_public',
         'cancelled_at',
 
-        // reschedule
+        'old_event_date',
         'rescheduled_at',
         'reschedule_reason',
         'reschedule_public',
+
+        'smm_title',
+        'smm_description',
+        'smm_image',
     ];
 
     protected $casts = [
         'event_date' => 'datetime',
+        'old_event_date' => 'datetime',
         'cancelled_at' => 'datetime',
         'rescheduled_at' => 'datetime',
         'cancel_public' => 'boolean',
@@ -41,8 +51,28 @@ class Event extends Model
         'status' => EventStatus::class,
     ];
 
-    public function registrations()
+    public function registrations(): HasMany
     {
         return $this->hasMany(Registration::class);
+    }
+
+    public function histories(): HasMany
+    {
+        return $this->hasMany(EventHistory::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function summary(): HasOne
+    {
+        return $this->hasOne(EventSummary::class);
+    }
+
+    protected function mediaFields(): array
+    {
+        return ['image', 'smm_image'];
     }
 }

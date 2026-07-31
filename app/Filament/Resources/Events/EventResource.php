@@ -5,19 +5,33 @@ namespace App\Filament\Resources\Events;
 use App\Filament\Resources\Events\Schemas\EventForm;
 use App\Filament\Resources\Events\Tables\EventsTable;
 use App\Filament\Resources\Events\RelationManagers\RegistrationsRelationManager;
+use App\Filament\Resources\Events\RelationManagers\HistoriesRelationManager; 
 use App\Models\Event;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class EventResource extends Resource
 {
+    protected static ?string $navigationLabel = 'Івенти';
+
+    protected static ?string $pluralLabel = 'Івенти';
+        
+    protected static ?string $modelLabel = 'Івент';
+    
     protected static ?string $model = Event::class;
 
-    // ⚠️ ВАЖЛИВО: сумісно з Filament v4
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-m-calendar';
 
     protected static ?string $recordTitleAttribute = 'title';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereDate('event_date', '>=', today())
+            ->orderBy('event_date');
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -33,6 +47,7 @@ class EventResource extends Resource
     {
         return [
             RegistrationsRelationManager::class,
+            HistoriesRelationManager::class, 
         ];
     }
 

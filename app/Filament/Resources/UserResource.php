@@ -17,26 +17,26 @@ class UserResource extends Resource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-m-users';
 
     /**
-     * Тимчасово відкритий доступ (щоб все точно працювало)
+     * ТІЛЬКИ АДМІН 
      */
     public static function canViewAny(): bool
     {
-        return true;
+        return auth()->user()?->getActiveRole() === 'admin';
     }
 
     public static function canCreate(): bool
     {
-        return true;
+        return auth()->user()?->getActiveRole() === 'admin';
     }
 
     public static function canEdit($record): bool
     {
-        return true;
+        return auth()->user()?->getActiveRole() === 'admin';
     }
 
     public static function canDelete($record): bool
     {
-        return true;
+        return auth()->user()?->getActiveRole() === 'admin';
     }
 
     public static function form(Schema $schema): Schema
@@ -53,10 +53,11 @@ class UserResource extends Resource
                 ->dehydrated(fn ($state) => filled($state)),
 
             Select::make('role')
+                ->label('Роль')
                 ->options([
-                    'admin' => 'Admin',
-                    'editor' => 'Editor',
-                    'content' => 'Content',
+                    'admin' => '👑 Адмін',
+                    'editor' => '🛠 Редактор',
+                    'content' => '🎨 Контент-мейкер',
                 ])
                 ->required(),
         ]);
@@ -66,10 +67,17 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->searchable(),
-                Tables\Columns\TextColumn::make('email')->searchable(),
-                Tables\Columns\BadgeColumn::make('role'),
-                Tables\Columns\TextColumn::make('created_at')->dateTime(),
+                Tables\Columns\TextColumn::make('name')->label('Імʼя')->searchable(),
+                Tables\Columns\TextColumn::make('email')->label('Email')->searchable(),
+                Tables\Columns\BadgeColumn::make('role')
+                    ->label('Роль')
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        'admin' => '👑 Адмін',
+                        'editor' => '🛠 Редактор',
+                        'content' => '🎨 Контент-мейкер',
+                        default => $state,
+                    }),
+                Tables\Columns\TextColumn::make('created_at')->label('Створено')->dateTime(),
             ])
             ->actions([
                 \Filament\Actions\EditAction::make(),
