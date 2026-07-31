@@ -71,6 +71,7 @@
             font-weight: 800;
             opacity: 1;
             letter-spacing: -.05em;
+            text-transform: uppercase;
             white-space: nowrap;
             pointer-events: none;
             transform: translateY(-50%);
@@ -124,8 +125,7 @@
 
         .card:hover {
             z-index: 20;
-            animation: none;
-            transform: translateY(-20px) scale(1.07) rotate(0deg);
+            animation-play-state: paused;
             box-shadow: 0 30px 70px rgba(0, 0, 0, .2);
         }
 
@@ -368,10 +368,8 @@
 
         .t-card:hover {
             z-index: 10;
-            animation: none !important;
-            transform: translateY(-15px) scale(1.05) rotate(0deg) !important;
+            animation-play-state: paused !important;
             box-shadow: 0 20px 40px rgba(0, 0, 0, .12);
-            transition: all .3s ease !important;
         }
 
         .t-card:hover img {
@@ -713,9 +711,9 @@
 <section class="content-section">
     <div class="container-1200">
         <div class="title-block">
-            <div id="bgText">НАПРЯМИ ДІЯЛЬНОСТІ &nbsp; НАПРЯМИ ДІЯЛЬНОСТІ</div>
+            <div id="bgText">Напрями діяльності &nbsp; Напрями діяльності</div>
 
-            <h2>ГОЛОВНІ НАПРЯМИ ДІЯЛЬНОСТІ:</h2>
+            <h2>Головні напрями діяльності:</h2>
         </div>
 
         <div class="cards-wrapper">
@@ -750,9 +748,9 @@
 <section id="about-section" class="info-accordion-section">
     <div class="container-1200">
         <div class="title-block">
-            <div id="bgTextSecondary">ПРО НАС &nbsp; ПРО НАС &nbsp; ПРО НАС &nbsp; ПРО НАС</div>
+            <div id="bgTextSecondary">Про нас &nbsp; Про нас &nbsp; Про нас &nbsp; Про нас</div>
 
-            <h2>ПРО НАС</h2>
+            <h2>Про нас</h2>
         </div>
 
         <div class="accordion custom-accordion" id="mainAccordion">

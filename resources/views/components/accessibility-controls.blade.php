@@ -19,87 +19,56 @@
         html[data-omc-a11y-font='large'] .omc-a11y-widget { zoom: .8; }
     }
 
-    /* Контрастні режими навмисно перефарбовують весь публічний вміст. */
-    html[data-omc-a11y-theme='light'] body,
-    html[data-omc-a11y-theme='light'] body :where(*, *::before, *::after) {
-        color: #000 !important; background-color: #fff !important; background-image: none !important;
-        border-color: #000 !important; box-shadow: none !important; text-shadow: none !important;
-    }
-    html[data-omc-a11y-theme='dark'] body,
-    html[data-omc-a11y-theme='dark'] body :where(*, *::before, *::after) {
-        color: #fff !important; background-color: #000 !important; background-image: none !important;
-        border-color: #fff !important; box-shadow: none !important; text-shadow: none !important;
-    }
+    /* Контрастні режими змінюють лише смислові поверхні. Це зберігає сітку,
+       картки та SVG-іконки, на відміну від глобального перефарбування кожного елемента. */
+    html[data-omc-a11y-theme='light'] body { color: #000 !important; background: #fff !important; }
+    html[data-omc-a11y-theme='dark'] body { color: #fff !important; background: #000 !important; }
 
-    /* У світлому контрастному режимі звичайні кольорові картки стають білими.
-       Чітка рамка не дає їм зливатися з фоном сторінки. */
+    html[data-omc-a11y-theme='light'] body :where(h1, h2, h3, h4, h5, h6, p, span, li, dt, dd, figcaption, label, legend, small, strong, b, i, em, button, input, textarea, select, option) { color: #000 !important; text-shadow: none !important; }
+    html[data-omc-a11y-theme='dark'] body :where(h1, h2, h3, h4, h5, h6, p, span, li, dt, dd, figcaption, label, legend, small, strong, b, i, em, button, input, textarea, select, option) { color: #fff !important; text-shadow: none !important; }
+
+    html[data-omc-a11y-theme='light'] body :is(header, main, footer, nav, section, article, aside):not(.omc-a11y-panel) { background-color: #fff !important; background-image: none !important; box-shadow: none !important; }
+    html[data-omc-a11y-theme='dark'] body :is(header, main, footer, nav, section, article, aside):not(.omc-a11y-panel) { background-color: #000 !important; background-image: none !important; box-shadow: none !important; }
+
+    html[data-omc-a11y-theme='light'] body :is(button, input, textarea, select) { background-color: #fff !important; border-color: #000 !important; }
+    html[data-omc-a11y-theme='dark'] body :is(button, input, textarea, select) { background-color: #000 !important; border-color: #fff !important; }
+
     html[data-omc-a11y-theme='light'] body :is(
-        .meeting-card,
-        .design-info-card,
-        .t-card,
-        .employee-card,
-        .event-card,
-        .event-summary-card,
-        .summary-event-card,
-        .calendar-card,
-        .report-card,
-        .contacts-card,
-        .contacts-map,
-        .maintenance-card
-    ) {
-        box-sizing: border-box !important;
-        border: 3px solid #000 !important;
-        outline: 1px solid #000 !important;
-        outline-offset: 0 !important;
-    }
+        .card, .meeting-card, .design-info-card, .design-legal-block, .t-card,
+        .employee-card, .event-card, .event-summary-card, .summary-event-card,
+        .calendar-card, .report-card, .contacts-card, .contacts-map, .maintenance-card
+    ) { box-sizing: border-box !important; background: #fff !important; background-image: none !important; border: 2px solid #000 !important; box-shadow: none !important; }
 
-    html[data-omc-a11y-theme='light'] body :is(.custom-accordion .accordion-item, .custom-accordion .accordion-button, .booking-line) {
-        border: 2px solid #000 !important;
-    }
+    html[data-omc-a11y-theme='dark'] body :is(
+        .card, .meeting-card, .design-info-card, .design-legal-block, .t-card,
+        .employee-card, .event-card, .event-summary-card, .summary-event-card,
+        .calendar-card, .report-card, .contacts-card, .contacts-map, .maintenance-card
+    ) { box-sizing: border-box !important; background: #000 !important; background-image: none !important; border: 2px solid #fff !important; box-shadow: none !important; }
+
+    html[data-omc-a11y-theme='light'] body .custom-accordion .accordion-item { border: 0 !important; border-bottom: 1px solid #000 !important; background: transparent !important; }
+    html[data-omc-a11y-theme='dark'] body .custom-accordion .accordion-item { border: 0 !important; border-bottom: 1px solid #fff !important; background: transparent !important; }
+    html[data-omc-a11y-theme='light'] body .custom-accordion .accordion-button { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+    html[data-omc-a11y-theme='dark'] body .custom-accordion .accordion-button { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+    html[data-omc-a11y-theme='light'] body .custom-accordion .accordion-item:has(.accordion-button:not(.collapsed)) { outline: 2px solid #000 !important; outline-offset: -2px !important; }
+    html[data-omc-a11y-theme='dark'] body .custom-accordion .accordion-item:has(.accordion-button:not(.collapsed)) { outline: 2px solid #fff !important; outline-offset: -2px !important; }
+
+    html[data-omc-a11y-theme='light'] body .booking-line { border-top: 1px solid #000 !important; border-right: 0 !important; border-bottom: 1px solid #000 !important; border-left: 0 !important; }
+    html[data-omc-a11y-theme='dark'] body .booking-line { border-top: 1px solid #fff !important; border-right: 0 !important; border-bottom: 1px solid #fff !important; border-left: 0 !important; }
+
     html[data-omc-a11y-theme='light'] body a { color: #001ee6 !important; }
     html[data-omc-a11y-theme='dark'] body a { color: #ffff00 !important; }
     html[data-omc-a11y-theme='light'] body a,
     html[data-omc-a11y-theme='dark'] body a { font-weight: 800 !important; text-decoration: underline !important; text-decoration-thickness: 2px !important; text-underline-offset: 3px !important; }
+
     html[data-omc-a11y-theme='light'] body img,
-    html[data-omc-a11y-theme='dark'] body img { filter: grayscale(1) contrast(1.45) !important; }
-    /* Великі фонові слова є лише декором. У контрастному режимі вони не потрібні
-       й можуть заважати читанню, тому основний текст лишається єдиним заголовком.
-       Не ховаємо всі [aria-hidden], бо серед них є потрібні декоративні іконки. */
+    html[data-omc-a11y-theme='dark'] body img { background-color: transparent !important; filter: grayscale(1) contrast(1.45) !important; }
+
+    /* Фонові слова — лише декор і в контрастному режимі заважають читанню. */
     html[data-omc-a11y-theme='light'] :is(#bgText, #bgTextSecondary, .team-hero-bg, .calendar-bg-text, .reports-bg-text, .statut-bg-text, .summary-watermark, .contacts-watermark, .events-watermark, .event-detail-watermark, .event-summaries-watermark, .bg-watermark-wrapper),
-    html[data-omc-a11y-theme='dark'] :is(#bgText, #bgTextSecondary, .team-hero-bg, .calendar-bg-text, .reports-bg-text, .statut-bg-text, .summary-watermark, .contacts-watermark, .events-watermark, .event-detail-watermark, .event-summaries-watermark, .bg-watermark-wrapper) {
-        display: none !important;
-    }
+    html[data-omc-a11y-theme='dark'] :is(#bgText, #bgTextSecondary, .team-hero-bg, .calendar-bg-text, .reports-bg-text, .statut-bg-text, .summary-watermark, .contacts-watermark, .events-watermark, .event-detail-watermark, .event-summaries-watermark, .bg-watermark-wrapper) { display: none !important; }
 
-    /* Картки мають чітко відрізнятися від чорного фону. */
-    html[data-omc-a11y-theme='dark'] body :is(
-        .meeting-card,
-        .design-info-card,
-        .t-card,
-        .employee-card,
-        .event-card,
-        .event-summary-card,
-        .summary-event-card,
-        .calendar-card,
-        .report-card,
-        .contacts-card,
-        .contacts-map,
-        .maintenance-card
-    ) {
-        box-sizing: border-box !important;
-        border: 3px solid #fff !important;
-        outline: 1px solid #fff !important;
-        outline-offset: 0 !important;
-    }
-
-    html[data-omc-a11y-theme='dark'] body :is(.custom-accordion .accordion-item, .custom-accordion .accordion-button, .booking-line) {
-        border: 2px solid #fff !important;
-    }
-
-    /* У чорному контрасті квітки та контурні цифри мають бути білими й видимими. */
-    html[data-omc-a11y-theme='dark'] body :is(.icon-flower, .dept-icon img, .interactive-flower img, .card-number-art) {
-        display: inline-block !important;
-        filter: brightness(0) invert(1) !important;
-    }
+    /* Контурні SVG лишаються читабельними, без підкладок-квадратів. */
+    html[data-omc-a11y-theme='dark'] body :is(.icon-flower, .dept-icon img, .interactive-flower img, .card-number-art) { display: inline-block !important; background: transparent !important; filter: brightness(0) invert(1) !important; }
     html[data-omc-a11y-theme='light'] :focus-visible { outline: 4px solid #001ee6 !important; outline-offset: 4px !important; }
     html[data-omc-a11y-theme='dark'] :focus-visible { outline: 4px solid #ffff00 !important; outline-offset: 4px !important; }
 
