@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\AppAnnouncementController as ApiAppAnnouncementController;
+use App\Http\Controllers\Api\V1\AppStateController as ApiAppStateController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\EventController as ApiEventController;
 use App\Http\Controllers\Api\V1\EventRegistrationController as ApiEventRegistrationController;
@@ -20,6 +22,10 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['auth:sanctum', EnsureCrmApiAccess::class])->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
         Route::get('/dashboard', DashboardController::class);
+        Route::get('/app-state', [ApiAppStateController::class, 'show']);
+        Route::patch('/app-state', [ApiAppStateController::class, 'update']);
+        Route::apiResource('app-announcements', ApiAppAnnouncementController::class)
+            ->except('show');
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::get('/auth/sessions', [AuthController::class, 'sessions']);
         Route::delete('/auth/sessions/others', [AuthController::class, 'destroyOtherSessions']);
