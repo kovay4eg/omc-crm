@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
 class SystemLog extends Model
@@ -13,6 +12,9 @@ class SystemLog extends Model
         'description',
         'ip',
         'user_agent',
+        'source',
+        'device_name',
+        'platform',
     ];
 
     public function user()
