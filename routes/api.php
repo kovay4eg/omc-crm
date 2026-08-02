@@ -22,9 +22,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     Route::post('/auth/login', [AuthController::class, 'login'])
-        ->middleware('throttle:5,1');
+        ->middleware('throttle:crm-login');
 
-    Route::middleware(['auth:sanctum', EnsureCrmApiAccess::class])->group(function () {
+    Route::middleware(['auth:sanctum', EnsureCrmApiAccess::class, 'throttle:crm-api'])->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
         Route::get('/dashboard', DashboardController::class);
         Route::get('/app-state', [ApiAppStateController::class, 'show']);

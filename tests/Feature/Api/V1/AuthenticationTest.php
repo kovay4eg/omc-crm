@@ -31,6 +31,14 @@ class AuthenticationTest extends TestCase
             ->assertJsonStructure(['data' => ['token']]);
 
         $this->assertDatabaseCount('personal_access_tokens', 1);
+        $token = $user->tokens()->firstOrFail();
+        $this->assertSame(['crm:access'], $token->abilities);
+        $this->assertNotNull($token->expires_at);
+        $this->assertTrue($token->expires_at->isFuture());
+        $response
+            ->assertHeader('Cache-Control', 'no-store, private')
+            ->assertHeader('X-Content-Type-Options', 'nosniff')
+            ->assertHeader('X-Frame-Options', 'DENY');
     }
 
     public function test_invalid_credentials_are_rejected(): void
@@ -42,6 +50,45 @@ class AuthenticationTest extends TestCase
             'password' => 'wrong-password',
             'device_name' => 'Test phone',
         ])->assertUnprocessable();
+
+        $this->assertDatabaseHas('system_logs', [
+            'user_id' => $user->id,
+            'action' => 'mobile_login_failed',
+            'source' => 'mobile_app',
+        ]);
+    }
+
+    public function test_login_keeps_at_most_five_mobile_sessions(): void
+    {
+        $user = User::factory()->create([
+            'password' => 'secret-password',
+            'role' => 'admin',
+        ]);
+
+        foreach (range(1, 5) as $index) {
+            $user->createToken('Old phone '.$index);
+        }
+
+        $this->postJson('/api/v1/auth/login', [
+            'email' => $user->email,
+            'password' => 'secret-password',
+            'device_name' => 'New phone',
+        ])->assertOk();
+
+        $this->assertCount(5, $user->fresh()->tokens);
+        $this->assertTrue($user->fresh()->tokens->contains('name', 'New phone'));
+    }
+
+    public function test_token_without_crm_ability_is_rejected(): void
+    {
+        $user = User::factory()->create(['role' => 'admin']);
+        $token = $user->createToken('Limited token', [])->plainTextToken;
+
+        $this->getJson('/api/v1/me', [
+            'Authorization' => 'Bearer '.$token,
+        ])
+            ->assertForbidden()
+            ->assertJsonPath('message', 'Ця сесія не має доступу до мобільної CRM.');
     }
 
     public function test_enabled_two_factor_requires_and_accepts_totp_code(): void
