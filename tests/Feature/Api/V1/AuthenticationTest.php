@@ -2,8 +2,10 @@
 
 namespace Tests\Feature\Api\V1;
 
+use App\Models\MobilePushDevice;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -246,6 +248,48 @@ class AuthenticationTest extends TestCase
         $this->assertDatabaseCount('personal_access_tokens', 1);
         $this->assertDatabaseHas('personal_access_tokens', [
             'id' => $currentToken->accessToken->getKey(),
+        ]);
+    }
+
+    public function test_authenticated_mobile_user_can_register_and_remove_encrypted_push_token(): void
+    {
+        $user = User::factory()->create(['role' => 'admin']);
+        $accessToken = $user->createToken('iPhone')->plainTextToken;
+        $headers = ['Authorization' => 'Bearer '.$accessToken];
+        $pushToken = str_repeat('fcm-token-', 12);
+
+        $this->putJson('/api/v1/auth/push-device', [
+            'token' => $pushToken,
+            'platform' => 'ios',
+            'device_name' => 'iPhone 15 Pro',
+            'preferences' => [
+                'push_system' => true,
+                'push_news' => false,
+            ],
+        ], $headers)
+            ->assertOk()
+            ->assertJsonPath('data.platform', 'ios')
+            ->assertJsonPath('data.preferences.push_news', false);
+
+        $device = MobilePushDevice::query()->firstOrFail();
+        $this->assertSame($pushToken, $device->token);
+        $this->assertNotSame(
+            $pushToken,
+            DB::table('mobile_push_devices')->value('token'),
+        );
+        $this->assertDatabaseHas('system_logs', [
+            'user_id' => $user->id,
+            'action' => 'push_device_registered',
+        ]);
+
+        $this->deleteJson('/api/v1/auth/push-device', [
+            'token' => $pushToken,
+        ], $headers)->assertOk();
+
+        $this->assertDatabaseCount('mobile_push_devices', 0);
+        $this->assertDatabaseHas('system_logs', [
+            'user_id' => $user->id,
+            'action' => 'push_device_removed',
         ]);
     }
 }

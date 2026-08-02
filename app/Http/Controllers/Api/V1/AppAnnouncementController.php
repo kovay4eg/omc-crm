@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\AppAnnouncementResource;
+use App\Jobs\SendAppAnnouncementPush;
 use App\Models\AppAnnouncement;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -30,6 +31,7 @@ class AppAnnouncementController extends Controller
         $announcement->created_by = $request->user()->id;
         $announcement->updated_by = $request->user()->id;
         $announcement->save();
+        $this->dispatchPushIfRequested($request, $announcement);
 
         system_log('create_app_announcement', 'Створено оголошення для застосунку: '.$announcement->title);
 
@@ -43,6 +45,7 @@ class AppAnnouncementController extends Controller
         $announcement->fill($this->attributes($request, $data, $announcement));
         $announcement->updated_by = $request->user()->id;
         $announcement->save();
+        $this->dispatchPushIfRequested($request, $announcement);
 
         system_log('update_app_announcement', 'Оновлено оголошення для застосунку: '.$announcement->title);
 
@@ -107,5 +110,12 @@ class AppAnnouncementController extends Controller
     private function authorizeAdmin(Request $request): void
     {
         abort_unless($request->user()->isAdmin(), 403, 'Керування оголошеннями доступне лише адміністраторам.');
+    }
+
+    private function dispatchPushIfRequested(Request $request, AppAnnouncement $announcement): void
+    {
+        if ($request->boolean('send_push') && $announcement->push_requested_at && ! $announcement->push_sent_at) {
+            SendAppAnnouncementPush::dispatch($announcement->id)->afterCommit();
+        }
     }
 }

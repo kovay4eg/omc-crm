@@ -2,11 +2,12 @@
 
 namespace Tests\Feature\Api\V1;
 
+use App\Jobs\SendAppAnnouncementPush;
 use App\Models\AppAnnouncement;
-use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -67,6 +68,7 @@ class AppStateAndAnnouncementTest extends TestCase
 
     public function test_admin_can_create_announcement_with_image_and_push_request(): void
     {
+        Queue::fake();
         Storage::fake('public');
         $admin = User::factory()->create(['role' => 'admin']);
         Sanctum::actingAs($admin);
@@ -93,6 +95,10 @@ class AppStateAndAnnouncementTest extends TestCase
         $this->assertDatabaseHas('system_logs', [
             'action' => 'create_app_announcement',
         ]);
+        Queue::assertPushed(
+            SendAppAnnouncementPush::class,
+            fn (SendAppAnnouncementPush $job): bool => $job->announcementId === $announcement->id,
+        );
     }
 
     public function test_editor_cannot_manage_announcements(): void

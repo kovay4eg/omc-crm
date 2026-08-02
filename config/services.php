@@ -30,4 +30,9 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'firebase' => [
+        'project_id' => env('FIREBASE_PROJECT_ID'),
+        'credentials' => env('FIREBASE_CREDENTIALS'),
+    ],
+
 ];

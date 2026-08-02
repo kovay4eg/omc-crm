@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\EventController as ApiEventController;
 use App\Http\Controllers\Api\V1\EventRegistrationController as ApiEventRegistrationController;
 use App\Http\Controllers\Api\V1\EventSummaryController as ApiEventSummaryController;
 use App\Http\Controllers\Api\V1\HomepageSettingsController as ApiHomepageSettingsController;
+use App\Http\Controllers\Api\V1\MobilePushDeviceController as ApiMobilePushDeviceController;
 use App\Http\Controllers\Api\V1\PartnerController as ApiPartnerController;
 use App\Http\Controllers\Api\V1\SystemLogController as ApiSystemLogController;
 use App\Http\Controllers\Api\V1\TeamController as ApiTeamController;
@@ -36,6 +37,8 @@ Route::prefix('v1')->group(function () {
         Route::delete('/auth/sessions/others', [AuthController::class, 'destroyOtherSessions']);
         Route::delete('/auth/sessions/{token}', [AuthController::class, 'destroySession'])
             ->whereNumber('token');
+        Route::put('/auth/push-device', [ApiMobilePushDeviceController::class, 'update']);
+        Route::delete('/auth/push-device', [ApiMobilePushDeviceController::class, 'destroy']);
         Route::get('/auth/two-factor', [ApiTwoFactorController::class, 'status']);
         Route::post('/auth/two-factor/prepare', [ApiTwoFactorController::class, 'prepare']);
         Route::post('/auth/two-factor/confirm', [ApiTwoFactorController::class, 'confirm']);
