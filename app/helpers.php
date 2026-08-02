@@ -15,7 +15,9 @@ if (!function_exists('system_log')) {
                 'ip' => request()->ip(),
                 'user_agent' => request()->userAgent(),
                 'source' => $isMobileApp ? 'mobile_app' : 'web_admin',
-                'device_name' => $isMobileApp ? request()->header('X-OMC-Device') : null,
+                'device_name' => $isMobileApp
+                    ? rawurldecode((string) request()->header('X-OMC-Device'))
+                    : null,
                 'platform' => $isMobileApp ? request()->header('X-OMC-Platform') : null,
             ]);
         } catch (Throwable $e) {
