@@ -1,12 +1,15 @@
 <?php
 
-use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AppAnnouncementController as ApiAppAnnouncementController;
 use App\Http\Controllers\Api\V1\AppStateController as ApiAppStateController;
+use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\EventController as ApiEventController;
 use App\Http\Controllers\Api\V1\EventRegistrationController as ApiEventRegistrationController;
+use App\Http\Controllers\Api\V1\EventSummaryController as ApiEventSummaryController;
+use App\Http\Controllers\Api\V1\HomepageSettingsController as ApiHomepageSettingsController;
 use App\Http\Controllers\Api\V1\SystemLogController as ApiSystemLogController;
+use App\Http\Controllers\Api\V1\TeamController as ApiTeamController;
 use App\Http\Controllers\Api\V1\TwoFactorController as ApiTwoFactorController;
 use App\Http\Controllers\Api\V1\UserController as ApiUserController;
 use App\Http\Controllers\EventRegistrationController;
@@ -48,6 +51,22 @@ Route::prefix('v1')->group(function () {
         Route::post('/events/{event}/registrations', [ApiEventRegistrationController::class, 'store']);
         Route::match(['put', 'patch'], '/events/{event}/registrations/{registration}', [ApiEventRegistrationController::class, 'update']);
         Route::delete('/events/{event}/registrations/{registration}', [ApiEventRegistrationController::class, 'destroy']);
+
+        Route::get('/event-summaries', [ApiEventSummaryController::class, 'index']);
+        Route::post('/events/{event}/summary', [ApiEventSummaryController::class, 'update']);
+        Route::delete('/event-summary-images/{image}', [ApiEventSummaryController::class, 'destroyImage']);
+        Route::patch('/event-summaries/{summary}/images/reorder', [ApiEventSummaryController::class, 'reorderImages']);
+
+        Route::get('/homepage-settings', [ApiHomepageSettingsController::class, 'show']);
+        Route::post('/homepage-settings', [ApiHomepageSettingsController::class, 'update']);
+
+        Route::get('/team', [ApiTeamController::class, 'index']);
+        Route::get('/team/options', [ApiTeamController::class, 'options']);
+        Route::post('/team', [ApiTeamController::class, 'store']);
+        Route::patch('/team/reorder', [ApiTeamController::class, 'reorder']);
+        Route::post('/team/banner', [ApiTeamController::class, 'updateBanner']);
+        Route::post('/team/{employee}', [ApiTeamController::class, 'update']);
+        Route::delete('/team/{employee}', [ApiTeamController::class, 'destroy']);
 
         Route::apiResource('users', ApiUserController::class)->except('show');
         Route::get('/activity-logs', [ApiSystemLogController::class, 'index']);
