@@ -9,7 +9,9 @@
         "php": "^8.2",
         "filament/filament": "^5.4",
         "google/apiclient": "^2.19",
+        "laragear/two-factor": "^4.0",
         "laravel/framework": "^12.0",
+        "laravel/sanctum": "^4.3",
         "laravel/socialite": "^5.15",
         "laravel/tinker": "^2.10.1"
     },
