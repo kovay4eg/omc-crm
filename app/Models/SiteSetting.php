@@ -12,12 +12,14 @@ class SiteSetting extends Model
     protected $fillable = [
         'team_banner',
         'maintenance_mode',
+        'mobile_maintenance_mode',
     ];
 
     protected function casts(): array
     {
         return [
             'maintenance_mode' => 'boolean',
+            'mobile_maintenance_mode' => 'boolean',
         ];
     }
 
