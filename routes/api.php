@@ -3,11 +3,13 @@
 use App\Http\Controllers\Api\V1\AppAnnouncementController as ApiAppAnnouncementController;
 use App\Http\Controllers\Api\V1\AppStateController as ApiAppStateController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\ContentDocumentController as ApiContentDocumentController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\EventController as ApiEventController;
 use App\Http\Controllers\Api\V1\EventRegistrationController as ApiEventRegistrationController;
 use App\Http\Controllers\Api\V1\EventSummaryController as ApiEventSummaryController;
 use App\Http\Controllers\Api\V1\HomepageSettingsController as ApiHomepageSettingsController;
+use App\Http\Controllers\Api\V1\PartnerController as ApiPartnerController;
 use App\Http\Controllers\Api\V1\SystemLogController as ApiSystemLogController;
 use App\Http\Controllers\Api\V1\TeamController as ApiTeamController;
 use App\Http\Controllers\Api\V1\TwoFactorController as ApiTwoFactorController;
@@ -59,6 +61,17 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/homepage-settings', [ApiHomepageSettingsController::class, 'show']);
         Route::post('/homepage-settings', [ApiHomepageSettingsController::class, 'update']);
+
+        Route::get('/partners', [ApiPartnerController::class, 'index']);
+        Route::post('/partners', [ApiPartnerController::class, 'store']);
+        Route::delete('/partners/{index}', [ApiPartnerController::class, 'destroy'])->whereNumber('index');
+
+        Route::get('/content-documents/{type}', [ApiContentDocumentController::class, 'index']);
+        Route::post('/content-documents/{type}', [ApiContentDocumentController::class, 'store']);
+        Route::post('/content-documents/{type}/{document}', [ApiContentDocumentController::class, 'update'])
+            ->whereNumber('document');
+        Route::delete('/content-documents/{type}/{document}', [ApiContentDocumentController::class, 'destroy'])
+            ->whereNumber('document');
 
         Route::get('/team', [ApiTeamController::class, 'index']);
         Route::get('/team/options', [ApiTeamController::class, 'options']);
