@@ -8,6 +8,7 @@ use App\Models\Employee;
 use App\Models\Event;
 use App\Models\HomepageSetting;
 use App\Models\Position;
+use App\Models\Report;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -108,5 +109,48 @@ class ContentManagementTest extends TestCase
         $this->deleteJson('/api/v1/event-summary-images/'.$summary->images->first()->id)
             ->assertOk();
         $this->assertDatabaseCount('event_summary_images', 0);
+    }
+
+    public function test_crm_user_can_manage_reports_with_files(): void
+    {
+        Storage::fake('public');
+        Sanctum::actingAs(User::factory()->create(['role' => 'editor']));
+
+        $response = $this->post('/api/v1/content-documents/reports', [
+            'title' => 'Річний звіт',
+            'year' => 2026,
+            'file' => UploadedFile::fake()->create('report.pdf', 120, 'application/pdf'),
+        ], ['Accept' => 'application/json']);
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath('data.title', 'Річний звіт')
+            ->assertJsonPath('data.year', 2026);
+
+        $report = Report::query()->firstOrFail();
+        Storage::disk('public')->assertExists($report->file);
+        $this->getJson('/api/v1/content-documents/reports')
+            ->assertOk()
+            ->assertJsonPath('data.0.title', 'Річний звіт');
+        $this->deleteJson('/api/v1/content-documents/reports/'.$report->id)
+            ->assertOk();
+        $this->assertDatabaseCount('reports', 0);
+    }
+
+    public function test_crm_user_can_add_and_remove_partner_logo(): void
+    {
+        Storage::fake('public');
+        Sanctum::actingAs(User::factory()->create(['role' => 'content']));
+
+        $this->post('/api/v1/partners', [
+            'logos' => [UploadedFile::fake()->image('partner.png', 600, 300)],
+        ], ['Accept' => 'application/json'])
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
+
+        $this->deleteJson('/api/v1/partners/0')
+            ->assertOk()
+            ->assertJsonCount(0, 'data');
+        $this->assertDatabaseHas('system_logs', ['action' => 'update_footer_partners']);
     }
 }
