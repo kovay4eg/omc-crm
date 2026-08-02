@@ -17,6 +17,12 @@ class EnsureCrmApiAccess
             ], 403);
         }
 
+        if ($request->bearerToken() !== null && ! $request->user()?->tokenCan('crm:access')) {
+            return response()->json([
+                'message' => 'Ця сесія не має доступу до мобільної CRM.',
+            ], 403);
+        }
+
         return $next($request);
     }
 }
