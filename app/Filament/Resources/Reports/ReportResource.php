@@ -3,20 +3,12 @@
 namespace App\Filament\Resources\Reports;
 
 use App\Models\Report;
-
-use Filament\Schemas\Schema;
-
-use Filament\Tables\Table;
-use Filament\Tables\TableComponent;
-
-use Filament\Resources\Resource;
-
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
-
+use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
-
-use App\Filament\Resources\Reports\Pages;
+use Filament\Tables\Table;
 
 class ReportResource extends Resource
 {

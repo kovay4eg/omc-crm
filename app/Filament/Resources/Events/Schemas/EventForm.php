@@ -60,8 +60,7 @@ class EventForm
                 ->label('Дата події')
                 ->required()
                 ->seconds(false)
-                ->minDate(fn () =>
-                    Auth::user()?->getActiveRole() === 'admin'
+                ->minDate(fn () => Auth::user()?->getActiveRole() === 'admin'
                         ? null
                         : now()
                 )
@@ -164,12 +163,10 @@ class EventForm
             TextInput::make('google_form_url')
                 ->label('Посилання на Google форму')
                 ->url()
-                ->visible(fn ($get) =>
-                    $get('has_registration_button')
+                ->visible(fn ($get) => $get('has_registration_button')
                     && $get('registration_type') === 'external'
                 )
-                ->required(fn ($get) =>
-                    $get('has_registration_button')
+                ->required(fn ($get) => $get('has_registration_button')
                     && $get('registration_type') === 'external'
                 ),
 
@@ -182,8 +179,7 @@ class EventForm
 
             Toggle::make('show_available_slots')
                 ->label('Показувати кількість місць на сайті')
-                ->visible(fn ($get) =>
-                    $get('has_registration_button')
+                ->visible(fn ($get) => $get('has_registration_button')
                     && $get('registration_type') !== 'external'
                 )
                 ->default(true),

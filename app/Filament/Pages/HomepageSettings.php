@@ -2,18 +2,17 @@
 
 namespace App\Filament\Pages;
 
-use Filament\Pages\Page;
-use Filament\Actions\Action;
-use Filament\Schemas\Schema;
 use App\Models\HomepageSetting;
-use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Concerns\InteractsWithForms;
-
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\TextInput;
+use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 
 class HomepageSettings extends Page implements HasForms
 {
@@ -21,7 +20,7 @@ class HomepageSettings extends Page implements HasForms
 
     protected static ?string $navigationLabel = 'Головна сторінка';
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-home';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-home';
 
     protected string $view = 'filament.pages.homepage-settings';
 
@@ -148,7 +147,7 @@ class HomepageSettings extends Page implements HasForms
                 TextInput::make('facebook_url')
                     ->label('Facebook URL')
                     ->url()
-                    ->hidden(fn ($get) => !$get('facebook_enabled')),
+                    ->hidden(fn ($get) => ! $get('facebook_enabled')),
 
                 Toggle::make('instagram_enabled')
                     ->label('Instagram')
@@ -157,7 +156,7 @@ class HomepageSettings extends Page implements HasForms
                 TextInput::make('instagram_url')
                     ->label('Instagram URL')
                     ->url()
-                    ->hidden(fn ($get) => !$get('instagram_enabled')),
+                    ->hidden(fn ($get) => ! $get('instagram_enabled')),
 
                 Toggle::make('telegram_enabled')
                     ->label('Telegram')
@@ -166,7 +165,7 @@ class HomepageSettings extends Page implements HasForms
                 TextInput::make('telegram_url')
                     ->label('Telegram URL')
                     ->url()
-                    ->hidden(fn ($get) => !$get('telegram_enabled')),
+                    ->hidden(fn ($get) => ! $get('telegram_enabled')),
 
                 Toggle::make('youtube_enabled')
                     ->label('YouTube')
@@ -175,7 +174,7 @@ class HomepageSettings extends Page implements HasForms
                 TextInput::make('youtube_url')
                     ->label('YouTube URL')
                     ->url()
-                    ->hidden(fn ($get) => !$get('youtube_enabled')),
+                    ->hidden(fn ($get) => ! $get('youtube_enabled')),
 
                 Toggle::make('tiktok_enabled')
                     ->label('TikTok')
@@ -184,7 +183,7 @@ class HomepageSettings extends Page implements HasForms
                 TextInput::make('tiktok_url')
                     ->label('TikTok URL')
                     ->url()
-                    ->hidden(fn ($get) => !$get('tiktok_enabled')),
+                    ->hidden(fn ($get) => ! $get('tiktok_enabled')),
 
             ])
             ->statePath('data');
@@ -194,7 +193,7 @@ class HomepageSettings extends Page implements HasForms
     {
         $data = $this->form->getState();
 
-        $settings = HomepageSetting::first() ?? new HomepageSetting();
+        $settings = HomepageSetting::first() ?? new HomepageSetting;
 
         $settings->banner_image = $data['banner_image'] ?? null;
 
@@ -211,19 +210,19 @@ class HomepageSettings extends Page implements HasForms
         $settings->contact_email = $data['contact_email'] ?? null;
         $settings->google_maps_url = $data['google_maps_url'] ?? null;
 
-        $settings->facebook_enabled = !empty($data['facebook_enabled']);
+        $settings->facebook_enabled = ! empty($data['facebook_enabled']);
         $settings->facebook_url = $data['facebook_url'] ?? null;
 
-        $settings->instagram_enabled = !empty($data['instagram_enabled']);
+        $settings->instagram_enabled = ! empty($data['instagram_enabled']);
         $settings->instagram_url = $data['instagram_url'] ?? null;
 
-        $settings->telegram_enabled = !empty($data['telegram_enabled']);
+        $settings->telegram_enabled = ! empty($data['telegram_enabled']);
         $settings->telegram_url = $data['telegram_url'] ?? null;
 
-        $settings->youtube_enabled = !empty($data['youtube_enabled']);
+        $settings->youtube_enabled = ! empty($data['youtube_enabled']);
         $settings->youtube_url = $data['youtube_url'] ?? null;
 
-        $settings->tiktok_enabled = !empty($data['tiktok_enabled']);
+        $settings->tiktok_enabled = ! empty($data['tiktok_enabled']);
         $settings->tiktok_url = $data['tiktok_url'] ?? null;
 
         $settings->save();

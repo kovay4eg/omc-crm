@@ -8,9 +8,9 @@ class HelpGuide extends Page
 {
     protected static ?string $navigationLabel = 'Довідка';
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-question-mark-circle';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-question-mark-circle';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Допомога';
+    protected static string|\UnitEnum|null $navigationGroup = 'Допомога';
 
     protected static ?int $navigationSort = 1;
 

@@ -26,7 +26,7 @@ class CalendarPlanResource extends Resource
 
     protected static ?string $modelLabel = 'План';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Контент сайту';
+    protected static string|\UnitEnum|null $navigationGroup = 'Контент сайту';
 
     protected static ?int $navigationSort = 7;
 

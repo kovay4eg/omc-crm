@@ -184,7 +184,7 @@ class EditEventSummary extends EditRecord
 
         system_log(
             'update_event_summary',
-            $description . ' Захід: ' . $this->record->title
+            $description.' Захід: '.$this->record->title
         );
     }
 

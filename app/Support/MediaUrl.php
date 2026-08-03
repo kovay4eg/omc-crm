@@ -15,6 +15,6 @@ class MediaUrl
             array_map('rawurlencode', explode('/', ltrim($path, '/'))),
         );
 
-        return asset('storage/' . $encodedPath);
+        return asset('storage/'.$encodedPath);
     }
 }

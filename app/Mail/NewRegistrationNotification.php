@@ -13,7 +13,9 @@ class NewRegistrationNotification extends Mailable
     use Queueable, SerializesModels;
 
     public Registration $registration;
+
     public Event $event;
+
     public int $count;
 
     public function __construct(Registration $registration, Event $event)
@@ -26,10 +28,10 @@ class NewRegistrationNotification extends Mailable
     public function build()
     {
         return $this->subject(
-                'Нова реєстрація на ваш захід: "' .
-                $this->event->title . '" - ' .
-                $this->event->event_date->format('d.m.Y H:i')
-            )
+            'Нова реєстрація на ваш захід: "'.
+            $this->event->title.'" - '.
+            $this->event->event_date->format('d.m.Y H:i')
+        )
             ->view('emails.new-registration');
     }
 }

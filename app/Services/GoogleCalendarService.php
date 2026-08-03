@@ -2,23 +2,23 @@
 
 namespace App\Services;
 
+use App\Models\Event as EventModel;
+use Carbon\Carbon;
 use Google\Client;
 use Google\Service\Calendar;
 use Google\Service\Calendar\Event;
 use Google\Service\Calendar\EventDateTime;
-use Carbon\Carbon;
-use App\Models\Event as EventModel;
 
 class GoogleCalendarService
 {
     protected function getClient($user)
     {
         try {
-            if (!$user->google_token) {
+            if (! $user->google_token) {
                 return null;
             }
 
-            $client = new Client();
+            $client = new Client;
 
             $client->setClientId(config('services.google.client_id'));
             $client->setClientSecret(config('services.google.client_secret'));
@@ -35,7 +35,7 @@ class GoogleCalendarService
             // 🔄 REFRESH TOKEN
             if ($client->isAccessTokenExpired()) {
 
-                if (!$client->getRefreshToken()) {
+                if (! $client->getRefreshToken()) {
                     return null;
                 }
 
@@ -68,7 +68,9 @@ class GoogleCalendarService
     {
         try {
             $client = $this->getClient($user);
-            if (!$client) return false;
+            if (! $client) {
+                return false;
+            }
 
             $service = new Calendar($client);
 
@@ -77,7 +79,7 @@ class GoogleCalendarService
                 'description' => $event->description,
             ]);
 
-            $start = new EventDateTime();
+            $start = new EventDateTime;
             $start->setDateTime(
                 Carbon::parse($event->event_date)
                     ->setTimezone('Europe/Kyiv')
@@ -85,7 +87,7 @@ class GoogleCalendarService
             );
             $start->setTimeZone('Europe/Kyiv');
 
-            $end = new EventDateTime();
+            $end = new EventDateTime;
             $end->setDateTime(
                 Carbon::parse($event->event_date)
                     ->addHour()
@@ -113,10 +115,14 @@ class GoogleCalendarService
     public function updateEvent($user, EventModel $event)
     {
         try {
-            if (!$event->google_event_id) return true;
+            if (! $event->google_event_id) {
+                return true;
+            }
 
             $client = $this->getClient($user);
-            if (!$client) return false;
+            if (! $client) {
+                return false;
+            }
 
             $service = new Calendar($client);
 
@@ -125,7 +131,7 @@ class GoogleCalendarService
             $googleEvent->setSummary($event->title);
             $googleEvent->setDescription($event->description);
 
-            $start = new EventDateTime();
+            $start = new EventDateTime;
             $start->setDateTime(
                 Carbon::parse($event->event_date)
                     ->setTimezone('Europe/Kyiv')
@@ -133,7 +139,7 @@ class GoogleCalendarService
             );
             $start->setTimeZone('Europe/Kyiv');
 
-            $end = new EventDateTime();
+            $end = new EventDateTime;
             $end->setDateTime(
                 Carbon::parse($event->event_date)
                     ->addHour()
@@ -158,10 +164,14 @@ class GoogleCalendarService
     public function deleteEvent($user, EventModel $event)
     {
         try {
-            if (!$event->google_event_id) return true;
+            if (! $event->google_event_id) {
+                return true;
+            }
 
             $client = $this->getClient($user);
-            if (!$client) return false;
+            if (! $client) {
+                return false;
+            }
 
             $service = new Calendar($client);
 

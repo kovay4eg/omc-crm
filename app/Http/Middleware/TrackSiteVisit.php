@@ -34,7 +34,7 @@ class TrackSiteVisit
             // Не зберігаємо IP-адреси, імена чи інші персональні дані.
             $sessionHash = hash('sha256', $sessionId);
 
-            if (Cache::add('site-visit:' . $sessionHash, true, now()->addMinute())) {
+            if (Cache::add('site-visit:'.$sessionHash, true, now()->addMinute())) {
                 $now = now('Europe/Kyiv');
 
                 SiteVisit::query()->updateOrCreate(

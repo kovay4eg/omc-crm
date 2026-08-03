@@ -1,16 +1,14 @@
 <?php
 
-use App\Http\Controllers\GoogleController;
-use App\Http\Controllers\EventController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\EventSummaryController;
 use App\Http\Controllers\EmployeePhotoController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventImageController;
 use App\Http\Controllers\EventShareImageController;
+use App\Http\Controllers\EventSummaryController;
+use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\HomeController;
 use App\Http\Middleware\EnsureFrontendIsAvailable;
 use App\Http\Middleware\TrackSiteVisit;
-use App\Models\Event;
-use App\Models\EventSummary;
 use App\Models\CalendarPlan;
 use App\Models\Report;
 use Illuminate\Support\Facades\Route;

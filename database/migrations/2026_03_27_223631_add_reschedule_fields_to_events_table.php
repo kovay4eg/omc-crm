@@ -26,7 +26,7 @@ return new class extends Migration
             $table->dropColumn([
                 'rescheduled_at',
                 'reschedule_reason',
-                'reschedule_public'
+                'reschedule_public',
             ]);
 
         });

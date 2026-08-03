@@ -6,18 +6,12 @@ use App\Filament\Resources\Statutes\Pages\CreateStatute;
 use App\Filament\Resources\Statutes\Pages\EditStatute;
 use App\Filament\Resources\Statutes\Pages\ListStatutes;
 use App\Models\Statute;
-
 use BackedEnum;
-
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
-
 use Filament\Resources\Resource;
-
 use Filament\Schemas\Schema;
-
 use Filament\Support\Icons\Heroicon;
-
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 

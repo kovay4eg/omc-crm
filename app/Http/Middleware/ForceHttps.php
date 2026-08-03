@@ -12,7 +12,7 @@ class ForceHttps
     {
         if (app()->environment('production') && ! $request->isSecure()) {
             return redirect()->to(
-                'https://' . $request->getHttpHost() . $request->getRequestUri(),
+                'https://'.$request->getHttpHost().$request->getRequestUri(),
                 301,
             );
         }

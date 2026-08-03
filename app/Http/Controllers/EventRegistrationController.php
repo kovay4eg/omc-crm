@@ -30,7 +30,7 @@ class EventRegistrationController extends Controller
                     ->findOrFail($validated['event_id']);
 
                 if (
-                    !in_array(
+                    ! in_array(
                         $event->status,
                         [EventStatus::Published, EventStatus::Rescheduled],
                         true
@@ -42,7 +42,7 @@ class EventRegistrationController extends Controller
                 }
 
                 if (
-                    !$event->has_registration_button ||
+                    ! $event->has_registration_button ||
                     $event->registration_type !== 'internal'
                 ) {
                     throw ValidationException::withMessages([

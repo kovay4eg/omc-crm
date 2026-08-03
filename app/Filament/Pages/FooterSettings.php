@@ -17,7 +17,7 @@ class FooterSettings extends Page implements HasForms
 
     protected static ?string $navigationLabel = 'Футер';
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-photo';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-photo';
 
     protected string $view = 'filament.pages.footer-settings';
 
@@ -69,7 +69,7 @@ class FooterSettings extends Page implements HasForms
 
     public function save(): void
     {
-        $settings = FooterSetting::first() ?? new FooterSetting();
+        $settings = FooterSetting::first() ?? new FooterSetting;
 
         $settings->partner_logos = $this->form->getState()['partner_logos'] ?? [];
         $settings->save();

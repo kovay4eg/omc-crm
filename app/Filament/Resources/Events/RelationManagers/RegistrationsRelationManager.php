@@ -2,13 +2,16 @@
 
 namespace App\Filament\Resources\Events\RelationManagers;
 
+use App\Enums\EventStatus;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 use Illuminate\Validation\ValidationException;
-use App\Enums\EventStatus;
 
 class RegistrationsRelationManager extends RelationManager
 {
@@ -79,12 +82,11 @@ class RegistrationsRelationManager extends RelationManager
              */
             ->headerActions([
 
-                \Filament\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label('Нова реєстрація')
 
                     // ❌ НЕ показуємо кнопку якщо івент скасований
-                    ->visible(fn ($livewire) =>
-                        $livewire->ownerRecord->status !== EventStatus::Cancelled
+                    ->visible(fn ($livewire) => $livewire->ownerRecord->status !== EventStatus::Cancelled
                     )
 
                     // ❌ Захист навіть якщо хтось обійде UI
@@ -109,10 +111,10 @@ class RegistrationsRelationManager extends RelationManager
             ->actions([
 
                 // ✏️ Редагування
-                \Filament\Actions\EditAction::make(),
+                EditAction::make(),
 
                 // 🗑 Видалення
-                \Filament\Actions\DeleteAction::make(),
+                DeleteAction::make(),
             ]);
     }
 }

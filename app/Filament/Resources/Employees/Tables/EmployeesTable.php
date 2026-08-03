@@ -79,7 +79,7 @@ class EmployeesTable
 
                         $settings = SiteSetting::first();
 
-                        if (!$settings) {
+                        if (! $settings) {
 
                             $settings = SiteSetting::create([
                                 'team_banner' => null,
@@ -96,7 +96,7 @@ class EmployeesTable
 
                         $settings = SiteSetting::first();
 
-                        if (!$settings) {
+                        if (! $settings) {
 
                             $settings = SiteSetting::create([
                                 'team_banner' => null,
@@ -118,7 +118,7 @@ class EmployeesTable
                             'departments' => Department::all()->map(fn ($d) => [
                                 'id' => $d->id,
                                 'name' => $d->name,
-                            ])->toArray()
+                            ])->toArray(),
                         ]);
 
                     })
@@ -143,7 +143,7 @@ class EmployeesTable
 
                                     }),
 
-                            ])
+                            ]),
 
                     ])
 
@@ -153,7 +153,7 @@ class EmployeesTable
 
                         foreach ($data['departments'] as $item) {
 
-                            if (!empty($item['id'])) {
+                            if (! empty($item['id'])) {
 
                                 Department::where('id', $item['id'])->update([
                                     'name' => $item['name'],
@@ -184,7 +184,7 @@ class EmployeesTable
                             'positions' => Position::all()->map(fn ($p) => [
                                 'id' => $p->id,
                                 'name' => $p->name,
-                            ])->toArray()
+                            ])->toArray(),
                         ]);
 
                     })
@@ -210,7 +210,7 @@ class EmployeesTable
 
                         foreach ($data['positions'] as $item) {
 
-                            if (!empty($item['id'])) {
+                            if (! empty($item['id'])) {
 
                                 Position::where('id', $item['id'])->update([
                                     'name' => $item['name'],

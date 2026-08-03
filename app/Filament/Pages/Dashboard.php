@@ -2,10 +2,15 @@
 
 namespace App\Filament\Pages;
 
-use Filament\Pages\Dashboard as BaseDashboard;
+use App\Filament\Widgets\Clock;
+use App\Filament\Widgets\EventCalendar;
+use App\Filament\Widgets\MaintenanceModeControl;
+use App\Filament\Widgets\StatsOverview;
+use App\Filament\Widgets\Weather;
 use Filament\Actions\Action;
-use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
+use Filament\Pages\Dashboard as BaseDashboard;
+use Illuminate\Support\Facades\Auth;
 
 class Dashboard extends BaseDashboard
 {
@@ -15,7 +20,7 @@ class Dashboard extends BaseDashboard
 
     protected function getHeaderActions(): array
     {
-        if (!Auth::user()?->isAdmin()) {
+        if (! Auth::user()?->isAdmin()) {
             return [];
         }
 
@@ -41,20 +46,23 @@ class Dashboard extends BaseDashboard
                 ->modalSubmitActionLabel('Застосувати'),
         ];
     }
+
     protected function getHeaderWidgets(): array
     {
         return [
-            \App\Filament\Widgets\MaintenanceModeControl::class,
-            \App\Filament\Widgets\Clock::class,
-            \App\Filament\Widgets\Weather::class,
-            \App\Filament\Widgets\StatsOverview::class,
-            \App\Filament\Widgets\EventCalendar::class,
+            MaintenanceModeControl::class,
+            Clock::class,
+            Weather::class,
+            StatsOverview::class,
+            EventCalendar::class,
         ];
     }
-    public function getColumns(): int | array
+
+    public function getColumns(): int|array
     {
         return 2;
-    } 
+    }
+
     public function getWidgets(): array
     {
         return [];

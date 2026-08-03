@@ -19,7 +19,9 @@ class EmployeeResource extends Resource
     protected static ?string $model = Employee::class;
 
     protected static ?string $navigationLabel = 'Працівники хабу';
+
     protected static ?string $modelLabel = 'Працівник';
+
     protected static ?string $pluralModelLabel = 'Працівники';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;

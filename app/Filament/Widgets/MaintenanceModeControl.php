@@ -30,8 +30,8 @@ class MaintenanceModeControl extends Widget
     {
         abort_unless(Auth::user()?->isAdmin(), 403);
 
-        $settings = SiteSetting::first() ?? new SiteSetting();
-        $settings->maintenance_mode = !$settings->maintenance_mode;
+        $settings = SiteSetting::first() ?? new SiteSetting;
+        $settings->maintenance_mode = ! $settings->maintenance_mode;
         $settings->save();
 
         $this->maintenanceMode = $settings->maintenance_mode;

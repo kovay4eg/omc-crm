@@ -7,6 +7,7 @@ use Illuminate\Console\Command;
 class CheckComposer extends Command
 {
     protected $signature = 'check:composer';
+
     protected $description = 'Check if Composer is available';
 
     public function handle()
@@ -16,6 +17,7 @@ class CheckComposer extends Command
         if ($code !== 0) {
             $this->error('Composer НЕ знайдено');
             $this->line(implode("\n", $output));
+
             return 1;
         }
 

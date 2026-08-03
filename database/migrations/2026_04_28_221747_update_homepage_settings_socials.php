@@ -10,14 +10,11 @@ return new class extends Migration
     {
         Schema::table('homepage_settings', function (Blueprint $table) {
 
-          
             $table->dropColumn(['x_enabled', 'x_url']);
 
-        
             $table->boolean('youtube_enabled')->default(false);
             $table->string('youtube_url')->nullable();
 
-       
             $table->boolean('tiktok_enabled')->default(false);
             $table->string('tiktok_url')->nullable();
         });
@@ -36,7 +33,7 @@ return new class extends Migration
                 'youtube_enabled',
                 'youtube_url',
                 'tiktok_enabled',
-                'tiktok_url'
+                'tiktok_url',
             ]);
         });
     }

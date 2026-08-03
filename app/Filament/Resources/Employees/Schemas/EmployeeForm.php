@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Employees\Schemas;
 
 use App\Support\MediaStorage;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Schema;
 
 class EmployeeForm

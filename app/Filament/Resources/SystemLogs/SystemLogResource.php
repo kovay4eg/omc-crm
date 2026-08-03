@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SystemLogs;
 
+use App\Filament\Resources\SystemLogs\SystemLogResource\Pages\ListSystemLogs;
 use App\Models\SystemLog;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -12,6 +13,7 @@ class SystemLogResource extends Resource
     protected static ?string $model = SystemLog::class;
 
     protected static ?string $navigationLabel = 'Логи';
+
     protected static ?int $navigationSort = 99;
 
     public static function canViewAny(): bool
@@ -73,7 +75,7 @@ class SystemLogResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => \App\Filament\Resources\SystemLogs\SystemLogResource\Pages\ListSystemLogs::route('/'),
+            'index' => ListSystemLogs::route('/'),
         ];
     }
 }

@@ -27,7 +27,7 @@ return new class extends Migration
             $table->dropColumn([
                 'google_token',
                 'google_refresh_token',
-                'google_token_expires_at'
+                'google_token_expires_at',
             ]);
         });
 

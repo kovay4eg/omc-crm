@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use App\Models\SystemLog;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
-use App\Models\SystemLog;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -21,7 +21,7 @@ class EventServiceProvider extends ServiceProvider
             SystemLog::create([
                 'user_id' => null,
                 'action' => 'login_failed',
-                'description' => 'Невдала спроба входу: ' . ($event->credentials['email'] ?? 'unknown'),
+                'description' => 'Невдала спроба входу: '.($event->credentials['email'] ?? 'unknown'),
                 'ip' => request()->ip(),
                 'user_agent' => request()->userAgent(),
             ]);
@@ -32,7 +32,7 @@ class EventServiceProvider extends ServiceProvider
             SystemLog::create([
                 'user_id' => $event->user->id,
                 'action' => 'login_success',
-                'description' => 'Успішний вхід: ' . $event->user->email,
+                'description' => 'Успішний вхід: '.$event->user->email,
                 'ip' => request()->ip(),
                 'user_agent' => request()->userAgent(),
             ]);

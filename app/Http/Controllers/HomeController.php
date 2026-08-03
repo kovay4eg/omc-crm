@@ -46,7 +46,7 @@ class HomeController extends Controller
                 $event->registration_is_available =
                     $event->has_registration_button
                     && $event->status !== EventStatus::Cancelled
-                    && !$event->is_full;
+                    && ! $event->is_full;
             });
 
         $eventSummaries = EventSummary::query()

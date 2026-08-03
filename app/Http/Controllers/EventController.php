@@ -6,6 +6,7 @@ use App\Enums\EventStatus;
 use App\Models\Event;
 use App\Models\HomepageSetting;
 use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 
 class EventController extends Controller
 {
@@ -32,7 +33,7 @@ class EventController extends Controller
                 $event->registration_is_available =
                     $event->has_registration_button
                     && $event->status !== EventStatus::Cancelled
-                    && !$event->is_full;
+                    && ! $event->is_full;
             });
 
         return view('events.index', compact('events'));
@@ -73,7 +74,7 @@ class EventController extends Controller
             'event' => $event,
             'smmTitle' => $event->smm_title ?: $event->title,
             'smmDescription' => $event->smm_description
-                ?: \Illuminate\Support\Str::limit(
+                ?: Str::limit(
                     preg_replace('/\s+/', ' ', trim($event->description)),
                     180,
                 ),

@@ -18,7 +18,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('employees', function (Blueprint $table) {
-            if (!Schema::hasColumn('employees', 'department')) {
+            if (! Schema::hasColumn('employees', 'department')) {
                 $table->string('department')->nullable();
             }
         });

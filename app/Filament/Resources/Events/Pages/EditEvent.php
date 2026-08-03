@@ -35,23 +35,23 @@ class EditEvent extends EditRecord
 
             if ($oldValue != $newValue) {
                 $changes[] = $field
-                    . ': '
-                    . $this->formatChangeValue($oldValue)
-                    . ' → '
-                    . $this->formatChangeValue($newValue);
+                    .': '
+                    .$this->formatChangeValue($oldValue)
+                    .' → '
+                    .$this->formatChangeValue($newValue);
             }
         }
 
         system_log(
             'update_event',
-            'Оновлено івент: ' . $this->record->title .
-            ' | Зміни: ' . implode(', ', $changes)
+            'Оновлено івент: '.$this->record->title.
+            ' | Зміни: '.implode(', ', $changes)
         );
 
         $success = app(GoogleCalendarService::class)
             ->updateEvent(auth()->user(), $this->record);
 
-        if (!$success) {
+        if (! $success) {
             Notification::make()
                 ->title('Google не відповів')
                 ->body('Івент оновлено, але не синхронізовано з Google')
@@ -147,7 +147,7 @@ class EditEvent extends EditRecord
                     $success = app(GoogleCalendarService::class)
                         ->updateEvent(auth()->user(), $event);
 
-                    if (!$success) {
+                    if (! $success) {
                         Notification::make()
                             ->title('Google не відповів')
                             ->warning()
@@ -202,7 +202,7 @@ class EditEvent extends EditRecord
                     $success = app(GoogleCalendarService::class)
                         ->updateEvent(auth()->user(), $event);
 
-                    if (!$success) {
+                    if (! $success) {
                         Notification::make()
                             ->title('Google не відповідає')
                             ->warning()

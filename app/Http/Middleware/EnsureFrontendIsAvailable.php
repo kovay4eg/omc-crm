@@ -15,7 +15,7 @@ class EnsureFrontendIsAvailable
         $isMaintenanceModeEnabled = (bool) SiteSetting::query()
             ->value('maintenance_mode');
 
-        if (!$isMaintenanceModeEnabled) {
+        if (! $isMaintenanceModeEnabled) {
             return $next($request);
         }
 

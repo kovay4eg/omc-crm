@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\Events\Tables;
 
-use Filament\Tables\Table;
-use Filament\Tables\Columns\TextColumn;
 use App\Enums\EventStatus;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class EventsTable
 {
@@ -45,9 +45,9 @@ class EventsTable
                         // 🔥 перенесено
                         if ($record->rescheduled_at && $record->old_event_date) {
                             return 'Перенесено: '
-                                . $record->old_event_date->format('d.m')
-                                . ' → '
-                                . $record->event_date->format('d.m');
+                                .$record->old_event_date->format('d.m')
+                                .' → '
+                                .$record->event_date->format('d.m');
                         }
 
                         return $status->label();
