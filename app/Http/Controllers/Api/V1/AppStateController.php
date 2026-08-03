@@ -24,6 +24,7 @@ class AppStateController extends Controller
             'site_maintenance_mode' => (bool) $settings?->maintenance_mode,
             'mobile_maintenance_mode' => (bool) $settings?->mobile_maintenance_mode,
             'can_manage' => $request->user()->isAdmin(),
+            'app_update' => config('mobile.updates'),
             'announcement' => $announcement
                 ? (new AppAnnouncementResource($announcement))->resolve($request)
                 : null,
