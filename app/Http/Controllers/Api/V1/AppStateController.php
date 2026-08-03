@@ -41,7 +41,7 @@ class AppStateController extends Controller
         ]);
         abort_if($data === [], 422, 'Не передано жодного налаштування.');
 
-        $settings = SiteSetting::query()->first() ?? new SiteSetting();
+        $settings = SiteSetting::query()->first() ?? new SiteSetting;
         if (array_key_exists('site_maintenance_mode', $data)) {
             $settings->maintenance_mode = $data['site_maintenance_mode'];
         }
