@@ -16,6 +16,29 @@ class AppStateAndAnnouncementTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_app_state_contains_platform_update_configuration(): void
+    {
+        config()->set('mobile.updates.android', [
+            'latest_version' => '1.4.0',
+            'minimum_version' => '1.1.0',
+            'update_url' => 'https://omc.pl.ua/android',
+        ]);
+        config()->set('mobile.updates.ios', [
+            'latest_version' => '1.3.0',
+            'minimum_version' => '1.0.0',
+            'update_url' => 'https://omc.pl.ua/ios',
+        ]);
+
+        Sanctum::actingAs(User::factory()->create(['role' => 'content']));
+
+        $this->getJson('/api/v1/app-state')
+            ->assertOk()
+            ->assertJsonPath('data.app_update.android.latest_version', '1.4.0')
+            ->assertJsonPath('data.app_update.android.minimum_version', '1.1.0')
+            ->assertJsonPath('data.app_update.android.update_url', 'https://omc.pl.ua/android')
+            ->assertJsonPath('data.app_update.ios.latest_version', '1.3.0');
+    }
+
     public function test_only_admin_can_toggle_site_and_mobile_maintenance_modes(): void
     {
         $editor = User::factory()->create(['role' => 'editor']);
