@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Enums\EventStatus;
 use App\Models\Event;
 use App\Services\GoogleCalendarService;
 
@@ -16,11 +17,14 @@ class EventObserver
 
     public function updated(Event $event): void
     {
-        if (!$event->user) return;
+        if (! $event->user) {
+            return;
+        }
 
         // якщо скасовано
-        if ($event->status === 'cancelled') {
+        if ($event->status === EventStatus::Cancelled) {
             $this->google->deleteEvent($event->user, $event);
+
             return;
         }
 
@@ -29,7 +33,9 @@ class EventObserver
 
     public function deleted(Event $event): void
     {
-        if (!$event->user) return;
+        if (! $event->user) {
+            return;
+        }
 
         $this->google->deleteEvent($event->user, $event);
     }

@@ -2,9 +2,15 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "laravel/laravel",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Website and CRM for the Poltava Regional Youth Center.",
+    "keywords": ["laravel", "crm", "poltava", "youth-center"],
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Roman Koshovyi",
+            "role": "Creator and Developer"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "filament/filament": "^5.4",
@@ -77,6 +83,10 @@
         ]
     },
     "extra": {
+        "project-attribution": {
+            "signature": "Developed by Roman Koshovyi",
+            "fingerprint": "OMC-RK-2026-PLT-7F3A"
+        },
         "laravel": {
             "dont-discover": []
         }

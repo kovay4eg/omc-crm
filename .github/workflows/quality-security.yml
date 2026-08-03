@@ -1,0 +1,53 @@
+name: Quality and security
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - dev
+      - "feature/**"
+
+permissions:
+  contents: read
+
+jobs:
+  laravel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mbstring, pdo_sqlite
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare Laravel
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Validate dependencies
+        run: |
+          composer validate --strict
+          composer audit --locked
+
+      - name: Check formatting
+        run: vendor/bin/pint --test
+
+      - name: Test
+        run: php artisan test --compact
+
+      - name: Compile views and routes
+        run: |
+          php artisan view:cache
+          php artisan route:list --json > /dev/null
+
