@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AndroidAppDownloadController;
+use App\Http\Controllers\AppDownloadController;
 use App\Http\Controllers\EmployeePhotoController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventImageController;
@@ -16,6 +17,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/download/android', AndroidAppDownloadController::class)
     ->name('app.download.android');
+
+Route::get('/app', AppDownloadController::class)
+    ->name('app.download');
 
 Route::middleware([EnsureFrontendIsAvailable::class, TrackSiteVisit::class])->group(function () {
     Route::get('/', [HomeController::class, 'index']);

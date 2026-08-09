@@ -8,7 +8,7 @@ import qrcode.image.svg
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 
 
-DEFAULT_URL = "https://omc.pl.ua/download/android"
+DEFAULT_URL = "https://omc.pl.ua/app"
 
 
 def _font(size: int, *, bold: bool = False) -> ImageFont.FreeTypeFont:
