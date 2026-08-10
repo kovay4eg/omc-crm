@@ -12,7 +12,7 @@ return [
         ),
         'android_sha256' => env(
             'MOBILE_ANDROID_APK_SHA256',
-            '3B6BE3AAA0B3681257D24C0B207082380108E21F577C5FCBDF4AB029CC7276D0',
+            '02CB91FCC9C9B0D7137BAD4CA8590C5BAA42CFA80DB44A7DB47FA28D9CB80C9C',
         ),
         'android_signing_sha256' => env(
             'MOBILE_ANDROID_SIGNING_SHA256',
@@ -24,7 +24,7 @@ return [
                 'url' => rtrim((string) env('APP_URL', 'https://omc.pl.ua'), '/').'/downloads/omc-poltava-admin-arm64.apk',
                 'sha256' => env(
                     'MOBILE_ANDROID_ARM64_SHA256',
-                    '008605D603AFE833AB7ED3D2D0269764A4F607D26480306276A7EEC1CFFEA75B',
+                    '7015461C821A70193DC4B36E5CEF270915EE11170281B3AD22B3494ADC85D631',
                 ),
             ],
             'armeabi-v7a' => [
@@ -32,7 +32,7 @@ return [
                 'url' => rtrim((string) env('APP_URL', 'https://omc.pl.ua'), '/').'/downloads/omc-poltava-admin-armv7.apk',
                 'sha256' => env(
                     'MOBILE_ANDROID_ARMV7_SHA256',
-                    '268FFD24911FCCF0379EE10D66F6AC5D340392B632D84CCD96FCF1418D99E6F6',
+                    'CA38AB04136D3E5AB39B4B3DE2DF7070BC666C1BF819419FC331D9D4E4F80E71',
                 ),
             ],
             'x86_64' => [
@@ -40,7 +40,7 @@ return [
                 'url' => rtrim((string) env('APP_URL', 'https://omc.pl.ua'), '/').'/downloads/omc-poltava-admin-x86_64.apk',
                 'sha256' => env(
                     'MOBILE_ANDROID_X86_64_SHA256',
-                    '40201582EAA56AF1A5DA70E823EDE07DA14502E085B908D4AE07083DC4BD8A71',
+                    '10972153F8D2075F3455F6985F9509D845C5A31CFADFA991E7D27179341FA60D',
                 ),
             ],
         ],
@@ -48,7 +48,7 @@ return [
     ],
     'updates' => [
         'android' => [
-            'latest_version' => env('MOBILE_ANDROID_LATEST_VERSION', '1.0.4'),
+            'latest_version' => env('MOBILE_ANDROID_LATEST_VERSION', '1.0.5'),
             'minimum_version' => env('MOBILE_ANDROID_MINIMUM_VERSION', '1.0.0'),
             'update_url' => env('MOBILE_ANDROID_UPDATE_URL', 'https://omc.pl.ua/download/android'),
         ],
