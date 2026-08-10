@@ -224,6 +224,18 @@
         .button:hover { transform: translateY(-2px); background: var(--blue-dark); }
         .platform-card.ios .button { background: var(--ios); box-shadow: 0 15px 28px rgba(23, 25, 35, .16); }
 
+        .button.secondary {
+            min-height: 48px;
+            margin-top: 12px;
+            background: transparent;
+            color: var(--blue-dark);
+            border: 1px solid rgba(36, 56, 218, .24);
+            box-shadow: none;
+            font-size: 14px;
+        }
+
+        .button.secondary:hover { background: rgba(36, 56, 218, .07); }
+
         .direct-link {
             margin-top: 18px !important;
             font-size: 13px;
@@ -299,15 +311,18 @@
                 <span class="status">Доступно · v{{ $androidVersion }}</span>
             </div>
             <h2>Android</h2>
-            <p>Завантажте офіційний APK безпосередньо із захищеного сервера ОМЦ.</p>
+            <p>Компактна версія для сучасних телефонів завантажується швидше. Універсальна збірка залишається для Nox і старіших пристроїв.</p>
 
-            <a class="qr-box" href="{{ $androidDownloadUrl }}" aria-label="Завантажити ОМЦ CRM для Android">
+            <a class="qr-box" href="{{ $androidRecommendedUrl }}" aria-label="Завантажити компактну версію ОМЦ CRM для Android">
                 <img src="{{ asset('images/qr/omc-android-download-qr-square.png') }}" alt="QR-код завантаження ОМЦ CRM для Android">
             </a>
 
-            <a class="button" href="{{ $androidDownloadUrl }}" download>
+            <a class="button" href="{{ $androidRecommendedUrl }}" download>
                 <span aria-hidden="true">↓</span>
-                Завантажити для Android
+                Android ARM64 · рекомендовано
+            </a>
+            <a class="button secondary" href="{{ $androidDownloadUrl }}" download>
+                Універсальна версія · Nox
             </a>
             <p class="direct-link">Постійне посилання:<a href="{{ $androidDownloadUrl }}">{{ $androidDownloadUrl }}</a></p>
         </article>
