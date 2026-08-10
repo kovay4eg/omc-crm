@@ -14,9 +14,11 @@ class AppDownloadPageTest extends TestCase
         $response = $this->get('/app');
 
         $response->assertOk()
-            ->assertSeeText('Завантажити для Android')
+            ->assertSeeText('Android ARM64 · рекомендовано')
+            ->assertSeeText('Універсальна версія · Nox')
             ->assertSeeText('iOS готується до публікації')
             ->assertSee(route('app.download.android'))
+            ->assertSee(route('app.download.android', ['abi' => 'arm64-v8a']))
             ->assertSee(route('app.download.ios'))
             ->assertSee(asset('images/qr/omc-android-download-qr-square.png'))
             ->assertSee(asset('images/qr/omc-ios-download-qr-square.png'));

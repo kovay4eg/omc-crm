@@ -12,6 +12,7 @@ class AppDownloadController extends Controller
 
         return view('app-download', [
             'androidDownloadUrl' => route('app.download.android'),
+            'androidRecommendedUrl' => route('app.download.android', ['abi' => 'arm64-v8a']),
             'androidVersion' => config('mobile.updates.android.latest_version'),
             'iosDownloadUrl' => route('app.download.ios'),
             'iosVersion' => config('mobile.updates.ios.latest_version'),

@@ -11,7 +11,7 @@ require dirname(__DIR__).'/vendor/autoload.php';
 
 $platform = $argv[1] ?? null;
 $urls = [
-    'android' => 'https://omc.pl.ua/download/android',
+    'android' => 'https://omc.pl.ua/download/android?abi=arm64-v8a',
     'ios' => 'https://omc.pl.ua/download/ios',
 ];
 
