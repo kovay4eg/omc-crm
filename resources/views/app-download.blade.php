@@ -3,31 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#2538e5">
+    <meta name="theme-color" content="#2438da">
     <meta name="robots" content="index,follow">
-    <title>Завантажити ОМЦ CRM для Android</title>
-    <meta name="description" content="Офіційна сторінка завантаження мобільного застосунку ОМЦ CRM для Android.">
+    <title>Завантажити ОМЦ CRM для Android та iOS</title>
+    <meta name="description" content="Офіційна сторінка мобільного застосунку ОМЦ CRM для Android та iOS.">
     <style>
         :root {
             color-scheme: light;
-            --primary: #2538e5;
-            --primary-dark: #1826b8;
-            --ink: #141624;
-            --muted: #626a84;
-            --surface: #ffffff;
+            --blue: #2438da;
+            --blue-dark: #1726ad;
+            --ios: #171923;
+            --ink: #151722;
+            --muted: #626982;
             --page: #f4f6ff;
-            --line: #dfe3ff;
-            --success: #087c6d;
+            --surface: #ffffff;
+            --line: #dfe3fa;
+            --green: #087f70;
+            --amber: #b36a00;
         }
 
         * { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
 
         body {
             margin: 0;
             min-height: 100vh;
             background:
-                radial-gradient(circle at 12% 12%, rgba(86, 104, 255, .18), transparent 32rem),
-                radial-gradient(circle at 90% 88%, rgba(90, 212, 194, .16), transparent 30rem),
+                radial-gradient(circle at 8% 8%, rgba(69, 88, 255, .16), transparent 34rem),
+                radial-gradient(circle at 94% 88%, rgba(43, 194, 169, .13), transparent 30rem),
                 var(--page);
             color: var(--ink);
             font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -35,10 +39,10 @@
 
         a { color: inherit; }
 
-        .download-page {
-            width: min(1160px, calc(100% - 32px));
+        .page {
+            width: min(1180px, calc(100% - 32px));
             margin: 0 auto;
-            padding: 48px 0 32px;
+            padding: 36px 0 30px;
         }
 
         .brand {
@@ -46,219 +50,235 @@
             align-items: center;
             justify-content: space-between;
             gap: 24px;
-            margin-bottom: 34px;
         }
 
         .brand img {
             width: min(330px, 72vw);
-            max-height: 108px;
+            max-height: 104px;
             object-fit: contain;
             object-position: left center;
         }
 
         .brand-badge {
-            flex: 0 0 auto;
             padding: 10px 16px;
             border: 1px solid var(--line);
             border-radius: 999px;
-            background: rgba(255, 255, 255, .76);
-            color: var(--primary-dark);
-            font-size: 14px;
-            font-weight: 800;
-            letter-spacing: .04em;
+            background: rgba(255, 255, 255, .86);
+            color: var(--blue-dark);
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: .05em;
             text-transform: uppercase;
         }
 
-        .download-card {
-            display: grid;
-            grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr);
-            gap: 48px;
-            align-items: center;
-            padding: clamp(28px, 5vw, 64px);
-            border: 1px solid rgba(212, 218, 255, .9);
-            border-radius: 40px;
-            background: rgba(255, 255, 255, .92);
-            box-shadow: 0 30px 80px rgba(34, 47, 145, .13);
-            backdrop-filter: blur(18px);
+        .hero {
+            max-width: 850px;
+            margin: 58px auto 42px;
+            text-align: center;
         }
 
-        .eyebrow {
+        .hero-label {
             display: inline-flex;
             align-items: center;
             gap: 9px;
             margin: 0 0 18px;
-            color: var(--success);
-            font-size: 15px;
-            font-weight: 800;
+            color: var(--green);
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: .04em;
+            text-transform: uppercase;
         }
 
-        .eyebrow::before {
+        .hero-label::before {
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: #20b69f;
-            box-shadow: 0 0 0 6px rgba(32, 182, 159, .13);
+            background: #1fb49d;
+            box-shadow: 0 0 0 6px rgba(31, 180, 157, .13);
             content: "";
         }
 
         h1 {
-            max-width: 720px;
             margin: 0;
-            font-size: clamp(38px, 6vw, 70px);
+            font-size: clamp(40px, 7vw, 76px);
             line-height: 1.02;
-            letter-spacing: -.045em;
+            letter-spacing: -.05em;
         }
 
         .lead {
-            max-width: 640px;
-            margin: 24px 0 0;
+            max-width: 720px;
+            margin: 22px auto 0;
             color: var(--muted);
-            font-size: clamp(18px, 2.2vw, 22px);
+            font-size: clamp(18px, 2.3vw, 22px);
             line-height: 1.55;
         }
 
-        .download-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            margin-top: 34px;
+        .platforms {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 24px;
         }
 
-        .download-button,
-        .site-button {
+        .platform-card {
+            display: flex;
+            min-width: 0;
+            flex-direction: column;
+            padding: clamp(24px, 4vw, 38px);
+            border: 1px solid var(--line);
+            border-radius: 34px;
+            background: var(--surface);
+            box-shadow: 0 24px 64px rgba(31, 43, 126, .10);
+        }
+
+        .platform-card:target {
+            outline: 4px solid rgba(36, 56, 218, .14);
+            outline-offset: 4px;
+        }
+
+        .platform-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .platform-icon {
+            display: grid;
+            width: 64px;
+            height: 64px;
+            place-items: center;
+            border-radius: 20px;
+            background: #e9ecff;
+            color: var(--blue);
+            font-size: 23px;
+            font-weight: 1000;
+        }
+
+        .platform-card.ios .platform-icon {
+            background: #eceef3;
+            color: var(--ios);
+        }
+
+        .status {
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: #e5f7f2;
+            color: var(--green);
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .status.pending {
+            background: #fff3dc;
+            color: var(--amber);
+        }
+
+        .platform-card h2 {
+            margin: 24px 0 8px;
+            font-size: 34px;
+            letter-spacing: -.03em;
+        }
+
+        .platform-card p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        .qr-box {
+            display: grid;
+            width: min(100%, 310px);
+            place-items: center;
+            align-self: center;
+            margin: 26px 0;
+            padding: 14px;
+            border: 1px solid var(--line);
+            border-radius: 26px;
+            background: #fff;
+        }
+
+        .qr-box img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 16px;
+        }
+
+        .button {
             display: inline-flex;
             min-height: 58px;
             align-items: center;
             justify-content: center;
-            gap: 11px;
-            padding: 15px 24px;
+            gap: 10px;
+            padding: 14px 20px;
             border-radius: 18px;
-            font-size: 17px;
-            font-weight: 800;
-            text-decoration: none;
-            transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
-        }
-
-        .download-button {
-            background: var(--primary);
+            background: var(--blue);
             color: #fff;
-            box-shadow: 0 16px 30px rgba(37, 56, 229, .24);
+            font-size: 17px;
+            font-weight: 900;
+            text-decoration: none;
+            box-shadow: 0 15px 28px rgba(36, 56, 218, .22);
+            transition: transform .18s ease, background .18s ease;
         }
 
-        .site-button {
-            border: 1px solid var(--line);
-            background: #fff;
-            color: var(--ink);
-        }
-
-        .download-button:hover,
-        .site-button:hover {
-            transform: translateY(-2px);
-        }
-
-        .download-button:hover { background: var(--primary-dark); }
+        .button:hover { transform: translateY(-2px); background: var(--blue-dark); }
+        .platform-card.ios .button { background: var(--ios); box-shadow: 0 15px 28px rgba(23, 25, 35, .16); }
 
         .direct-link {
-            margin: 26px 0 0;
-            color: var(--muted);
-            font-size: 14px;
-            line-height: 1.55;
-        }
-
-        .direct-link a {
-            display: inline-block;
-            margin-top: 5px;
-            color: var(--primary-dark);
-            font-weight: 700;
-            overflow-wrap: anywhere;
-        }
-
-        .qr-panel {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 24px;
-            border: 1px solid var(--line);
-            border-radius: 30px;
-            background: linear-gradient(155deg, #fff, #f3f5ff);
+            margin-top: 18px !important;
+            font-size: 13px;
             text-align: center;
         }
 
-        .qr-panel img {
+        .direct-link a {
             display: block;
-            width: min(100%, 360px);
-            height: auto;
-            border-radius: 22px;
+            margin-top: 5px;
+            color: var(--blue-dark);
+            font-weight: 800;
+            overflow-wrap: anywhere;
         }
 
-        .qr-panel strong {
-            margin-top: 18px;
-            font-size: 19px;
-        }
-
-        .qr-panel span {
-            margin-top: 7px;
-            color: var(--muted);
-            line-height: 1.45;
-        }
-
-        .steps {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-top: 24px;
-        }
-
-        .step {
-            padding: 22px;
-            border: 1px solid rgba(212, 218, 255, .85);
+        .notice {
+            margin-top: 28px;
+            padding: 22px 24px;
+            border: 1px solid var(--line);
             border-radius: 24px;
-            background: rgba(255, 255, 255, .76);
+            background: rgba(255, 255, 255, .78);
+            color: var(--muted);
+            line-height: 1.55;
+            text-align: center;
         }
 
-        .step-number {
-            display: grid;
-            width: 36px;
-            height: 36px;
-            place-items: center;
-            margin-bottom: 14px;
-            border-radius: 12px;
-            background: #e8ebff;
-            color: var(--primary-dark);
-            font-weight: 900;
-        }
-
-        .step strong { display: block; margin-bottom: 6px; }
-        .step p { margin: 0; color: var(--muted); line-height: 1.5; }
+        .notice strong { color: var(--ink); }
 
         footer {
             display: flex;
             justify-content: space-between;
             gap: 20px;
-            padding: 28px 4px 0;
+            padding: 30px 4px 0;
             color: #777e99;
             font-size: 13px;
         }
 
         @media (max-width: 820px) {
-            .download-page { padding-top: 24px; }
-            .brand { align-items: flex-start; flex-direction: column; margin-bottom: 24px; }
-            .download-card { grid-template-columns: 1fr; gap: 34px; border-radius: 30px; }
-            .steps { grid-template-columns: 1fr; }
-            .download-actions { flex-direction: column; }
-            .download-button, .site-button { width: 100%; }
+            .page { padding-top: 22px; }
+            .brand { align-items: flex-start; flex-direction: column; }
+            .hero { margin: 40px auto 30px; text-align: left; }
+            .hero-label { margin-left: 8px; }
+            .platforms { grid-template-columns: 1fr; }
             footer { align-items: center; flex-direction: column; text-align: center; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+            html { scroll-behavior: auto; }
+            *, *::before, *::after { transition: none !important; }
         }
     </style>
 </head>
 <body>
 <x-preloader />
 
-<main class="download-page">
+<main class="page">
     <header class="brand">
         <a href="{{ url('/') }}" aria-label="Перейти на головну сторінку ОМЦ">
             <img src="{{ asset('storage/homepage/Лого ПОМЦ.png') }}" alt="Обласний молодіжний центр">
@@ -266,54 +286,62 @@
         <span class="brand-badge">Офіційний застосунок</span>
     </header>
 
-    <section class="download-card" aria-labelledby="download-title">
-        <div>
-            <p class="eyebrow">Android · версія {{ $androidVersion }}</p>
-            <h1 id="download-title">ОМЦ CRM завжди поруч</h1>
-            <p class="lead">
-                Мобільне адміністрування подій, реєстрацій, контенту та команди Обласного молодіжного центру.
-            </p>
+    <section class="hero">
+        <p class="hero-label">Мобільне адміністрування ОМЦ</p>
+        <h1>Оберіть свій пристрій</h1>
+        <p class="lead">Події, реєстрації, контент і робота команди ОМЦ — у захищеному застосунку для Android та iOS.</p>
+    </section>
 
-            <div class="download-actions">
-                <a class="download-button" href="{{ $androidDownloadUrl }}" download>
-                    <span aria-hidden="true">↓</span>
-                    Завантажити для Android
-                </a>
-                <a class="site-button" href="{{ url('/') }}">Перейти на сайт</a>
+    <section class="platforms" aria-label="Завантаження застосунку">
+        <article class="platform-card android" id="android">
+            <div class="platform-head">
+                <span class="platform-icon" aria-hidden="true">A</span>
+                <span class="status">Доступно · v{{ $androidVersion }}</span>
             </div>
+            <h2>Android</h2>
+            <p>Завантажте офіційний APK безпосередньо із захищеного сервера ОМЦ.</p>
 
-            <p class="direct-link">
-                Пряме посилання на APK:<br>
-                <a href="{{ $androidDownloadUrl }}">{{ $androidDownloadUrl }}</a>
-            </p>
-        </div>
-
-        <div class="qr-panel">
-            <a href="{{ $androidDownloadUrl }}" aria-label="Завантажити застосунок для Android">
-                <img src="{{ asset('images/qr/omc-android-download-qr-square.png') }}" alt="QR-код для завантаження ОМЦ CRM">
+            <a class="qr-box" href="{{ $androidDownloadUrl }}" aria-label="Завантажити ОМЦ CRM для Android">
+                <img src="{{ asset('images/qr/omc-android-download-qr-square.png') }}" alt="QR-код завантаження ОМЦ CRM для Android">
             </a>
-            <strong>Відскануйте QR-код</strong>
-            <span>Наведіть камеру телефона або натисніть на код.</span>
-        </div>
+
+            <a class="button" href="{{ $androidDownloadUrl }}" download>
+                <span aria-hidden="true">↓</span>
+                Завантажити для Android
+            </a>
+            <p class="direct-link">Постійне посилання:<a href="{{ $androidDownloadUrl }}">{{ $androidDownloadUrl }}</a></p>
+        </article>
+
+        <article class="platform-card ios" id="ios">
+            <div class="platform-head">
+                <span class="platform-icon" aria-hidden="true">iOS</span>
+                <span class="status {{ $iosAvailable ? '' : 'pending' }}">
+                    {{ $iosAvailable ? 'Доступно · v'.$iosVersion : 'Готується' }}
+                </span>
+            </div>
+            <h2>iPhone та iPad</h2>
+            <p>
+                {{ $iosAvailable
+                    ? 'Відскануйте QR-код, щоб відкрити офіційну сторінку встановлення.'
+                    : 'iOS готується до публікації. Постійний QR і URL вже готові та змінюватися не будуть.' }}
+            </p>
+
+            <a class="qr-box" href="{{ $iosDownloadUrl }}" aria-label="Відкрити сторінку ОМЦ CRM для iOS">
+                <img src="{{ asset('images/qr/omc-ios-download-qr-square.png') }}" alt="Постійний QR-код ОМЦ CRM для iOS">
+            </a>
+
+            <a class="button" href="{{ $iosDownloadUrl }}">
+                <span aria-hidden="true">{{ $iosAvailable ? '↗' : '◷' }}</span>
+                {{ $iosAvailable ? 'Завантажити для iOS' : 'iOS — повідомити пізніше' }}
+            </a>
+            <p class="direct-link">Постійне посилання:<a href="{{ $iosDownloadUrl }}">{{ $iosDownloadUrl }}</a></p>
+        </article>
     </section>
 
-    <section class="steps" aria-label="Інструкція зі встановлення">
-        <article class="step">
-            <span class="step-number">1</span>
-            <strong>Завантажте APK</strong>
-            <p>Натисніть кнопку або відскануйте QR-код.</p>
-        </article>
-        <article class="step">
-            <span class="step-number">2</span>
-            <strong>Підтвердьте встановлення</strong>
-            <p>Android може попросити дозвіл для встановлення з браузера.</p>
-        </article>
-        <article class="step">
-            <span class="step-number">3</span>
-            <strong>Увійдіть у CRM</strong>
-            <p>Використайте свій чинний логін і пароль адміністратора.</p>
-        </article>
-    </section>
+    <aside class="notice">
+        <strong>Android:</strong> браузер може попросити дозвіл на встановлення APK.
+        <strong>iOS:</strong> після публікації в App Store або TestFlight цей QR автоматично перенаправить на актуальну версію.
+    </aside>
 
     <footer>
         <span>developed by Roman Koshovyi</span>
