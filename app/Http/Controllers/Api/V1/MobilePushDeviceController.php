@@ -17,6 +17,7 @@ class MobilePushDeviceController extends Controller
         'push_events',
         'push_news',
         'push_system',
+        'push_support',
     ];
 
     public function update(Request $request): JsonResponse
