@@ -250,6 +250,34 @@
             overflow-wrap: anywhere;
         }
 
+        .security-proof {
+            display: grid;
+            gap: 8px;
+            margin-top: 20px;
+            padding: 18px;
+            border: 1px solid #bee6dc;
+            border-radius: 20px;
+            background: #f1fbf8;
+        }
+
+        .security-proof strong { color: var(--green); }
+
+        .security-proof span {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .security-proof code {
+            color: var(--ink);
+            font-size: 11px;
+            line-height: 1.55;
+            overflow-wrap: anywhere;
+            user-select: all;
+        }
+
         .notice {
             margin-top: 28px;
             padding: 22px 24px;
@@ -262,6 +290,12 @@
         }
 
         .notice strong { color: var(--ink); }
+
+        .notice.important {
+            border-color: #f2cf91;
+            background: #fff9ed;
+            color: #72501a;
+        }
 
         footer {
             display: flex;
@@ -325,6 +359,20 @@
                 Універсальна версія · Nox
             </a>
             <p class="direct-link">Постійне посилання:<a href="{{ $androidDownloadUrl }}">{{ $androidDownloadUrl }}</a></p>
+
+            @if (is_string($androidSigningSha256) && is_string($androidApkSha256))
+                <div class="security-proof" aria-label="Перевірка цифрового підпису Android-застосунку">
+                    <strong>Перевірений production-підпис ОМЦ</strong>
+                    <span>SHA-256 сертифіката підпису</span>
+                    <code>{{ $androidSigningSha256 }}</code>
+                    <span>SHA-256 APK ARM64</span>
+                    <code>{{ $androidApkSha256 }}</code>
+                    @if (is_string($androidUniversalSha256))
+                        <span>SHA-256 універсального APK</span>
+                        <code>{{ $androidUniversalSha256 }}</code>
+                    @endif
+                </div>
+            @endif
         </article>
 
         <article class="platform-card ios" id="ios">
@@ -353,7 +401,16 @@
         </article>
     </section>
 
+    <aside class="notice important">
+        <strong>Важливо для оновлення до v{{ $androidVersion }}:</strong>
+        застосунок отримав постійний production-підпис ОМЦ. Якщо у вас встановлена версія 1.0.3 або старіша,
+        один раз видаліть її перед установленням нової. Дані CRM зберігаються на сервері, але потрібно буде
+        повторно увійти та створити локальний PIN.
+    </aside>
+
     <aside class="notice">
+        <strong>Безпека:</strong> не вимикайте Google Play Protect. Якщо Android називає файл шкідливим,
+        скасуйте встановлення та повідомте адміністратору.
         <strong>Android:</strong> браузер може попросити дозвіл на встановлення APK.
         <strong>iOS:</strong> після публікації в App Store або TestFlight цей QR автоматично перенаправить на актуальну версію.
     </aside>
