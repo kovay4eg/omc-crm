@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AndroidAppDownloadController;
 use App\Http\Controllers\AppDownloadController;
+use App\Http\Controllers\IosAppDownloadController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\HomeController;
@@ -19,6 +20,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/download/android', AndroidAppDownloadController::class)
     ->name('app.download.android');
+
+Route::get('/download/ios', IosAppDownloadController::class)
+    ->name('app.download.ios');
 
 Route::get('/app', AppDownloadController::class)
     ->name('app.download');
