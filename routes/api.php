@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AdminProController as ApiAdminProController;
 use App\Http\Controllers\Api\V1\AppAnnouncementController as ApiAppAnnouncementController;
 use App\Http\Controllers\Api\V1\AppStateController as ApiAppStateController;
 use App\Http\Controllers\Api\V1\AuthController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Api\V1\EventSummaryController as ApiEventSummaryControl
 use App\Http\Controllers\Api\V1\HomepageSettingsController as ApiHomepageSettingsController;
 use App\Http\Controllers\Api\V1\MobilePushDeviceController as ApiMobilePushDeviceController;
 use App\Http\Controllers\Api\V1\PartnerController as ApiPartnerController;
+use App\Http\Controllers\Api\V1\SupportConversationController as ApiSupportConversationController;
 use App\Http\Controllers\Api\V1\SystemLogController as ApiSystemLogController;
 use App\Http\Controllers\Api\V1\TeamController as ApiTeamController;
 use App\Http\Controllers\Api\V1\TwoFactorController as ApiTwoFactorController;
@@ -44,6 +46,13 @@ Route::prefix('v1')->group(function () {
         Route::post('/auth/two-factor/confirm', [ApiTwoFactorController::class, 'confirm']);
         Route::post('/auth/two-factor/recovery-codes', [ApiTwoFactorController::class, 'regenerate']);
         Route::delete('/auth/two-factor', [ApiTwoFactorController::class, 'disable']);
+
+        Route::get('/support/conversations', [ApiSupportConversationController::class, 'index']);
+        Route::post('/support/conversations', [ApiSupportConversationController::class, 'store']);
+        Route::get('/support/conversations/{supportConversation}', [ApiSupportConversationController::class, 'show']);
+        Route::post('/support/conversations/{supportConversation}/messages', [ApiSupportConversationController::class, 'storeMessage']);
+        Route::patch('/support/conversations/{supportConversation}/status', [ApiSupportConversationController::class, 'updateStatus']);
+        Route::post('/admin-pro/transfer', [ApiAdminProController::class, 'transfer']);
 
         Route::get('/events', [ApiEventController::class, 'index']);
         Route::post('/events', [ApiEventController::class, 'store']);

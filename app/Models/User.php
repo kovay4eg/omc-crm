@@ -52,6 +52,11 @@ class User extends Authenticatable implements FilamentUser, TwoFactorAuthenticat
         return $this->role === 'admin';
     }
 
+    public function isAdminPro(): bool
+    {
+        return $this->role === 'admin' && AdminProAssignment::currentUserId() === $this->getKey();
+    }
+
     public function isEditor(): bool
     {
         return $this->role === 'editor';

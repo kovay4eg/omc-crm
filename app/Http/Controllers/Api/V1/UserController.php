@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\UserResource;
+use App\Models\AdminProAssignment;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,7 +21,10 @@ class UserController extends Controller
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
 
+        $adminProId = AdminProAssignment::currentUserId();
+
         return UserResource::collection(User::query()
+            ->when($adminProId, fn ($query) => $query->where('id', '!=', $adminProId))
             ->when($filters['search'] ?? null, fn ($query, $search) => $query
                 ->where(fn ($query) => $query
                     ->where('name', 'like', "%{$search}%")
@@ -41,6 +45,7 @@ class UserController extends Controller
     public function update(Request $request, User $user): UserResource
     {
         $this->authorizeAdmin($request);
+        abort_if($user->isAdminPro(), 403, 'Обліковий запис AdminPro змінюється лише через його профіль.');
         $data = $request->validate($this->rules($user));
         if (blank($data['password'] ?? null)) {
             unset($data['password']);
@@ -54,6 +59,7 @@ class UserController extends Controller
     public function destroy(Request $request, User $user): JsonResponse
     {
         $this->authorizeAdmin($request);
+        abort_if($user->isAdminPro(), 403, 'Обліковий запис AdminPro не можна видалити.');
         abort_if($request->user()->is($user), 422, 'Не можна видалити власний обліковий запис.');
         abort_if($user->isAdmin() && User::query()->where('role', 'admin')->count() <= 1, 422, 'Не можна видалити останнього адміністратора.');
 
