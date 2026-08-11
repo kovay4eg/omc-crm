@@ -12,7 +12,7 @@ return [
         ),
         'android_sha256' => env(
             'MOBILE_ANDROID_APK_SHA256',
-            '48442DE087DC445DFC719DEC2DD76502E58B0099D2101B5E425934F203DACE89',
+            '61072AA9C34D85D32C482C8A4E8C8541ACEECBBF88D2EB0F802096AAB44C4346',
         ),
         'android_signing_sha256' => env(
             'MOBILE_ANDROID_SIGNING_SHA256',
@@ -24,7 +24,7 @@ return [
                 'url' => rtrim((string) env('APP_URL', 'https://omc.pl.ua'), '/').'/downloads/omc-poltava-admin-arm64.apk',
                 'sha256' => env(
                     'MOBILE_ANDROID_ARM64_SHA256',
-                    '48442DE087DC445DFC719DEC2DD76502E58B0099D2101B5E425934F203DACE89',
+                    '61072AA9C34D85D32C482C8A4E8C8541ACEECBBF88D2EB0F802096AAB44C4346',
                 ),
             ],
             'armeabi-v7a' => [
@@ -32,7 +32,7 @@ return [
                 'url' => rtrim((string) env('APP_URL', 'https://omc.pl.ua'), '/').'/downloads/omc-poltava-admin-armv7.apk',
                 'sha256' => env(
                     'MOBILE_ANDROID_ARMV7_SHA256',
-                    '48442DE087DC445DFC719DEC2DD76502E58B0099D2101B5E425934F203DACE89',
+                    '79B235FD7843CC1EFDE0CF1304F7999A688E31687E830F6992A3864D53EEC617',
                 ),
             ],
             'x86_64' => [
@@ -40,7 +40,7 @@ return [
                 'url' => rtrim((string) env('APP_URL', 'https://omc.pl.ua'), '/').'/downloads/omc-poltava-admin-x86_64.apk',
                 'sha256' => env(
                     'MOBILE_ANDROID_X86_64_SHA256',
-                    '48442DE087DC445DFC719DEC2DD76502E58B0099D2101B5E425934F203DACE89',
+                    '0A01FA697B820B3DC630C7E7DA939FDAA06A01D1DC3785E99E75720CFA95AB3C',
                 ),
             ],
         ],
