@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AdminProController as ApiAdminProController;
+use App\Http\Controllers\Api\V1\AdminProMailController as ApiAdminProMailController;
 use App\Http\Controllers\Api\V1\AppAnnouncementController as ApiAppAnnouncementController;
 use App\Http\Controllers\Api\V1\AppStateController as ApiAppStateController;
 use App\Http\Controllers\Api\V1\AuthController;
@@ -53,6 +54,12 @@ Route::prefix('v1')->group(function () {
         Route::post('/support/conversations/{supportConversation}/messages', [ApiSupportConversationController::class, 'storeMessage']);
         Route::patch('/support/conversations/{supportConversation}/status', [ApiSupportConversationController::class, 'updateStatus']);
         Route::post('/admin-pro/transfer', [ApiAdminProController::class, 'transfer']);
+        Route::get('/admin-pro/mail/status', [ApiAdminProMailController::class, 'status']);
+        Route::get('/admin-pro/mail/messages', [ApiAdminProMailController::class, 'index']);
+        Route::post('/admin-pro/mail/messages', [ApiAdminProMailController::class, 'store']);
+        Route::get('/admin-pro/mail/messages/{uid}', [ApiAdminProMailController::class, 'show'])->whereNumber('uid');
+        Route::patch('/admin-pro/mail/messages/{uid}', [ApiAdminProMailController::class, 'update'])->whereNumber('uid');
+        Route::delete('/admin-pro/mail/messages/{uid}', [ApiAdminProMailController::class, 'destroy'])->whereNumber('uid');
 
         Route::get('/events', [ApiEventController::class, 'index']);
         Route::post('/events', [ApiEventController::class, 'store']);

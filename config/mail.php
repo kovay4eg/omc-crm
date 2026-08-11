@@ -49,6 +49,17 @@ return [
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
+        'admin_pro' => [
+            'transport' => 'smtp',
+            'scheme' => env('ADMIN_PRO_MAIL_SMTP_SCHEME', 'smtps'),
+            'host' => env('ADMIN_PRO_MAIL_SMTP_HOST', 'omc.pl.ua'),
+            'port' => (int) env('ADMIN_PRO_MAIL_SMTP_PORT', 465),
+            'username' => env('ADMIN_PRO_MAIL_USERNAME', 'post@omc.pl.ua'),
+            'password' => env('ADMIN_PRO_MAIL_PASSWORD'),
+            'timeout' => 20,
+            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'https://omc.pl.ua'), PHP_URL_HOST)),
+        ],
+
         'ses' => [
             'transport' => 'ses',
         ],
