@@ -291,7 +291,7 @@
 <main class="page">
     <header class="brand">
         <a href="{{ url('/') }}" aria-label="Перейти на головну сторінку ОМЦ">
-            <img src="{{ asset('images/main-logo-desktop-svg.svg') }}" width="384" height="87" decoding="async" alt="Обласний молодіжний центр">
+            <img src="{{ asset('images/omc-logo.png') }}" width="3334" height="2084" decoding="async" alt="Обласний молодіжний центр">
         </a>
     </header>
 
