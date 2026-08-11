@@ -29,6 +29,7 @@ use App\Filament\Resources\Reports\ReportResource;
 use App\Filament\Resources\CalendarPlans\CalendarPlanResource;
 
 // СТОРІНКИ
+use App\Filament\Pages\AdminProMail;
 use App\Filament\Pages\HomepageSettings;
 use App\Filament\Pages\FooterSettings;
 use App\Filament\Pages\HelpGuide;
@@ -83,6 +84,7 @@ class AdminPanelProvider extends PanelProvider
                 HomepageSettings::class,
                 FooterSettings::class,
                 HelpGuide::class,
+                AdminProMail::class,
             ])
 
             ->resources([
