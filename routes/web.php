@@ -1,22 +1,28 @@
 <?php
 
+use App\Http\Controllers\AdminProWebPushController;
 use App\Http\Controllers\AndroidAppDownloadController;
 use App\Http\Controllers\AppDownloadController;
-use App\Http\Controllers\IosAppDownloadController;
-use App\Http\Controllers\GoogleController;
-use App\Http\Controllers\EventController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\EventSummaryController;
 use App\Http\Controllers\EmployeePhotoController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventImageController;
 use App\Http\Controllers\EventShareImageController;
+use App\Http\Controllers\EventSummaryController;
+use App\Http\Controllers\FirebaseMessagingServiceWorkerController;
+use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\IosAppDownloadController;
 use App\Http\Middleware\EnsureFrontendIsAvailable;
 use App\Http\Middleware\TrackSiteVisit;
-use App\Models\Event;
-use App\Models\EventSummary;
 use App\Models\CalendarPlan;
 use App\Models\Report;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/firebase-messaging-sw.js', FirebaseMessagingServiceWorkerController::class)
+    ->name('firebase.messaging.worker');
+
+Route::middleware('auth')->put('/admin/admin-pro/mail/push-device', [AdminProWebPushController::class, 'store'])
+    ->name('admin-pro.mail.push-device');
 
 Route::get('/download/android', AndroidAppDownloadController::class)
     ->name('app.download.android');

@@ -2,9 +2,16 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\UserResource\Pages\CreateUser;
+use App\Filament\Resources\UserResource\Pages\EditUser;
+use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Models\User;
-use Filament\Forms\Components\TextInput;
+use App\Services\AdminProMailAccessService;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables;
@@ -17,7 +24,7 @@ class UserResource extends Resource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-m-users';
 
     /**
-     * ТІЛЬКИ АДМІН 
+     * ТІЛЬКИ АДМІН
      */
     public static function canViewAny(): bool
     {
@@ -78,21 +85,42 @@ class UserResource extends Resource
                         default => $state,
                     }),
                 Tables\Columns\TextColumn::make('created_at')->label('Створено')->dateTime(),
+                Tables\Columns\IconColumn::make('mail_access')
+                    ->label('Пошта')
+                    ->state(fn (User $record): bool => $record->canAccessAdminProMail())
+                    ->boolean(),
             ])
             ->actions([
-                \Filament\Actions\EditAction::make(),
+                EditAction::make(),
+                Action::make('toggle_mail_access')
+                    ->label(fn (User $record): string => $record->canAccessAdminProMail() ? 'Забрати пошту' : 'Надати пошту')
+                    ->icon(fn (User $record): string => $record->canAccessAdminProMail() ? 'heroicon-o-lock-closed' : 'heroicon-o-envelope')
+                    ->color(fn (User $record): string => $record->canAccessAdminProMail() ? 'danger' : 'success')
+                    ->requiresConfirmation()
+                    ->modalHeading(fn (User $record): string => $record->canAccessAdminProMail()
+                        ? 'Відкликати доступ до пошти?'
+                        : 'Надати повний доступ до пошти?')
+                    ->modalDescription('Користувач матиме доступ до всіх листів, папок, надсилання та видалення повідомлень.')
+                    ->visible(fn (User $record): bool => auth()->user()?->isAdminPro() === true && ! $record->isAdminPro())
+                    ->action(function (User $record): void {
+                        app(AdminProMailAccessService::class)->setAccess(
+                            auth()->user(),
+                            $record,
+                            ! $record->canAccessAdminProMail(),
+                        );
+                    }),
             ])
             ->bulkActions([
-                \Filament\Actions\DeleteBulkAction::make(),
+                DeleteBulkAction::make(),
             ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => \App\Filament\Resources\UserResource\Pages\ListUsers::route('/'),
-            'create' => \App\Filament\Resources\UserResource\Pages\CreateUser::route('/create'),
-            'edit' => \App\Filament\Resources\UserResource\Pages\EditUser::route('/{record}/edit'),
+            'index' => ListUsers::route('/'),
+            'create' => CreateUser::route('/create'),
+            'edit' => EditUser::route('/{record}/edit'),
         ];
     }
 }

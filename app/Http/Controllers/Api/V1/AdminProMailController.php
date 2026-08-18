@@ -15,7 +15,10 @@ class AdminProMailController extends Controller
     {
         $this->authorizeAdminPro($request);
 
-        return $this->privateResponse(['data' => $this->mailbox->status()]);
+        $status = $this->mailbox->status();
+        $status['folders'] = $status['configured'] ? $this->mailbox->folders() : [];
+
+        return $this->privateResponse(['data' => $status]);
     }
 
     public function index(Request $request): JsonResponse
@@ -25,12 +28,16 @@ class AdminProMailController extends Controller
             'page' => ['nullable', 'integer', 'min:1'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:50'],
             'search' => ['nullable', 'string', 'max:120'],
+            'folder' => ['nullable', 'string', 'in:inbox,archive,spam,trash'],
+            'filter' => ['nullable', 'string', 'in:all,unread,starred'],
         ]);
 
         return $this->privateResponse($this->mailbox->messages(
             (int) ($data['page'] ?? 1),
             (int) ($data['per_page'] ?? 30),
             $data['search'] ?? null,
+            $data['folder'] ?? 'inbox',
+            $data['filter'] ?? 'all',
         ));
     }
 
@@ -38,7 +45,9 @@ class AdminProMailController extends Controller
     {
         $this->authorizeAdminPro($request);
 
-        return $this->privateResponse(['data' => $this->mailbox->message($uid)]);
+        $data = $request->validate(['folder' => ['nullable', 'string', 'in:inbox,archive,spam,trash']]);
+
+        return $this->privateResponse(['data' => $this->mailbox->message($uid, $data['folder'] ?? 'inbox')]);
     }
 
     public function store(Request $request): JsonResponse
@@ -52,7 +61,7 @@ class AdminProMailController extends Controller
         ]);
 
         $this->mailbox->send(array_values(array_unique($data['to'])), $data['subject'], $data['body']);
-        system_log('admin_pro_mail_send', 'AdminPro надіслав лист через post@omc.pl.ua.');
+        system_log('admin_pro_mail_send', 'Користувач із поштовим доступом надіслав лист через post@omc.pl.ua.');
 
         return $this->privateResponse(['message' => 'Лист надіслано.'], 201);
     }
@@ -60,8 +69,27 @@ class AdminProMailController extends Controller
     public function update(Request $request, int $uid): JsonResponse
     {
         $this->authorizeAdminPro($request);
-        $data = $request->validate(['read' => ['required', 'boolean']]);
-        $this->mailbox->mark($uid, (bool) $data['read']);
+        $data = $request->validate([
+            'folder' => ['nullable', 'string', 'in:inbox,archive,spam,trash'],
+            'read' => ['sometimes', 'boolean'],
+            'flagged' => ['sometimes', 'boolean'],
+            'move_to' => ['sometimes', 'string', 'in:inbox,archive,spam,trash'],
+        ]);
+        abort_unless(
+            array_key_exists('read', $data) || array_key_exists('flagged', $data) || array_key_exists('move_to', $data),
+            422,
+            'Не вказано дію над листом.',
+        );
+        $folder = $data['folder'] ?? 'inbox';
+        if (array_key_exists('read', $data)) {
+            $this->mailbox->mark($uid, (bool) $data['read'], $folder);
+        }
+        if (array_key_exists('flagged', $data)) {
+            $this->mailbox->flag($uid, (bool) $data['flagged'], $folder);
+        }
+        if (isset($data['move_to'])) {
+            $this->mailbox->move($uid, $data['move_to'], $folder);
+        }
 
         return $this->privateResponse(['message' => 'Стан листа оновлено.']);
     }
@@ -69,15 +97,19 @@ class AdminProMailController extends Controller
     public function destroy(Request $request, int $uid): JsonResponse
     {
         $this->authorizeAdminPro($request);
-        $this->mailbox->delete($uid);
-        system_log('admin_pro_mail_delete', 'AdminPro видалив лист зі скриньки post@omc.pl.ua.');
+        $data = $request->validate([
+            'folder' => ['nullable', 'string', 'in:inbox,archive,spam,trash'],
+            'permanently' => ['nullable', 'boolean'],
+        ]);
+        $this->mailbox->delete($uid, $data['folder'] ?? 'inbox', (bool) ($data['permanently'] ?? false));
+        system_log('admin_pro_mail_delete', 'Користувач із поштовим доступом видалив лист зі скриньки post@omc.pl.ua.');
 
         return $this->privateResponse(['message' => 'Лист видалено.']);
     }
 
     private function authorizeAdminPro(Request $request): void
     {
-        abort_unless($request->user()?->isAdminPro(), 403, 'Пошта доступна лише AdminPro.');
+        abort_unless($request->user()?->canAccessAdminProMail(), 403, 'Немає доступу до пошти AdminPro.');
     }
 
     private function privateResponse(array $data, int $status = 200): JsonResponse

@@ -5,6 +5,7 @@ namespace App\Models;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laragear\TwoFactor\Contracts\TwoFactorAuthenticatable;
@@ -55,6 +56,16 @@ class User extends Authenticatable implements FilamentUser, TwoFactorAuthenticat
     public function isAdminPro(): bool
     {
         return $this->role === 'admin' && AdminProAssignment::currentUserId() === $this->getKey();
+    }
+
+    public function adminProMailAccess(): HasOne
+    {
+        return $this->hasOne(AdminProMailAccess::class);
+    }
+
+    public function canAccessAdminProMail(): bool
+    {
+        return $this->isAdminPro() || $this->adminProMailAccess()->exists();
     }
 
     public function isEditor(): bool
