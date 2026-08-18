@@ -196,6 +196,7 @@ class AdminProMailTest extends TestCase
             ]);
         });
         $this->mock(FcmPushService::class, function (MockInterface $mock) use ($adminPro): void {
+            $mock->shouldReceive('configured')->once()->andReturn(true);
             $mock->shouldReceive('sendToUser')
                 ->once()
                 ->withArgs(fn (User $user, string $title, string $body, array $data, string $preference): bool => $user->is($adminPro)
@@ -208,5 +209,43 @@ class AdminProMailTest extends TestCase
 
         $this->artisan('admin-pro-mail:check')->assertSuccessful();
         $this->assertDatabaseHas('admin_pro_mail_checkpoints', ['last_uid' => 41]);
+    }
+
+    public function test_mail_checker_keeps_checkpoint_when_firebase_is_not_configured(): void
+    {
+        $adminPro = User::factory()->create(['role' => 'admin']);
+        AdminProAssignment::transferTo($adminPro);
+        AdminProMailCheckpoint::query()->create([
+            'mailbox' => 'post@omc.pl.ua',
+            'uid_validity' => 10,
+            'last_uid' => 40,
+        ]);
+        config()->set('admin_pro_mail.address', 'post@omc.pl.ua');
+
+        $this->mock(AdminProMailboxService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('configured')->once()->andReturn(true);
+            $mock->shouldReceive('newMessageBatch')->once()->with(40, 10)->andReturn([
+                'uid_validity' => 10,
+                'last_uid' => 41,
+                'reset' => false,
+                'messages' => [[
+                    'uid' => 41,
+                    'subject' => 'Новий документ',
+                    'from_name' => 'Apple',
+                    'from_address' => 'sender@example.com',
+                    'date' => now()->toAtomString(),
+                    'read' => false,
+                    'flagged' => false,
+                    'folder' => 'inbox',
+                ]],
+            ]);
+        });
+        $this->mock(FcmPushService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('configured')->once()->andReturn(false);
+            $mock->shouldNotReceive('sendToUser');
+        });
+
+        $this->artisan('admin-pro-mail:check')->assertFailed();
+        $this->assertDatabaseHas('admin_pro_mail_checkpoints', ['last_uid' => 40]);
     }
 }
