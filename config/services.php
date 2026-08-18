@@ -33,6 +33,13 @@ return [
     'firebase' => [
         'project_id' => env('FIREBASE_PROJECT_ID'),
         'credentials' => env('FIREBASE_CREDENTIALS'),
+        'web' => [
+            'api_key' => env('FIREBASE_WEB_API_KEY'),
+            'auth_domain' => env('FIREBASE_WEB_AUTH_DOMAIN'),
+            'messaging_sender_id' => env('FIREBASE_WEB_MESSAGING_SENDER_ID'),
+            'app_id' => env('FIREBASE_WEB_APP_ID'),
+            'vapid_key' => env('FIREBASE_WEB_VAPID_KEY'),
+        ],
     ],
 
 ];

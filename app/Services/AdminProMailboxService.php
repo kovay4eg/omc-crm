@@ -7,6 +7,10 @@ use RuntimeException;
 
 class AdminProMailboxService
 {
+    public const FOLDERS = ['inbox', 'archive', 'spam', 'trash'];
+
+    public const FILTERS = ['all', 'unread', 'starred'];
+
     public function status(): array
     {
         return ['address' => (string) config('admin_pro_mail.address'), 'configured' => $this->configured()];
@@ -19,18 +23,51 @@ class AdminProMailboxService
             && filled(config('admin_pro_mail.password'));
     }
 
-    public function messages(int $page = 1, int $perPage = 30, ?string $search = null): array
+    public function folders(): array
     {
-        $connection = $this->open();
+        $connection = $this->open('inbox');
 
         try {
-            $uids = imap_search($connection, 'ALL', SE_UID) ?: [];
+            return collect(self::FOLDERS)->map(function (string $folder) use ($connection): array {
+                $name = $this->resolveFolderName($connection, $folder, true);
+                $status = imap_status($connection, $this->serverPrefix().$this->encodeMailboxName($name), SA_MESSAGES | SA_UNSEEN);
+
+                return [
+                    'key' => $folder,
+                    'label' => $this->folderLabel($folder),
+                    'total' => (int) ($status->messages ?? 0),
+                    'unread' => (int) ($status->unseen ?? 0),
+                ];
+            })->all();
+        } finally {
+            imap_close($connection);
+        }
+    }
+
+    public function messages(
+        int $page = 1,
+        int $perPage = 30,
+        ?string $search = null,
+        string $folder = 'inbox',
+        string $filter = 'all',
+    ): array {
+        $folder = $this->validateFolder($folder);
+        $filter = $this->validateFilter($filter);
+        $connection = $this->open($folder);
+
+        try {
+            $criteria = match ($filter) {
+                'unread' => 'UNSEEN',
+                'starred' => 'FLAGGED',
+                default => 'ALL',
+            };
+            $uids = imap_search($connection, $criteria, SE_UID) ?: [];
             rsort($uids, SORT_NUMERIC);
             $items = [];
             $needle = mb_strtolower(trim((string) $search));
 
             foreach ($uids as $uid) {
-                $header = $this->header($connection, (int) $uid);
+                $header = $this->header($connection, (int) $uid, $folder);
                 $haystack = mb_strtolower($header['subject'].' '.$header['from_name'].' '.$header['from_address']);
                 if ($needle === '' || str_contains($haystack, $needle)) {
                     $items[] = $header;
@@ -53,9 +90,10 @@ class AdminProMailboxService
         }
     }
 
-    public function message(int $uid): array
+    public function message(int $uid, string $folder = 'inbox'): array
     {
-        $connection = $this->open();
+        $folder = $this->validateFolder($folder);
+        $connection = $this->open($folder);
 
         try {
             $messageNumber = imap_msgno($connection, $uid);
@@ -64,7 +102,7 @@ class AdminProMailboxService
             $structure = imap_fetchstructure($connection, $messageNumber);
 
             return [
-                ...$this->header($connection, $uid),
+                ...$this->header($connection, $uid, $folder),
                 'body' => trim($this->extractBody($connection, $messageNumber, $structure)),
             ];
         } finally {
@@ -72,9 +110,9 @@ class AdminProMailboxService
         }
     }
 
-    public function mark(int $uid, bool $read): void
+    public function mark(int $uid, bool $read, string $folder = 'inbox'): void
     {
-        $connection = $this->open();
+        $connection = $this->open($this->validateFolder($folder));
 
         try {
             $success = $read
@@ -86,9 +124,51 @@ class AdminProMailboxService
         }
     }
 
-    public function delete(int $uid): void
+    public function flag(int $uid, bool $flagged, string $folder = 'inbox'): void
     {
-        $connection = $this->open();
+        $connection = $this->open($this->validateFolder($folder));
+
+        try {
+            $success = $flagged
+                ? imap_setflag_full($connection, (string) $uid, '\\Flagged', ST_UID)
+                : imap_clearflag_full($connection, (string) $uid, '\\Flagged', ST_UID);
+            throw_unless($success, RuntimeException::class, 'Не вдалося змінити позначку листа.');
+        } finally {
+            imap_close($connection);
+        }
+    }
+
+    public function move(int $uid, string $targetFolder, string $sourceFolder = 'inbox'): void
+    {
+        $sourceFolder = $this->validateFolder($sourceFolder);
+        $targetFolder = $this->validateFolder($targetFolder);
+        throw_if($sourceFolder === $targetFolder, RuntimeException::class, 'Лист уже знаходиться в цій папці.');
+        $connection = $this->open($sourceFolder);
+
+        try {
+            $target = $this->resolveFolderName($connection, $targetFolder, true);
+            throw_unless(
+                imap_mail_move($connection, (string) $uid, $this->encodeMailboxName($target), CP_UID),
+                RuntimeException::class,
+                'Не вдалося перемістити лист.',
+            );
+            imap_expunge($connection);
+        } finally {
+            imap_close($connection);
+        }
+    }
+
+    public function delete(int $uid, string $folder = 'inbox', bool $permanently = false): void
+    {
+        $folder = $this->validateFolder($folder);
+
+        if ($folder !== 'trash' && ! $permanently) {
+            $this->move($uid, 'trash', $folder);
+
+            return;
+        }
+
+        $connection = $this->open($folder);
 
         try {
             throw_unless(imap_delete($connection, (string) $uid, FT_UID), RuntimeException::class, 'Не вдалося видалити лист.');
@@ -110,16 +190,43 @@ class AdminProMailboxService
         });
     }
 
-    private function open()
+    public function newMessageBatch(?int $lastUid, ?int $uidValidity, int $limit = 20): array
+    {
+        $connection = $this->open('inbox');
+
+        try {
+            $status = imap_status($connection, $this->serverPrefix().'INBOX', SA_UIDVALIDITY | SA_UIDNEXT);
+            throw_if($status === false, RuntimeException::class, 'Не вдалося перевірити стан вхідної пошти.');
+            $currentValidity = (int) ($status->uidvalidity ?? 0);
+            $uids = imap_search($connection, 'ALL', SE_UID) ?: [];
+            rsort($uids, SORT_NUMERIC);
+            $latestUid = $uids === [] ? 0 : (int) $uids[0];
+            $reset = $uidValidity !== null && $uidValidity !== $currentValidity;
+            $messages = [];
+
+            if ($lastUid !== null && ! $reset) {
+                foreach (array_slice(array_values(array_filter($uids, fn (int $uid): bool => $uid > $lastUid)), 0, $limit) as $uid) {
+                    $messages[] = $this->header($connection, (int) $uid, 'inbox');
+                }
+            }
+
+            return [
+                'uid_validity' => $currentValidity,
+                'last_uid' => $latestUid,
+                'reset' => $reset,
+                'messages' => $messages,
+            ];
+        } finally {
+            imap_close($connection);
+        }
+    }
+
+    private function open(string $folder = 'inbox')
     {
         throw_unless(function_exists('imap_open'), RuntimeException::class, 'PHP IMAP недоступний на сервері.');
         throw_unless(filled(config('admin_pro_mail.password')), RuntimeException::class, 'Поштова скринька ще не налаштована.');
 
-        $flags = '/imap/'.config('admin_pro_mail.imap.encryption', 'ssl');
-        if (! config('admin_pro_mail.imap.validate_certificate', true)) {
-            $flags .= '/novalidate-cert';
-        }
-        $mailbox = sprintf('{%s:%d%s}INBOX', config('admin_pro_mail.imap.host'), config('admin_pro_mail.imap.port'), $flags);
+        $mailbox = $this->serverPrefix().'INBOX';
         $connection = @imap_open(
             $mailbox,
             (string) config('admin_pro_mail.username'),
@@ -130,10 +237,19 @@ class AdminProMailboxService
 
         throw_if($connection === false, RuntimeException::class, 'Не вдалося підключитися до поштової скриньки.');
 
+        if ($folder !== 'inbox') {
+            $name = $this->resolveFolderName($connection, $folder, true);
+            throw_unless(
+                @imap_reopen($connection, $this->serverPrefix().$this->encodeMailboxName($name)),
+                RuntimeException::class,
+                'Не вдалося відкрити папку «'.$this->folderLabel($folder).'».',
+            );
+        }
+
         return $connection;
     }
 
-    private function header($connection, int $uid): array
+    private function header($connection, int $uid, string $folder): array
     {
         $messageNumber = imap_msgno($connection, $uid);
         throw_if($messageNumber < 1, RuntimeException::class, 'Лист не знайдено.');
@@ -150,7 +266,102 @@ class AdminProMailboxService
             'from_address' => $fromAddress,
             'date' => isset($header->udate) ? date(DATE_ATOM, (int) $header->udate) : null,
             'read' => (bool) ($flags?->seen ?? false),
+            'flagged' => (bool) ($flags?->flagged ?? false),
+            'folder' => $folder,
         ];
+    }
+
+    private function validateFolder(string $folder): string
+    {
+        $folder = strtolower(trim($folder));
+        throw_unless(in_array($folder, self::FOLDERS, true), RuntimeException::class, 'Невідома поштова папка.');
+
+        return $folder;
+    }
+
+    private function validateFilter(string $filter): string
+    {
+        $filter = strtolower(trim($filter));
+        throw_unless(in_array($filter, self::FILTERS, true), RuntimeException::class, 'Невідомий фільтр листів.');
+
+        return $filter;
+    }
+
+    private function serverPrefix(): string
+    {
+        $flags = '/imap/'.config('admin_pro_mail.imap.encryption', 'ssl');
+        if (! config('admin_pro_mail.imap.validate_certificate', true)) {
+            $flags .= '/novalidate-cert';
+        }
+
+        return sprintf('{%s:%d%s}', config('admin_pro_mail.imap.host'), config('admin_pro_mail.imap.port'), $flags);
+    }
+
+    private function resolveFolderName($connection, string $folder, bool $create): string
+    {
+        if ($folder === 'inbox') {
+            return 'INBOX';
+        }
+
+        $candidates = match ($folder) {
+            'archive' => ['archive', 'archives', 'inbox.archive', 'inbox.archives'],
+            'spam' => ['spam', 'junk', 'junk e-mail', 'inbox.spam', 'inbox.junk'],
+            'trash' => ['trash', 'deleted', 'deleted messages', 'inbox.trash', 'inbox.deleted'],
+            default => [],
+        };
+        $mailboxes = imap_getmailboxes($connection, $this->serverPrefix(), '*') ?: [];
+
+        foreach ($mailboxes as $mailbox) {
+            $name = $this->decodeMailboxName($this->stripServerPrefix((string) $mailbox->name));
+            if (in_array(mb_strtolower($name), $candidates, true)) {
+                return $name;
+            }
+        }
+
+        $name = match ($folder) {
+            'archive' => 'Archive',
+            'spam' => 'Spam',
+            'trash' => 'Trash',
+            default => throw new RuntimeException('Невідома поштова папка.'),
+        };
+
+        if ($create) {
+            throw_unless(
+                @imap_createmailbox($connection, $this->serverPrefix().$this->encodeMailboxName($name)),
+                RuntimeException::class,
+                'Не вдалося створити папку «'.$this->folderLabel($folder).'».',
+            );
+        }
+
+        return $name;
+    }
+
+    private function stripServerPrefix(string $name): string
+    {
+        $separator = strpos($name, '}');
+
+        return $separator === false ? $name : substr($name, $separator + 1);
+    }
+
+    private function encodeMailboxName(string $name): string
+    {
+        return function_exists('imap_utf7_encode') ? imap_utf7_encode($name) : $name;
+    }
+
+    private function decodeMailboxName(string $name): string
+    {
+        return function_exists('imap_utf7_decode') ? imap_utf7_decode($name) : $name;
+    }
+
+    private function folderLabel(string $folder): string
+    {
+        return match ($folder) {
+            'inbox' => 'Вхідні',
+            'archive' => 'Архів',
+            'spam' => 'Спам',
+            'trash' => 'Видалені',
+            default => $folder,
+        };
     }
 
     private function decodeHeader(string $value): string

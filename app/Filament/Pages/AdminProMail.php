@@ -21,9 +21,15 @@ class AdminProMail extends Page
 
     public array $messages = [];
 
+    public array $folders = [];
+
     public ?array $selectedMessage = null;
 
     public string $search = '';
+
+    public string $folder = 'inbox';
+
+    public string $filter = 'all';
 
     public string $to = '';
 
@@ -39,7 +45,7 @@ class AdminProMail extends Page
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->isAdminPro() === true;
+        return auth()->user()?->canAccessAdminProMail() === true;
     }
 
     public function mount(): void
@@ -56,7 +62,12 @@ class AdminProMail extends Page
         try {
             $mailbox = app(AdminProMailboxService::class);
             $this->configured = $mailbox->configured();
-            $this->messages = $mailbox->messages(search: $this->search)['data'];
+            $this->folders = $this->configured ? $mailbox->folders() : [];
+            $this->messages = $mailbox->messages(
+                search: $this->search,
+                folder: $this->folder,
+                filter: $this->filter,
+            )['data'];
         } catch (Throwable $exception) {
             report($exception);
             $this->messages = [];
@@ -69,12 +80,30 @@ class AdminProMail extends Page
         $this->refreshMailbox();
     }
 
+    public function selectFolder(string $folder): void
+    {
+        abort_unless(in_array($folder, AdminProMailboxService::FOLDERS, true), 422);
+        $this->authorizeAdminPro();
+        $this->folder = $folder;
+        $this->selectedMessage = null;
+        $this->refreshMailbox();
+    }
+
+    public function selectFilter(string $filter): void
+    {
+        abort_unless(in_array($filter, AdminProMailboxService::FILTERS, true), 422);
+        $this->authorizeAdminPro();
+        $this->filter = $filter;
+        $this->selectedMessage = null;
+        $this->refreshMailbox();
+    }
+
     public function openMessage(int $uid): void
     {
         $this->authorizeAdminPro();
 
         try {
-            $this->selectedMessage = app(AdminProMailboxService::class)->message($uid);
+            $this->selectedMessage = app(AdminProMailboxService::class)->message($uid, $this->folder);
             $this->refreshMailbox();
         } catch (Throwable $exception) {
             report($exception);
@@ -114,7 +143,7 @@ class AdminProMail extends Page
 
         try {
             app(AdminProMailboxService::class)->send([$data['to']], $data['subject'], $data['body']);
-            system_log('admin_pro_mail_send', 'AdminPro надіслав лист через post@omc.pl.ua.');
+            system_log('admin_pro_mail_send', 'Користувач із поштовим доступом надіслав лист через post@omc.pl.ua.');
             $this->cancelCompose();
             Notification::make()->success()->title('Лист надіслано')->send();
         } catch (Throwable $exception) {
@@ -128,11 +157,59 @@ class AdminProMail extends Page
         $this->authorizeAdminPro();
 
         try {
-            app(AdminProMailboxService::class)->delete($uid);
-            system_log('admin_pro_mail_delete', 'AdminPro видалив лист зі скриньки post@omc.pl.ua.');
+            $permanently = $this->folder === 'trash';
+            app(AdminProMailboxService::class)->delete($uid, $this->folder, $permanently);
+            system_log('admin_pro_mail_delete', 'Користувач із поштовим доступом видалив лист зі скриньки post@omc.pl.ua.');
             $this->selectedMessage = null;
             $this->refreshMailbox();
-            Notification::make()->success()->title('Лист видалено')->send();
+            Notification::make()->success()->title($permanently ? 'Лист видалено назавжди' : 'Лист переміщено у видалені')->send();
+        } catch (Throwable $exception) {
+            report($exception);
+            Notification::make()->danger()->title($exception->getMessage())->send();
+        }
+    }
+
+    public function moveMessage(int $uid, string $target): void
+    {
+        abort_unless(in_array($target, AdminProMailboxService::FOLDERS, true), 422);
+        $this->authorizeAdminPro();
+
+        try {
+            app(AdminProMailboxService::class)->move($uid, $target, $this->folder);
+            system_log('admin_pro_mail_move', 'Користувач із поштовим доступом перемістив лист у папку '.$target.'.');
+            $this->selectedMessage = null;
+            $this->refreshMailbox();
+            Notification::make()->success()->title('Лист переміщено')->send();
+        } catch (Throwable $exception) {
+            report($exception);
+            Notification::make()->danger()->title($exception->getMessage())->send();
+        }
+    }
+
+    public function toggleFlag(int $uid, bool $flagged): void
+    {
+        $this->authorizeAdminPro();
+
+        try {
+            app(AdminProMailboxService::class)->flag($uid, $flagged, $this->folder);
+            if ($this->selectedMessage && $this->selectedMessage['uid'] === $uid) {
+                $this->selectedMessage['flagged'] = $flagged;
+            }
+            $this->refreshMailbox();
+        } catch (Throwable $exception) {
+            report($exception);
+            Notification::make()->danger()->title($exception->getMessage())->send();
+        }
+    }
+
+    public function markUnread(int $uid): void
+    {
+        $this->authorizeAdminPro();
+
+        try {
+            app(AdminProMailboxService::class)->mark($uid, false, $this->folder);
+            $this->selectedMessage = null;
+            $this->refreshMailbox();
         } catch (Throwable $exception) {
             report($exception);
             Notification::make()->danger()->title($exception->getMessage())->send();
@@ -141,6 +218,6 @@ class AdminProMail extends Page
 
     private function authorizeAdminPro(): void
     {
-        abort_unless(static::canAccess(), 403, 'Пошта доступна лише AdminPro.');
+        abort_unless(static::canAccess(), 403, 'Немає доступу до пошти AdminPro.');
     }
 }

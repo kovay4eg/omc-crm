@@ -57,8 +57,13 @@ class FcmPushService
         return $result;
     }
 
-    public function sendToUser(User $user, string $title, string $body, array $data = []): array
-    {
+    public function sendToUser(
+        User $user,
+        string $title,
+        string $body,
+        array $data = [],
+        string $preference = 'push_support',
+    ): array {
         if (! $this->configured()) {
             return ['sent' => 0, 'failed' => 0, 'skipped' => true];
         }
@@ -77,8 +82,8 @@ class FcmPushService
             ->where('user_id', $user->id)
             ->where(fn ($query) => $query
                 ->whereNull('preferences')
-                ->orWhereNull('preferences->push_support')
-                ->orWhereJsonContains('preferences->push_support', true))
+                ->orWhereNull('preferences->'.$preference)
+                ->orWhereJsonContains('preferences->'.$preference, true))
             ->each(function (MobilePushDevice $device) use ($title, $body, $data, $authToken, &$result): void {
                 $response = Http::withToken($authToken)
                     ->acceptJson()
@@ -96,6 +101,10 @@ class FcmPushService
                             'android' => [
                                 'priority' => 'high',
                                 'notification' => ['sound' => 'default'],
+                            ],
+                            'webpush' => [
+                                'fcm_options' => ['link' => url('/admin/admin-pro-mail')],
+                                'notification' => ['icon' => url('/images/omc-logo.png')],
                             ],
                         ],
                     ]);

@@ -18,13 +18,14 @@ class MobilePushDeviceController extends Controller
         'push_news',
         'push_system',
         'push_support',
+        'push_mail',
     ];
 
     public function update(Request $request): JsonResponse
     {
         $data = $request->validate([
             'token' => ['required', 'string', 'min:20', 'max:4096'],
-            'platform' => ['required', Rule::in(['android', 'ios'])],
+            'platform' => ['required', Rule::in(['android', 'ios', 'web'])],
             'device_name' => ['nullable', 'string', 'max:120'],
             'preferences' => ['nullable', 'array'],
             ...collect(self::PREFERENCE_KEYS)
@@ -56,7 +57,7 @@ class MobilePushDeviceController extends Controller
             'description' => 'Оновлено налаштування push-пристрою',
             'ip' => $request->ip(),
             'user_agent' => $request->userAgent(),
-            'source' => 'mobile_app',
+            'source' => $data['platform'] === 'web' ? 'web_admin' : 'mobile_app',
             'device_name' => $data['device_name'] ?? null,
             'platform' => $data['platform'],
         ]);

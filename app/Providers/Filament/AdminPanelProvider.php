@@ -2,39 +2,38 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\AdminProMail;
+use App\Filament\Pages\Dashboard;
+use App\Filament\Pages\FooterSettings;
+use App\Filament\Pages\HelpGuide;
+use App\Filament\Pages\HomepageSettings;
+use App\Filament\Resources\CalendarPlans\CalendarPlanResource;
+use App\Filament\Resources\Employees\EmployeeResource;
+use App\Filament\Resources\Events\EventResource;
+use App\Filament\Resources\EventSummaries\EventSummaryResource;
+use App\Filament\Resources\Reports\ReportResource;
+use App\Filament\Resources\Statutes\StatuteResource;
+use App\Filament\Resources\SystemLogs\SystemLogResource;
+use App\Filament\Resources\UserResource;
+use App\Models\HomepageSetting;
+use App\Support\MediaUrl;
+// РЕСУРСИ
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
+// СТОРІНКИ
+use Filament\Support\Colors\Color;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-
-// РЕСУРСИ
-use App\Filament\Resources\Events\EventResource;
-use App\Filament\Resources\EventSummaries\EventSummaryResource;
-use App\Filament\Resources\UserResource;
-use App\Filament\Resources\SystemLogs\SystemLogResource;
-use App\Filament\Resources\Employees\EmployeeResource;
-use App\Filament\Resources\Statutes\StatuteResource;
-use App\Filament\Resources\Reports\ReportResource;
-use App\Filament\Resources\CalendarPlans\CalendarPlanResource;
-
-// СТОРІНКИ
-use App\Filament\Pages\AdminProMail;
-use App\Filament\Pages\HomepageSettings;
-use App\Filament\Pages\FooterSettings;
-use App\Filament\Pages\HelpGuide;
-use App\Models\HomepageSetting;
-use App\Support\MediaUrl;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -66,6 +65,9 @@ class AdminPanelProvider extends PanelProvider
                     'fullcalendar-js',
                     'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'
                 ),
+                Js::make('firebase-app', 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js'),
+                Js::make('firebase-messaging', 'https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js'),
+                Js::make('admin-pro-mail-push', asset('js/admin-pro-mail-push.js')),
             ])
 
             ->login()
@@ -80,7 +82,7 @@ class AdminPanelProvider extends PanelProvider
             ])
 
             ->pages([
-                \App\Filament\Pages\Dashboard::class,
+                Dashboard::class,
                 HomepageSettings::class,
                 FooterSettings::class,
                 HelpGuide::class,
