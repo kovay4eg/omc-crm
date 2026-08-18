@@ -41,6 +41,12 @@ class CheckAdminProMail extends Command
             return self::SUCCESS;
         }
 
+        if (! $push->configured()) {
+            $this->components->warn('Firebase Cloud Messaging не налаштовано. Нові листи буде перевірено повторно.');
+
+            return self::FAILURE;
+        }
+
         $adminProId = AdminProAssignment::currentUserId();
         $users = User::query()
             ->where(function ($query) use ($adminProId): void {
