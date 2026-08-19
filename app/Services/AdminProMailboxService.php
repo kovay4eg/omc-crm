@@ -303,22 +303,24 @@ class AdminProMailboxService
             return 'INBOX';
         }
 
-        $candidates = match ($folder) {
-            'archive' => ['archive', 'archives', 'inbox.archive', 'inbox.archives'],
-            'spam' => ['spam', 'junk', 'junk e-mail', 'inbox.spam', 'inbox.junk'],
-            'trash' => ['trash', 'deleted', 'deleted messages', 'inbox.trash', 'inbox.deleted'],
+        $aliases = match ($folder) {
+            'archive' => ['archive', 'archives'],
+            'spam' => ['spam', 'junk', 'junk e-mail'],
+            'trash' => ['trash', 'deleted', 'deleted messages'],
             default => [],
         };
         $mailboxes = imap_getmailboxes($connection, $this->serverPrefix(), '*') ?: [];
 
         foreach ($mailboxes as $mailbox) {
             $name = $this->decodeMailboxName($this->stripServerPrefix((string) $mailbox->name));
-            if (in_array(mb_strtolower($name), $candidates, true)) {
+            $normalized = mb_strtolower($name);
+            $basename = mb_strtolower((string) preg_replace('/^.*[.\/]/u', '', $name));
+            if (in_array($normalized, $aliases, true) || in_array($basename, $aliases, true)) {
                 return $name;
             }
         }
 
-        $name = match ($folder) {
+        $leaf = match ($folder) {
             'archive' => 'Archive',
             'spam' => 'Spam',
             'trash' => 'Trash',
@@ -326,14 +328,47 @@ class AdminProMailboxService
         };
 
         if ($create) {
-            throw_unless(
-                @imap_createmailbox($connection, $this->serverPrefix().$this->encodeMailboxName($name)),
-                RuntimeException::class,
-                'Не вдалося створити папку «'.$this->folderLabel($folder).'».',
-            );
+            foreach ($this->folderCreationCandidates($mailboxes, $leaf) as $name) {
+                if (@imap_createmailbox($connection, $this->serverPrefix().$this->encodeMailboxName($name))) {
+                    return $name;
+                }
+
+                imap_errors();
+            }
+
+            throw new RuntimeException('Не вдалося створити папку «'.$this->folderLabel($folder).'».');
         }
 
-        return $name;
+        return $leaf;
+    }
+
+    private function folderCreationCandidates(array $mailboxes, string $leaf): array
+    {
+        $delimiter = '.';
+        $namespace = null;
+
+        foreach ($mailboxes as $mailbox) {
+            $name = $this->decodeMailboxName($this->stripServerPrefix((string) ($mailbox->name ?? '')));
+            $mailboxDelimiter = trim((string) ($mailbox->delimiter ?? ''));
+            if ($mailboxDelimiter !== '') {
+                $delimiter = $mailboxDelimiter;
+            }
+
+            if (preg_match('/^INBOX([.\/]).+/i', $name, $matches) === 1) {
+                $namespace = 'INBOX'.$matches[1];
+                break;
+            }
+
+            if ($mailboxDelimiter !== '' && str_starts_with(mb_strtolower($name), 'inbox'.mb_strtolower($mailboxDelimiter))) {
+                $namespace = 'INBOX'.$mailboxDelimiter;
+                break;
+            }
+        }
+
+        $preferred = $namespace === null ? $leaf : $namespace.$leaf;
+        $fallback = $namespace === null ? 'INBOX'.$delimiter.$leaf : $leaf;
+
+        return array_values(array_unique([$preferred, $fallback]));
     }
 
     private function stripServerPrefix(string $name): string

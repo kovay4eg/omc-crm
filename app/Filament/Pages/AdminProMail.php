@@ -62,14 +62,21 @@ class AdminProMail extends Page
         try {
             $mailbox = app(AdminProMailboxService::class);
             $this->configured = $mailbox->configured();
-            $this->folders = $this->configured ? $mailbox->folders() : [];
+            if (! $this->configured) {
+                $this->folders = [];
+                $this->messages = [];
+
+                return;
+            }
+
+            $this->folders = $mailbox->folders();
             $this->messages = $mailbox->messages(
                 search: $this->search,
                 folder: $this->folder,
                 filter: $this->filter,
             )['data'];
         } catch (Throwable $exception) {
-            report($exception);
+            $this->reportMailboxFailure($exception);
             $this->messages = [];
             $this->error = $exception->getMessage();
         }
@@ -106,7 +113,7 @@ class AdminProMail extends Page
             $this->selectedMessage = app(AdminProMailboxService::class)->message($uid, $this->folder);
             $this->refreshMailbox();
         } catch (Throwable $exception) {
-            report($exception);
+            $this->reportMailboxFailure($exception);
             Notification::make()->danger()->title($exception->getMessage())->send();
         }
     }
@@ -147,7 +154,7 @@ class AdminProMail extends Page
             $this->cancelCompose();
             Notification::make()->success()->title('Лист надіслано')->send();
         } catch (Throwable $exception) {
-            report($exception);
+            $this->reportMailboxFailure($exception);
             Notification::make()->danger()->title('Не вдалося надіслати лист')->body($exception->getMessage())->send();
         }
     }
@@ -164,7 +171,7 @@ class AdminProMail extends Page
             $this->refreshMailbox();
             Notification::make()->success()->title($permanently ? 'Лист видалено назавжди' : 'Лист переміщено у видалені')->send();
         } catch (Throwable $exception) {
-            report($exception);
+            $this->reportMailboxFailure($exception);
             Notification::make()->danger()->title($exception->getMessage())->send();
         }
     }
@@ -181,7 +188,7 @@ class AdminProMail extends Page
             $this->refreshMailbox();
             Notification::make()->success()->title('Лист переміщено')->send();
         } catch (Throwable $exception) {
-            report($exception);
+            $this->reportMailboxFailure($exception);
             Notification::make()->danger()->title($exception->getMessage())->send();
         }
     }
@@ -197,7 +204,7 @@ class AdminProMail extends Page
             }
             $this->refreshMailbox();
         } catch (Throwable $exception) {
-            report($exception);
+            $this->reportMailboxFailure($exception);
             Notification::make()->danger()->title($exception->getMessage())->send();
         }
     }
@@ -211,8 +218,17 @@ class AdminProMail extends Page
             $this->selectedMessage = null;
             $this->refreshMailbox();
         } catch (Throwable $exception) {
-            report($exception);
+            $this->reportMailboxFailure($exception);
             Notification::make()->danger()->title($exception->getMessage())->send();
+        }
+    }
+
+    private function reportMailboxFailure(Throwable $exception): void
+    {
+        try {
+            report($exception);
+        } catch (Throwable) {
+            // Keep the mailbox UI available if logging is temporarily unwritable.
         }
     }
 
