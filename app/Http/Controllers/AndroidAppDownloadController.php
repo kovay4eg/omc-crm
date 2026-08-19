@@ -10,6 +10,20 @@ class AndroidAppDownloadController extends Controller
 {
     public function __invoke(Request $request): BinaryFileResponse|Response
     {
+        $latestBuild = (int) config('mobile.updates.android.latest_build_number', 0);
+        $installedBuild = filter_var(
+            $request->query('installed_build'),
+            FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 1]],
+        );
+
+        if ($latestBuild > 0 && is_int($installedBuild) && $installedBuild >= $latestBuild) {
+            return response('У вас уже встановлена актуальна або новіша версія застосунку.', 409)
+                ->header('Content-Type', 'text/plain; charset=UTF-8')
+                ->header('Cache-Control', 'private, no-store, max-age=0')
+                ->header('X-Content-Type-Options', 'nosniff');
+        }
+
         $path = config('mobile.downloads.android_path');
         $abi = strtolower((string) $request->query('abi'));
         $variants = config('mobile.downloads.android_variants', []);
