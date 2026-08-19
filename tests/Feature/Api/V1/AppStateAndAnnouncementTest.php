@@ -20,12 +20,16 @@ class AppStateAndAnnouncementTest extends TestCase
     {
         config()->set('mobile.updates.android', [
             'latest_version' => '1.4.0',
+            'latest_build_number' => 14,
             'minimum_version' => '1.1.0',
+            'minimum_build_number' => 11,
             'update_url' => 'https://omc.pl.ua/android',
         ]);
         config()->set('mobile.updates.ios', [
             'latest_version' => '1.3.0',
+            'latest_build_number' => 13,
             'minimum_version' => '1.0.0',
+            'minimum_build_number' => 10,
             'update_url' => 'https://omc.pl.ua/ios',
         ]);
 
@@ -34,7 +38,9 @@ class AppStateAndAnnouncementTest extends TestCase
         $this->getJson('/api/v1/app-state')
             ->assertOk()
             ->assertJsonPath('data.app_update.android.latest_version', '1.4.0')
+            ->assertJsonPath('data.app_update.android.latest_build_number', 14)
             ->assertJsonPath('data.app_update.android.minimum_version', '1.1.0')
+            ->assertJsonPath('data.app_update.android.minimum_build_number', 11)
             ->assertJsonPath('data.app_update.android.update_url', 'https://omc.pl.ua/android')
             ->assertJsonPath('data.app_update.ios.latest_version', '1.3.0');
     }

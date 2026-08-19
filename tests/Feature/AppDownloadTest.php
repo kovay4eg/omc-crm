@@ -51,4 +51,21 @@ class AppDownloadTest extends TestCase
             @unlink($arm64);
         }
     }
+
+    public function test_android_download_rejects_same_or_newer_installed_build(): void
+    {
+        config()->set('mobile.updates.android.latest_build_number', 10);
+
+        $response = $this->get('/download/android?installed_build=10');
+
+        $response->assertStatus(409);
+        $this->assertSame(
+            'У вас уже встановлена актуальна або новіша версія застосунку.',
+            $response->getContent(),
+        );
+        $this->assertStringContainsString(
+            'no-store',
+            (string) $response->headers->get('Cache-Control'),
+        );
+    }
 }
