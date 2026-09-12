@@ -4,6 +4,7 @@ namespace Tests\Feature\Api\V1;
 
 use App\Models\MobilePushDevice;
 use App\Models\User;
+use App\Services\FcmPushService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -291,5 +292,27 @@ class AuthenticationTest extends TestCase
             'user_id' => $user->id,
             'action' => 'push_device_removed',
         ]);
+    }
+
+    public function test_authenticated_mobile_user_can_request_push_delivery_check(): void
+    {
+        $user = User::factory()->create(['role' => 'admin']);
+        $accessToken = $user->createToken('Android tablet')->plainTextToken;
+
+        $push = $this->mock(FcmPushService::class);
+        $push->shouldReceive('sendToUser')
+            ->once()
+            ->withArgs(fn ($target, $title, $body, $data, $preference) => $target->is($user)
+                && $title === 'Сповіщення ОМЦ CRM працюють'
+                && $body === 'Цей планшет успішно підключено до push-сповіщень.'
+                && $data === ['type' => 'push_delivery_check']
+                && $preference === 'push_system')
+            ->andReturn(['sent' => 1, 'failed' => 0, 'skipped' => false]);
+
+        $this->postJson('/api/v1/auth/push-device/test', [], [
+            'Authorization' => 'Bearer '.$accessToken,
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.sent', 1);
     }
 }

@@ -42,6 +42,8 @@ Route::prefix('v1')->group(function () {
             ->whereNumber('token');
         Route::put('/auth/push-device', [ApiMobilePushDeviceController::class, 'update']);
         Route::delete('/auth/push-device', [ApiMobilePushDeviceController::class, 'destroy']);
+        Route::post('/auth/push-device/test', [ApiMobilePushDeviceController::class, 'test'])
+            ->middleware('throttle:3,1');
         Route::get('/auth/two-factor', [ApiTwoFactorController::class, 'status']);
         Route::post('/auth/two-factor/prepare', [ApiTwoFactorController::class, 'prepare']);
         Route::post('/auth/two-factor/confirm', [ApiTwoFactorController::class, 'confirm']);
