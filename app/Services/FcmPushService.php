@@ -140,10 +140,16 @@ class FcmPushService
         if ($device->platform === 'android') {
             return [
                 'token' => $device->token,
-                'data' => [...$stringData, 'title' => $title, 'body' => $body],
+                'notification' => ['title' => $title, 'body' => $body],
+                'data' => $stringData,
                 'android' => [
                     'priority' => 'high',
                     'ttl' => '86400s',
+                    'notification' => [
+                        'channel_id' => 'omc_crm_high_importance',
+                        'sound' => 'default',
+                        'default_vibrate_timings' => true,
+                    ],
                 ],
             ];
         }

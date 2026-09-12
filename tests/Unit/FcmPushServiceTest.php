@@ -9,15 +9,22 @@ use Tests\TestCase;
 
 class FcmPushServiceTest extends TestCase
 {
-    public function test_android_messages_are_high_priority_data_messages_for_background_delivery(): void
+    public function test_android_messages_use_the_native_high_priority_notification_channel(): void
     {
         $message = $this->messageFor('android');
 
-        $this->assertArrayNotHasKey('notification', $message);
+        $this->assertSame(
+            ['title' => 'Перевірка', 'body' => 'Push працює'],
+            $message['notification'],
+        );
         $this->assertSame('high', $message['android']['priority']);
         $this->assertSame('86400s', $message['android']['ttl']);
-        $this->assertSame('Перевірка', $message['data']['title']);
-        $this->assertSame('Push працює', $message['data']['body']);
+        $this->assertSame(
+            'omc_crm_high_importance',
+            $message['android']['notification']['channel_id'],
+        );
+        $this->assertSame('default', $message['android']['notification']['sound']);
+        $this->assertTrue($message['android']['notification']['default_vibrate_timings']);
         $this->assertSame('42', $message['data']['announcement_id']);
     }
 
