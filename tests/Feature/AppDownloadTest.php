@@ -2,10 +2,23 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class AppDownloadTest extends TestCase
 {
+    use RefreshDatabase;
+
+    public function test_download_page_recommends_the_universal_android_apk(): void
+    {
+        $response = $this->get('/app');
+
+        $response->assertOk();
+        $response->assertSee(route('app.download.android'), false);
+        $response->assertDontSee('abi=arm64-v8a', false);
+        $response->assertSee('Універсальний APK для ARM64 та ARMv7', false);
+    }
+
     public function test_android_download_is_streamed_without_cacheable_redirect(): void
     {
         $apk = tempnam(sys_get_temp_dir(), 'omc-apk-');

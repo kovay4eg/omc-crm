@@ -90,23 +90,7 @@ class FcmPushService
                     ->timeout(15)
                     ->retry(2, 250)
                     ->post('https://fcm.googleapis.com/v1/projects/'.$this->projectId().'/messages:send', [
-                        'message' => [
-                            'token' => $device->token,
-                            'notification' => ['title' => $title, 'body' => $body],
-                            'data' => collect($data)->map(fn (mixed $value): string => (string) $value)->all(),
-                            'apns' => [
-                                'headers' => ['apns-priority' => '10'],
-                                'payload' => ['aps' => ['sound' => 'default', 'badge' => 1]],
-                            ],
-                            'android' => [
-                                'priority' => 'high',
-                                'notification' => ['sound' => 'default'],
-                            ],
-                            'webpush' => [
-                                'fcm_options' => ['link' => url('/admin/admin-pro-mail')],
-                                'notification' => ['icon' => url('/images/omc-logo.png')],
-                            ],
-                        ],
+                        'message' => $this->messageForDevice($device, $title, $body, $data),
                     ]);
                 $response->successful() ? $result['sent']++ : $result['failed']++;
                 if ($this->isUnregistered($response)) {
@@ -129,33 +113,62 @@ class FcmPushService
             ->post(
                 'https://fcm.googleapis.com/v1/projects/'.$this->projectId().'/messages:send',
                 [
-                    'message' => [
-                        'token' => $device->token,
-                        'notification' => [
-                            'title' => $announcement->title,
-                            'body' => str($announcement->body)->stripTags()->limit(220)->toString(),
-                        ],
-                        'data' => [
+                    'message' => $this->messageForDevice(
+                        $device,
+                        $announcement->title,
+                        str($announcement->body)->stripTags()->limit(220)->toString(),
+                        [
                             'type' => 'app_announcement',
                             'announcement_id' => (string) $announcement->id,
                             'link_url' => (string) ($announcement->link_url ?? ''),
                         ],
-                        'apns' => [
-                            'headers' => ['apns-priority' => '10'],
-                            'payload' => [
-                                'aps' => [
-                                    'sound' => 'default',
-                                    'badge' => 1,
-                                ],
-                            ],
-                        ],
-                        'android' => [
-                            'priority' => 'high',
-                            'notification' => ['sound' => 'default'],
-                        ],
-                    ],
+                    ),
                 ],
             );
+    }
+
+    private function messageForDevice(
+        MobilePushDevice $device,
+        string $title,
+        string $body,
+        array $data = [],
+    ): array {
+        $stringData = collect($data)
+            ->map(fn (mixed $value): string => (string) $value)
+            ->all();
+
+        if ($device->platform === 'android') {
+            return [
+                'token' => $device->token,
+                'data' => [...$stringData, 'title' => $title, 'body' => $body],
+                'android' => [
+                    'priority' => 'high',
+                    'ttl' => '86400s',
+                ],
+            ];
+        }
+
+        $message = [
+            'token' => $device->token,
+            'notification' => ['title' => $title, 'body' => $body],
+            'data' => $stringData,
+        ];
+
+        if ($device->platform === 'ios') {
+            $message['apns'] = [
+                'headers' => ['apns-priority' => '10'],
+                'payload' => ['aps' => ['sound' => 'default', 'badge' => 1]],
+            ];
+        }
+
+        if ($device->platform === 'web') {
+            $message['webpush'] = [
+                'fcm_options' => ['link' => url('/admin/admin-pro-mail')],
+                'notification' => ['icon' => url('/images/omc-logo.png')],
+            ];
+        }
+
+        return $message;
     }
 
     private function isUnregistered(Response $response): bool
