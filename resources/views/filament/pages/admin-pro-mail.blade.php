@@ -186,6 +186,28 @@
         @media (hover: hover) and (pointer: fine) {
             .omc-mail__message:hover { background: var(--mail-accent-soft); }
         }
+        .omc-mail__message-loading {
+            min-height: 3.45rem;
+            align-items: center;
+            justify-content: center;
+            gap: .7rem;
+            color: var(--mail-accent);
+            font-size: .84rem;
+            font-weight: 800;
+        }
+        .omc-mail__message-spinner {
+            width: 1.25rem;
+            height: 1.25rem;
+            flex: 0 0 auto;
+            border: 2px solid rgba(48, 71, 232, .2);
+            border-top-color: var(--mail-accent);
+            border-radius: 999px;
+            animation: omc-mail-message-spin .72s linear infinite;
+        }
+        @keyframes omc-mail-message-spin { to { transform: rotate(360deg); } }
+        @media (prefers-reduced-motion: reduce) {
+            .omc-mail__message-spinner { animation-duration: 1.5s; }
+        }
         .omc-mail__message-row { display: flex; align-items: flex-start; gap: .75rem; }
         .omc-mail__unread-dot { flex: 0 0 auto; width: .58rem; height: .58rem; margin-top: .42rem; border-radius: 999px; background: #cbd5e1; }
         .omc-mail__unread-dot.is-unread { background: var(--mail-accent); box-shadow: 0 0 0 4px rgba(48, 71, 232, .1); }
@@ -436,7 +458,8 @@
                             wire:click.prevent="openMessage({{ $message['uid'] }})"
                             wire:loading.class="is-opening" wire:loading.attr="disabled"
                             wire:target="openMessage({{ $message['uid'] }})" class="omc-mail__message">
-                            <span class="omc-mail__message-row">
+                            <span class="omc-mail__message-row" wire:loading.remove
+                                wire:target="openMessage({{ $message['uid'] }})">
                                 <span @class(['omc-mail__unread-dot', 'is-unread' => ! $message['read']])></span>
                                 <span class="omc-mail__message-copy">
                                     <span class="omc-mail__message-head">
@@ -449,6 +472,11 @@
                                     <span class="omc-mail__subject">{{ $message['subject'] }}</span>
                                     <span class="omc-mail__address">{{ $message['from_address'] }}</span>
                                 </span>
+                            </span>
+                            <span class="omc-mail__message-loading" wire:loading.flex
+                                wire:target="openMessage({{ $message['uid'] }})" role="status" aria-live="polite">
+                                <span class="omc-mail__message-spinner" aria-hidden="true"></span>
+                                <span>Відкриваємо лист…</span>
                             </span>
                         </button>
                     @empty
