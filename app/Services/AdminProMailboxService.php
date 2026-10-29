@@ -103,7 +103,7 @@ class AdminProMailboxService
 
             return [
                 ...$this->header($connection, $uid, $folder),
-                'body' => trim($this->extractBody($connection, $messageNumber, $structure)),
+                ...$this->extractContent($connection, $messageNumber, $structure),
             ];
         } finally {
             imap_close($connection);
@@ -413,19 +413,84 @@ class AdminProMailboxService
         return trim($result);
     }
 
-    private function extractBody($connection, int $messageNumber, object $structure): string
+    private function extractContent($connection, int $messageNumber, object $structure): array
     {
         if (empty($structure->parts)) {
-            return $this->decodeBody((string) imap_body($connection, $messageNumber, FT_PEEK), (int) ($structure->encoding ?? 0), $structure);
+            $body = $this->decodeBody((string) imap_body($connection, $messageNumber, FT_PEEK), (int) ($structure->encoding ?? 0), $structure);
+
+            return strtoupper((string) ($structure->subtype ?? 'PLAIN')) === 'HTML'
+                ? $this->htmlContent($body)
+                : ['body' => $this->normalizeText($body), 'links' => []];
         }
 
         $plain = $this->findPart($connection, $messageNumber, $structure, 'PLAIN');
-        if ($plain !== null) {
-            return $plain;
-        }
         $html = $this->findPart($connection, $messageNumber, $structure, 'HTML');
 
-        return $html === null ? '' : trim(html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        if ($plain !== null) {
+            return [
+                'body' => $this->normalizeText($plain),
+                'links' => $html === null ? [] : $this->safeLinks($html),
+            ];
+        }
+
+        return $html === null
+            ? ['body' => '', 'links' => []]
+            : $this->htmlContent($html);
+    }
+
+    private function htmlContent(string $html): array
+    {
+        $withoutHiddenContent = preg_replace(
+            '~<(style|script|head|noscript|template|svg)\b[^>]*>.*?</\1\s*>~is',
+            '',
+            $html,
+        ) ?? $html;
+        $withLineBreaks = preg_replace(
+            '~<(?:br\s*/?|/(?:p|div|li|tr|h[1-6]))\s*>~i',
+            "\n",
+            $withoutHiddenContent,
+        ) ?? $withoutHiddenContent;
+
+        return [
+            'body' => $this->normalizeText(html_entity_decode(strip_tags($withLineBreaks), ENT_QUOTES | ENT_HTML5, 'UTF-8')),
+            'links' => $this->safeLinks($html),
+        ];
+    }
+
+    private function safeLinks(string $html): array
+    {
+        preg_match_all(
+            '~<a\b[^>]*\bhref\s*=\s*(["\'])(.*?)\1[^>]*>(.*?)</a\s*>~is',
+            $html,
+            $matches,
+            PREG_SET_ORDER,
+        );
+
+        $links = [];
+        foreach ($matches as $match) {
+            $url = trim(html_entity_decode((string) $match[2], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+            if (! in_array(strtolower((string) parse_url($url, PHP_URL_SCHEME)), ['http', 'https'], true)) {
+                continue;
+            }
+
+            $label = $this->normalizeText(html_entity_decode(strip_tags((string) $match[3]), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+            $links[$url] = [
+                'label' => $label === '' ? $url : $label,
+                'url' => $url,
+            ];
+        }
+
+        return array_values($links);
+    }
+
+    private function normalizeText(string $text): string
+    {
+        $text = str_replace(["\r\n", "\r"], "\n", $text);
+        $text = preg_replace('/[\t ]+/u', ' ', $text) ?? $text;
+        $text = preg_replace('/ *\n */u', "\n", $text) ?? $text;
+        $text = preg_replace('/\n{3,}/u', "\n\n", $text) ?? $text;
+
+        return trim($text);
     }
 
     private function findPart($connection, int $messageNumber, object $structure, string $subtype, string $prefix = ''): ?string

@@ -203,6 +203,11 @@
         .omc-mail__reader-date { margin: .28rem 0 0; color: var(--mail-muted); font-size: .74rem; }
         .omc-mail__actions { display: flex; flex: 0 0 auto; gap: .35rem; }
         .omc-mail__body { overflow-wrap: anywhere; margin-top: 1.25rem; color: var(--mail-text); font-size: .9rem; line-height: 1.75; white-space: pre-wrap; }
+        .omc-mail__links { display: grid; gap: .6rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--mail-border); }
+        .omc-mail__links-title { margin: 0; color: var(--mail-muted); font-size: .76rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+        .omc-mail__link { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .75rem .9rem; border: 1px solid var(--mail-border); border-radius: .8rem; color: #4f46e5; font-size: .84rem; font-weight: 700; text-decoration: none; }
+        .omc-mail__link:hover { border-color: #818cf8; background: rgba(99, 102, 241, .08); }
+        .dark .omc-mail__link { color: #a5b4fc; }
 
         .omc-mail__empty {
             display: flex;
@@ -408,6 +413,18 @@
                         </div>
                     </div>
                     <div class="omc-mail__body">{{ $selectedMessage['body'] }}</div>
+                    @if (! empty($selectedMessage['links']))
+                        <div class="omc-mail__links" aria-label="Посилання з листа">
+                            <p class="omc-mail__links-title">Посилання з листа</p>
+                            @foreach ($selectedMessage['links'] as $link)
+                                <a class="omc-mail__link" href="{{ $link['url'] }}" target="_blank"
+                                    rel="noopener noreferrer nofollow">
+                                    <span>{{ $link['label'] }}</span>
+                                    <x-filament::icon icon="heroicon-o-arrow-top-right-on-square" style="width:1.1rem;height:1.1rem;flex:0 0 auto" />
+                                </a>
+                            @endforeach
+                        </div>
+                    @endif
                 @else
                     <div class="omc-mail__empty">
                         <x-filament::icon icon="heroicon-o-envelope-open" class="omc-mail__empty-icon" />
