@@ -233,7 +233,7 @@
         .omc-mail__reader-date { margin: .28rem 0 0; color: var(--mail-muted); font-size: .74rem; }
         .omc-mail__actions { display: flex; flex: 0 0 auto; gap: .35rem; }
         .omc-mail__body { overflow-wrap: anywhere; margin-top: 1.25rem; color: var(--mail-text); font-size: .9rem; line-height: 1.75; white-space: pre-wrap; }
-        .omc-mail__html-frame { width: 100%; min-height: 60vh; margin-top: 1.25rem; border: 0; border-radius: .75rem; background: #fff; }
+        .omc-mail__html-frame { display: block; width: 100%; min-height: 60vh; margin-top: 1.25rem; border: 0; border-radius: .75rem; background: #fff; }
         .omc-mail__attachments { display: grid; gap: .6rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--mail-border); }
         .omc-mail__attachment {
             display: flex;
@@ -570,8 +570,36 @@
                         </div>
                     @endif
                     @if ($renderedHtml)
-                        <iframe class="omc-mail__html-frame" title="Вміст листа" srcdoc="{{ $renderedHtml }}"
-                            sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"></iframe>
+                        <iframe wire:key="admin-pro-mail-html-{{ $selectedMessage['uid'] }}"
+                            class="omc-mail__html-frame" title="Вміст листа" srcdoc="{{ $renderedHtml }}"
+                            sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"
+                            x-on:load="
+                                const frame = $el;
+                                const mailDocument = frame.contentDocument;
+
+                                if (mailDocument) {
+                                    const resizeFrame = () => {
+                                        if (! frame.isConnected) return;
+
+                                        window.requestAnimationFrame(() => {
+                                            const rootHeight = mailDocument.documentElement?.scrollHeight || 0;
+                                            const bodyHeight = mailDocument.body?.scrollHeight || 0;
+                                            const contentHeight = Math.max(rootHeight, bodyHeight, 320);
+
+                                            frame.style.height = `${contentHeight}px`;
+                                        });
+                                    };
+
+                                    resizeFrame();
+                                    Array.from(mailDocument.images || []).forEach((image) => {
+                                        if (! image.complete) {
+                                            image.addEventListener('load', resizeFrame, { once: true });
+                                            image.addEventListener('error', resizeFrame, { once: true });
+                                        }
+                                    });
+                                    [250, 1000, 2500].forEach((delay) => window.setTimeout(resizeFrame, delay));
+                                }
+                            "></iframe>
                     @else
                         <div class="omc-mail__body">{{ $displayedMessage['body'] }}</div>
                     @endif
