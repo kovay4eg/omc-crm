@@ -3,6 +3,8 @@
 namespace App\Filament\Pages;
 
 use App\Services\AdminProMailboxService;
+use App\Services\MailLanguageDetector;
+use App\Services\MailTranslationService;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Throwable;
@@ -24,6 +26,12 @@ class AdminProMail extends Page
     public array $folders = [];
 
     public ?array $selectedMessage = null;
+
+    public ?array $translatedMessage = null;
+
+    public string $detectedLanguage = 'und';
+
+    public bool $translationSuggested = false;
 
     public string $search = '';
 
@@ -93,6 +101,7 @@ class AdminProMail extends Page
         $this->authorizeAdminPro();
         $this->folder = $folder;
         $this->selectedMessage = null;
+        $this->resetTranslation();
         $this->refreshMailbox();
     }
 
@@ -102,6 +111,7 @@ class AdminProMail extends Page
         $this->authorizeAdminPro();
         $this->filter = $filter;
         $this->selectedMessage = null;
+        $this->resetTranslation();
         $this->refreshMailbox();
     }
 
@@ -111,6 +121,7 @@ class AdminProMail extends Page
 
         try {
             $this->selectedMessage = app(AdminProMailboxService::class)->message($uid, $this->folder);
+            $this->prepareTranslation();
             $this->refreshMailbox();
         } catch (Throwable $exception) {
             $this->reportMailboxFailure($exception);
@@ -122,6 +133,45 @@ class AdminProMail extends Page
     {
         $this->authorizeAdminPro();
         $this->selectedMessage = null;
+        $this->resetTranslation();
+    }
+
+    public function translateSelectedMessage(): void
+    {
+        $this->authorizeAdminPro();
+
+        if ($this->selectedMessage === null) {
+            return;
+        }
+
+        try {
+            $translation = app(MailTranslationService::class)->translateToUkrainian(
+                (string) $this->selectedMessage['subject'],
+                (string) $this->selectedMessage['body'],
+            );
+
+            if ($translation['source_language'] === 'UK') {
+                $this->detectedLanguage = 'uk';
+                $this->translationSuggested = false;
+                Notification::make()->info()->title('Цей лист уже українською')->send();
+
+                return;
+            }
+
+            $this->translatedMessage = [
+                'subject' => $translation['subject'],
+                'body' => $translation['body'],
+            ];
+        } catch (Throwable $exception) {
+            $this->reportMailboxFailure($exception);
+            Notification::make()->danger()->title('Не вдалося перекласти лист')->body($exception->getMessage())->send();
+        }
+    }
+
+    public function showOriginalMessage(): void
+    {
+        $this->authorizeAdminPro();
+        $this->translatedMessage = null;
     }
 
     public function startCompose(?string $recipient = null, ?string $replySubject = null): void
@@ -168,6 +218,7 @@ class AdminProMail extends Page
             app(AdminProMailboxService::class)->delete($uid, $this->folder, $permanently);
             system_log('admin_pro_mail_delete', 'Користувач із поштовим доступом видалив лист зі скриньки post@omc.pl.ua.');
             $this->selectedMessage = null;
+            $this->resetTranslation();
             $this->refreshMailbox();
             Notification::make()->success()->title($permanently ? 'Лист видалено назавжди' : 'Лист переміщено у видалені')->send();
         } catch (Throwable $exception) {
@@ -185,6 +236,7 @@ class AdminProMail extends Page
             app(AdminProMailboxService::class)->move($uid, $target, $this->folder);
             system_log('admin_pro_mail_move', 'Користувач із поштовим доступом перемістив лист у папку '.$target.'.');
             $this->selectedMessage = null;
+            $this->resetTranslation();
             $this->refreshMailbox();
             Notification::make()->success()->title('Лист переміщено')->send();
         } catch (Throwable $exception) {
@@ -216,6 +268,7 @@ class AdminProMail extends Page
         try {
             app(AdminProMailboxService::class)->mark($uid, false, $this->folder);
             $this->selectedMessage = null;
+            $this->resetTranslation();
             $this->refreshMailbox();
         } catch (Throwable $exception) {
             $this->reportMailboxFailure($exception);
@@ -230,6 +283,28 @@ class AdminProMail extends Page
         } catch (Throwable) {
             // Keep the mailbox UI available if logging is temporarily unwritable.
         }
+    }
+
+    private function prepareTranslation(): void
+    {
+        $this->resetTranslation();
+
+        if ($this->selectedMessage === null) {
+            return;
+        }
+
+        $this->detectedLanguage = app(MailLanguageDetector::class)->detect(
+            (string) $this->selectedMessage['subject']."\n".(string) $this->selectedMessage['body'],
+        );
+        $this->translationSuggested = $this->detectedLanguage === 'non-uk'
+            && app(MailTranslationService::class)->configured();
+    }
+
+    private function resetTranslation(): void
+    {
+        $this->translatedMessage = null;
+        $this->detectedLanguage = 'und';
+        $this->translationSuggested = false;
     }
 
     private function authorizeAdminPro(): void

@@ -12,4 +12,9 @@ return [
         'encryption' => env('ADMIN_PRO_MAIL_IMAP_ENCRYPTION', 'ssl'),
         'validate_certificate' => env('ADMIN_PRO_MAIL_VALIDATE_CERTIFICATE', true),
     ],
+
+    'translation' => [
+        'deepl_key' => env('ADMIN_PRO_MAIL_DEEPL_KEY'),
+        'deepl_url' => env('ADMIN_PRO_MAIL_DEEPL_URL', 'https://api-free.deepl.com/v2/translate'),
+    ],
 ];

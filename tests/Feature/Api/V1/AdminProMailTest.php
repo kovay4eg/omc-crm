@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Services\AdminProMailAccessService;
 use App\Services\AdminProMailboxService;
 use App\Services\FcmPushService;
+use App\Services\MailTranslationService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
@@ -195,6 +196,111 @@ class AdminProMailTest extends TestCase
             ->call('closeMessage')
             ->assertSet('selectedMessage', null)
             ->assertDontSee('Назад до листів');
+    }
+
+    public function test_web_mail_translates_a_foreign_message_inline_and_restores_the_original(): void
+    {
+        $adminPro = User::factory()->create(['role' => 'admin']);
+        AdminProAssignment::transferTo($adminPro);
+
+        $this->mock(AdminProMailboxService::class, function (MockInterface $mock): void {
+            $folders = [
+                ['key' => 'inbox', 'label' => 'Вхідні', 'total' => 1, 'unread' => 1],
+                ['key' => 'archive', 'label' => 'Архів', 'total' => 0, 'unread' => 0],
+                ['key' => 'spam', 'label' => 'Спам', 'total' => 0, 'unread' => 0],
+                ['key' => 'trash', 'label' => 'Видалені', 'total' => 0, 'unread' => 0],
+            ];
+            $messages = [
+                'data' => [[
+                    'uid' => 8,
+                    'subject' => 'Verification required',
+                    'from_name' => 'Apple Developer',
+                    'from_address' => 'developer@email.apple.com',
+                    'date' => now()->toAtomString(),
+                    'read' => false,
+                    'flagged' => false,
+                    'folder' => 'inbox',
+                ]],
+                'meta' => ['current_page' => 1, 'per_page' => 30, 'total' => 1, 'last_page' => 1],
+            ];
+
+            $mock->shouldReceive('configured')->twice()->andReturn(true);
+            $mock->shouldReceive('folders')->twice()->andReturn($folders);
+            $mock->shouldReceive('messages')->twice()->with(1, 30, '', 'inbox', 'all')->andReturn($messages);
+            $mock->shouldReceive('message')->once()->with(8, 'inbox')->andReturn([
+                ...$messages['data'][0],
+                'read' => true,
+                'body' => 'Hello, we received your documents and will reply as soon as possible.',
+                'links' => [],
+            ]);
+        });
+        $this->mock(MailTranslationService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('configured')->once()->andReturn(true);
+            $mock->shouldReceive('translateToUkrainian')
+                ->once()
+                ->with(
+                    'Verification required',
+                    'Hello, we received your documents and will reply as soon as possible.',
+                )
+                ->andReturn([
+                    'subject' => 'Потрібна перевірка',
+                    'body' => 'Вітаємо, ми отримали ваші документи та відповімо якомога швидше.',
+                    'source_language' => 'EN',
+                ]);
+        });
+
+        $this->actingAs($adminPro);
+
+        Livewire::test(AdminProMailPage::class)
+            ->call('openMessage', 8)
+            ->assertSet('translationSuggested', true)
+            ->assertSee('Перекласти українською')
+            ->call('translateSelectedMessage')
+            ->assertSet('translatedMessage.subject', 'Потрібна перевірка')
+            ->assertSee('Вітаємо, ми отримали ваші документи')
+            ->assertSee('Показати оригінал')
+            ->call('showOriginalMessage')
+            ->assertSet('translatedMessage', null)
+            ->assertSee('Hello, we received your documents');
+    }
+
+    public function test_only_authorized_mail_users_can_download_attachments(): void
+    {
+        $adminPro = User::factory()->create(['role' => 'admin']);
+        $ordinaryAdmin = User::factory()->create(['role' => 'admin']);
+        AdminProAssignment::transferTo($adminPro);
+
+        $this->mock(AdminProMailboxService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('attachment')
+                ->once()
+                ->with(15, '2.1', 'inbox')
+                ->andReturn([
+                    'part' => '2.1',
+                    'name' => 'звіт.pdf',
+                    'mime_type' => 'application/pdf',
+                    'size' => 11,
+                    'inline' => false,
+                    'content_id' => '',
+                    'content' => '%PDF-test%',
+                ]);
+        });
+
+        $url = route('admin-pro.mail.attachment', [
+            'uid' => 15,
+            'part' => '2.1',
+            'folder' => 'inbox',
+            'inline' => 1,
+        ]);
+
+        $this->actingAs($ordinaryAdmin)->get($url)->assertForbidden();
+
+        $this->actingAs($adminPro)
+            ->get($url)
+            ->assertOk()
+            ->assertHeader('Content-Type', 'application/pdf')
+            ->assertHeader('Cache-Control', 'no-store, private')
+            ->assertHeader('Content-Disposition', 'inline; filename=zvit.pdf; filename*=utf-8\'\'%D0%B7%D0%B2%D1%96%D1%82.pdf')
+            ->assertSee('%PDF-test%', false);
     }
 
     public function test_admin_pro_can_register_a_private_web_push_device(): void

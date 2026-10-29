@@ -104,6 +104,37 @@ class AdminProMailboxService
             return [
                 ...$this->header($connection, $uid, $folder),
                 ...$this->extractContent($connection, $messageNumber, $structure),
+                'attachments' => $this->attachmentDescriptors($structure),
+            ];
+        } finally {
+            imap_close($connection);
+        }
+    }
+
+    public function attachment(int $uid, string $partNumber, string $folder = 'inbox'): array
+    {
+        throw_unless(preg_match('/^\d+(?:\.\d+)*$/', $partNumber) === 1, RuntimeException::class, 'Некоректний ідентифікатор вкладення.');
+
+        $folder = $this->validateFolder($folder);
+        $connection = $this->open($folder);
+
+        try {
+            $messageNumber = imap_msgno($connection, $uid);
+            throw_if($messageNumber < 1, RuntimeException::class, 'Лист не знайдено.');
+            $structure = imap_fetchstructure($connection, $messageNumber);
+            $part = $this->partByNumber($structure, $partNumber);
+            throw_if($part === null, RuntimeException::class, 'Вкладення не знайдено.');
+
+            $descriptor = $this->attachmentDescriptor($part, $partNumber);
+            throw_if($descriptor === null, RuntimeException::class, 'Ця частина листа не є вкладенням.');
+
+            $raw = (string) imap_fetchbody($connection, $messageNumber, $partNumber, FT_PEEK);
+            $content = $this->decodeTransferEncoding($raw, (int) ($part->encoding ?? 0));
+
+            return [
+                ...$descriptor,
+                'content' => $content,
+                'size' => strlen($content),
             ];
         } finally {
             imap_close($connection);
@@ -420,7 +451,7 @@ class AdminProMailboxService
 
             return strtoupper((string) ($structure->subtype ?? 'PLAIN')) === 'HTML'
                 ? $this->htmlContent($body)
-                : ['body' => $this->normalizeText($body), 'links' => []];
+                : ['body' => $this->normalizeText($body), 'html' => null, 'links' => []];
         }
 
         $plain = $this->findPart($connection, $messageNumber, $structure, 'PLAIN');
@@ -431,7 +462,7 @@ class AdminProMailboxService
         }
 
         return $html === null
-            ? ['body' => '', 'links' => []]
+            ? ['body' => '', 'html' => null, 'links' => []]
             : $this->htmlContent($html);
     }
 
@@ -446,6 +477,7 @@ class AdminProMailboxService
 
         return [
             'body' => $body,
+            'html' => $html === null ? null : $this->sanitizeHtml($html),
             'links' => $html === null ? [] : $this->safeLinks($html),
         ];
     }
@@ -465,8 +497,252 @@ class AdminProMailboxService
 
         return [
             'body' => $this->normalizeText(html_entity_decode(strip_tags($withLineBreaks), ENT_QUOTES | ENT_HTML5, 'UTF-8')),
+            'html' => $this->sanitizeHtml($html),
             'links' => $this->safeLinks($html),
         ];
+    }
+
+    private function sanitizeHtml(string $html): ?string
+    {
+        if (! class_exists(\DOMDocument::class) || trim($html) === '') {
+            return null;
+        }
+
+        $previousErrors = libxml_use_internal_errors(true);
+        $document = new \DOMDocument('1.0', 'UTF-8');
+        $loaded = $document->loadHTML(
+            '<?xml encoding="UTF-8">'.$html,
+            LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING,
+        );
+
+        if (! $loaded) {
+            libxml_clear_errors();
+            libxml_use_internal_errors($previousErrors);
+
+            return null;
+        }
+
+        $xpath = new \DOMXPath($document);
+        $blocked = $xpath->query('//script|//iframe|//frame|//frameset|//object|//embed|//applet|//form|//input|//button|//textarea|//select|//option|//meta|//base|//link|//noscript|//template|//svg|//video|//audio|//source');
+        if ($blocked !== false) {
+            foreach (iterator_to_array($blocked) as $node) {
+                $node->parentNode?->removeChild($node);
+            }
+        }
+
+        $elements = $xpath->query('//*');
+        if ($elements !== false) {
+            foreach (iterator_to_array($elements) as $element) {
+                foreach (iterator_to_array($element->attributes ?? []) as $attribute) {
+                    $name = strtolower($attribute->name);
+                    $value = trim($attribute->value);
+
+                    if (str_starts_with($name, 'on') || in_array($name, ['srcdoc', 'srcset', 'background', 'dynsrc', 'lowsrc', 'action', 'formaction', 'poster'], true)) {
+                        $element->removeAttributeNode($attribute);
+
+                        continue;
+                    }
+
+                    if ($name === 'href' && ! $this->isSafeMailUrl($value, ['http', 'https', 'mailto'])) {
+                        $element->removeAttributeNode($attribute);
+
+                        continue;
+                    }
+
+                    if ($name === 'src' && ! $this->isSafeImageSource($value)) {
+                        $element->removeAttributeNode($attribute);
+
+                        continue;
+                    }
+
+                    if ($name === 'style' && preg_match('/(?:expression\s*\(|url\s*\(|behavior\s*:|-moz-binding)/iu', $value) === 1) {
+                        $element->removeAttributeNode($attribute);
+                    }
+                }
+
+                if (strtolower($element->tagName) === 'a') {
+                    $element->setAttribute('target', '_blank');
+                    $element->setAttribute('rel', 'noopener noreferrer nofollow');
+                }
+            }
+        }
+
+        $messageStyles = '';
+        $styles = $xpath->query('//style');
+        if ($styles !== false) {
+            foreach (iterator_to_array($styles) as $style) {
+                $safeCss = preg_replace('/@import\s+[^;]+;|url\s*\([^)]*\)|expression\s*\([^)]*\)|behavior\s*:[^;]+;?/iu', '', $style->textContent) ?? '';
+                $messageStyles .= '<style>'.$safeCss.'</style>';
+                $style->parentNode?->removeChild($style);
+            }
+        }
+
+        $body = $document->getElementsByTagName('body')->item(0);
+        $content = '';
+        $container = $body ?? $document->documentElement;
+        if ($container !== null) {
+            foreach (iterator_to_array($container->childNodes) as $child) {
+                $content .= $document->saveHTML($child);
+            }
+        }
+
+        libxml_clear_errors();
+        libxml_use_internal_errors($previousErrors);
+
+        $baseStyles = <<<'CSS'
+        html { color-scheme: light; }
+        body { margin: 0; padding: 0; color: #172033; background: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.5; overflow-wrap: anywhere; }
+        img { max-width: 100%; height: auto; }
+        table { max-width: 100%; }
+        pre { max-width: 100%; overflow: auto; white-space: pre-wrap; }
+        a { color: #3047e8; }
+        CSS;
+
+        return '<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base target="_blank"><style>'.$baseStyles.'</style>'.$messageStyles.'</head><body>'.$content.'</body></html>';
+    }
+
+    private function isSafeMailUrl(string $url, array $schemes): bool
+    {
+        if ($url === '' || str_starts_with($url, '#')) {
+            return true;
+        }
+
+        return in_array(strtolower((string) parse_url(html_entity_decode($url, ENT_QUOTES | ENT_HTML5, 'UTF-8'), PHP_URL_SCHEME)), $schemes, true);
+    }
+
+    private function isSafeImageSource(string $source): bool
+    {
+        if (preg_match('/^cid:[^\s]+$/iu', $source) === 1) {
+            return true;
+        }
+
+        if (preg_match('/^data:image\/(?:png|jpe?g|gif|webp);base64,[a-z0-9+\/=\s]+$/iu', $source) === 1) {
+            return true;
+        }
+
+        return $this->isSafeMailUrl($source, ['https']);
+    }
+
+    private function attachmentDescriptors(object $structure): array
+    {
+        $attachments = [];
+        $this->collectAttachmentDescriptors($structure, '', $attachments);
+
+        return $attachments;
+    }
+
+    private function collectAttachmentDescriptors(object $structure, string $prefix, array &$attachments): void
+    {
+        foreach ($structure->parts ?? [] as $index => $part) {
+            $partNumber = $prefix === '' ? (string) ($index + 1) : $prefix.'.'.($index + 1);
+            $descriptor = $this->attachmentDescriptor($part, $partNumber);
+
+            if ($descriptor !== null) {
+                $attachments[] = $descriptor;
+
+                continue;
+            }
+
+            if (! empty($part->parts)) {
+                $this->collectAttachmentDescriptors($part, $partNumber, $attachments);
+            }
+        }
+    }
+
+    private function attachmentDescriptor(object $part, string $partNumber): ?array
+    {
+        $disposition = strtolower((string) ($part->disposition ?? ''));
+        $filename = $this->partFilename($part);
+        $contentId = trim((string) ($part->id ?? ''), "<> \t\r\n");
+        $isAttachment = $disposition === 'attachment'
+            || $filename !== ''
+            || ($disposition === 'inline' && (int) ($part->type ?? 0) !== 0);
+
+        if (! $isAttachment) {
+            return null;
+        }
+
+        $mimeType = $this->partMimeType($part);
+
+        return [
+            'part' => $partNumber,
+            'name' => $filename !== '' ? $filename : 'attachment-'.$partNumber.'.'.$this->extensionForMimeType($mimeType),
+            'mime_type' => $mimeType,
+            'size' => max(0, (int) ($part->bytes ?? 0)),
+            'inline' => $disposition === 'inline' || $contentId !== '',
+            'content_id' => $contentId,
+        ];
+    }
+
+    private function partFilename(object $part): string
+    {
+        foreach ([...($part->dparameters ?? []), ...($part->parameters ?? [])] as $parameter) {
+            $attribute = strtolower((string) ($parameter->attribute ?? ''));
+            if (! in_array($attribute, ['filename', 'filename*', 'name', 'name*'], true)) {
+                continue;
+            }
+
+            $value = trim((string) ($parameter->value ?? ''));
+            if (str_contains($attribute, '*') && str_contains($value, "''")) {
+                [, $value] = explode("''", $value, 2);
+                $value = rawurldecode($value);
+            } else {
+                $value = $this->decodeHeader($value);
+            }
+
+            $value = basename(str_replace('\\', '/', $value));
+            $value = preg_replace('/[\x00-\x1F\x7F]/u', '', $value) ?? '';
+
+            return mb_substr(trim($value), 0, 180);
+        }
+
+        return '';
+    }
+
+    private function partMimeType(object $part): string
+    {
+        $primary = match ((int) ($part->type ?? 7)) {
+            0 => 'text',
+            1 => 'multipart',
+            2 => 'message',
+            3 => 'application',
+            4 => 'audio',
+            5 => 'image',
+            6 => 'video',
+            default => 'application',
+        };
+        $subtype = strtolower((string) ($part->subtype ?? 'octet-stream'));
+        $subtype = preg_replace('/[^a-z0-9.+-]/', '', $subtype) ?: 'octet-stream';
+
+        return $primary.'/'.$subtype;
+    }
+
+    private function extensionForMimeType(string $mimeType): string
+    {
+        return match ($mimeType) {
+            'application/pdf' => 'pdf',
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/gif' => 'gif',
+            'text/plain' => 'txt',
+            'text/csv' => 'csv',
+            'message/rfc822' => 'eml',
+            default => 'bin',
+        };
+    }
+
+    private function partByNumber(object $structure, string $partNumber): ?object
+    {
+        $current = $structure;
+        foreach (explode('.', $partNumber) as $segment) {
+            $index = (int) $segment - 1;
+            if ($index < 0 || ! isset($current->parts[$index])) {
+                return null;
+            }
+            $current = $current->parts[$index];
+        }
+
+        return $current;
     }
 
     private function safeLinks(string $html): array
@@ -525,11 +801,7 @@ class AdminProMailboxService
 
     private function decodeBody(string $body, int $encoding, object $part): string
     {
-        $decoded = match ($encoding) {
-            3 => base64_decode($body, true) ?: '',
-            4 => quoted_printable_decode($body),
-            default => $body,
-        };
+        $decoded = $this->decodeTransferEncoding($body, $encoding);
         $charset = 'UTF-8';
         foreach ([...($part->parameters ?? []), ...($part->dparameters ?? [])] as $parameter) {
             if (strtolower((string) ($parameter->attribute ?? '')) === 'charset') {
@@ -539,5 +811,14 @@ class AdminProMailboxService
         }
 
         return strtoupper($charset) === 'UTF-8' ? $decoded : (mb_convert_encoding($decoded, 'UTF-8', $charset) ?: $decoded);
+    }
+
+    private function decodeTransferEncoding(string $body, int $encoding): string
+    {
+        return match ($encoding) {
+            3 => base64_decode($body, true) ?: '',
+            4 => quoted_printable_decode($body),
+            default => $body,
+        };
     }
 }

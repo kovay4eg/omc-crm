@@ -40,8 +40,11 @@ class AdminProMailboxServiceTest extends TestCase
         <html>
             <head><style>@media only screen { body { color: red; } }</style></head>
             <body>
-                <p>Hello Nataliia,</p>
+                <table style="width: 100%;"><tr><td><img src="cid:apple-logo" alt="Apple"></td></tr></table>
+                <p onclick="alert('unsafe')">Hello Nataliia,</p>
                 <p>Your confirmation is required.</p>
+                <img src="https://example.com/banner.png" srcset="https://tracker.example/banner-2x.png 2x" alt="Banner">
+                <img src="http://unsafe.example/tracker.png" alt="Unsafe tracker">
                 <a href="https://developer.apple.com/enroll/verify?token=abc&amp;value=1">Complete verification form</a>
                 <a href="javascript:alert('unsafe')">Unsafe link</a>
                 <script>alert('hidden')</script>
@@ -55,6 +58,16 @@ class AdminProMailboxServiceTest extends TestCase
         $this->assertStringContainsString('Your confirmation is required.', $content['body']);
         $this->assertStringNotContainsString('@media', $content['body']);
         $this->assertStringNotContainsString("alert('hidden')", $content['body']);
+        $this->assertStringContainsString('<style>', $content['html']);
+        $this->assertStringContainsString('@media only screen', $content['html']);
+        $this->assertStringNotContainsString('<script', $content['html']);
+        $this->assertStringNotContainsString('javascript:', $content['html']);
+        $this->assertStringNotContainsString('onclick=', $content['html']);
+        $this->assertStringContainsString('src="cid:apple-logo"', $content['html']);
+        $this->assertStringContainsString('src="https://example.com/banner.png"', $content['html']);
+        $this->assertStringNotContainsString('srcset=', $content['html']);
+        $this->assertStringNotContainsString('src="http://unsafe.example', $content['html']);
+        $this->assertStringContainsString('target="_blank"', $content['html']);
         $this->assertSame([
             [
                 'label' => 'Complete verification form',
@@ -79,6 +92,56 @@ class AdminProMailboxServiceTest extends TestCase
         ], $content['links']);
     }
 
+    public function test_it_describes_regular_and_nested_inline_attachments(): void
+    {
+        $structure = (object) [
+            'parts' => [
+                (object) [
+                    'type' => 1,
+                    'subtype' => 'ALTERNATIVE',
+                    'parts' => [
+                        (object) ['type' => 0, 'subtype' => 'PLAIN'],
+                        (object) ['type' => 0, 'subtype' => 'HTML'],
+                    ],
+                ],
+                (object) [
+                    'type' => 3,
+                    'subtype' => 'PDF',
+                    'disposition' => 'attachment',
+                    'encoding' => 3,
+                    'bytes' => 2048,
+                    'dparameters' => [(object) [
+                        'attribute' => 'filename',
+                        'value' => '=?UTF-8?B?0J/Rg9C10L0uUERGPw==?=',
+                    ]],
+                ],
+                (object) [
+                    'type' => 1,
+                    'subtype' => 'RELATED',
+                    'parts' => [
+                        (object) [
+                            'type' => 5,
+                            'subtype' => 'PNG',
+                            'disposition' => 'inline',
+                            'id' => '<apple-logo>',
+                            'bytes' => 512,
+                            'parameters' => [(object) ['attribute' => 'name', 'value' => 'logo.png']],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $attachments = $this->attachmentDescriptors($structure);
+
+        $this->assertCount(2, $attachments);
+        $this->assertSame('2', $attachments[0]['part']);
+        $this->assertSame('application/pdf', $attachments[0]['mime_type']);
+        $this->assertSame('3.1', $attachments[1]['part']);
+        $this->assertSame('apple-logo', $attachments[1]['content_id']);
+        $this->assertTrue($attachments[1]['inline']);
+    }
+
     private function creationCandidates(array $mailboxes, string $leaf): array
     {
         $method = new ReflectionMethod(AdminProMailboxService::class, 'folderCreationCandidates');
@@ -101,5 +164,13 @@ class AdminProMailboxServiceTest extends TestCase
         $method->setAccessible(true);
 
         return $method->invoke(new AdminProMailboxService, $plain, $html);
+    }
+
+    private function attachmentDescriptors(object $structure): array
+    {
+        $method = new ReflectionMethod(AdminProMailboxService::class, 'attachmentDescriptors');
+        $method->setAccessible(true);
+
+        return $method->invoke(new AdminProMailboxService, $structure);
     }
 }
