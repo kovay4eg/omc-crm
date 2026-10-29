@@ -427,15 +427,27 @@ class AdminProMailboxService
         $html = $this->findPart($connection, $messageNumber, $structure, 'HTML');
 
         if ($plain !== null) {
-            return [
-                'body' => $this->normalizeText($plain),
-                'links' => $html === null ? [] : $this->safeLinks($html),
-            ];
+            return $this->plainContent($plain, $html);
         }
 
         return $html === null
             ? ['body' => '', 'links' => []]
             : $this->htmlContent($html);
+    }
+
+    private function plainContent(string $plain, ?string $html): array
+    {
+        $body = $this->normalizeText($plain);
+        $containsStylesheet = preg_match('/@media\b|(?:^|\n)\s*\.[a-z0-9_-]+\s*\{/iu', $body) === 1;
+
+        if ($containsStylesheet && $html !== null) {
+            return $this->htmlContent($html);
+        }
+
+        return [
+            'body' => $body,
+            'links' => $html === null ? [] : $this->safeLinks($html),
+        ];
     }
 
     private function htmlContent(string $html): array

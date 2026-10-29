@@ -63,6 +63,22 @@ class AdminProMailboxServiceTest extends TestCase
         ], $content['links']);
     }
 
+    public function test_it_uses_html_alternative_when_plain_part_contains_stylesheet_noise(): void
+    {
+        $plain = "96\n\n@media only screen { body { color: red; } }\nHello Nataliia,";
+        $html = '<html><body><p>Hello Nataliia,</p><a href="https://developer.apple.com/verify">Verification form</a></body></html>';
+
+        $content = $this->plainContent($plain, $html);
+
+        $this->assertSame("Hello Nataliia,\nVerification form", $content['body']);
+        $this->assertSame([
+            [
+                'label' => 'Verification form',
+                'url' => 'https://developer.apple.com/verify',
+            ],
+        ], $content['links']);
+    }
+
     private function creationCandidates(array $mailboxes, string $leaf): array
     {
         $method = new ReflectionMethod(AdminProMailboxService::class, 'folderCreationCandidates');
@@ -77,5 +93,13 @@ class AdminProMailboxServiceTest extends TestCase
         $method->setAccessible(true);
 
         return $method->invoke(new AdminProMailboxService, $html);
+    }
+
+    private function plainContent(string $plain, ?string $html): array
+    {
+        $method = new ReflectionMethod(AdminProMailboxService::class, 'plainContent');
+        $method->setAccessible(true);
+
+        return $method->invoke(new AdminProMailboxService, $plain, $html);
     }
 }
