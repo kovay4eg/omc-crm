@@ -204,6 +204,54 @@
         .omc-mail__reader-date { margin: .28rem 0 0; color: var(--mail-muted); font-size: .74rem; }
         .omc-mail__actions { display: flex; flex: 0 0 auto; gap: .35rem; }
         .omc-mail__body { overflow-wrap: anywhere; margin-top: 1.25rem; color: var(--mail-text); font-size: .9rem; line-height: 1.75; white-space: pre-wrap; }
+        .omc-mail__html-frame { width: 100%; min-height: 60vh; margin-top: 1.25rem; border: 0; border-radius: .75rem; background: #fff; }
+        .omc-mail__attachments { display: grid; gap: .6rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--mail-border); }
+        .omc-mail__attachment {
+            display: flex;
+            min-width: 0;
+            align-items: center;
+            gap: .7rem;
+            padding: .72rem .85rem;
+            border: 1px solid var(--mail-border);
+            border-radius: .8rem;
+            color: var(--mail-text);
+            text-decoration: none;
+            background: var(--mail-surface-subtle);
+        }
+        .omc-mail__attachment:hover { border-color: #818cf8; background: var(--mail-accent-soft); }
+        .omc-mail__attachment-icon { width: 1.25rem; height: 1.25rem; flex: 0 0 auto; color: var(--mail-accent); }
+        .omc-mail__attachment-copy { min-width: 0; flex: 1; }
+        .omc-mail__attachment-name { display: block; overflow: hidden; text-overflow: ellipsis; color: var(--mail-text); font-size: .82rem; font-weight: 800; white-space: nowrap; }
+        .omc-mail__attachment-meta { display: block; margin-top: .12rem; color: var(--mail-muted); font-size: .7rem; }
+        .omc-mail__attachment-download { width: 1.05rem; height: 1.05rem; flex: 0 0 auto; color: var(--mail-muted); }
+        .omc-mail__translation {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .75rem;
+            margin-top: 1rem;
+            padding: .72rem .85rem;
+            border: 1px solid rgba(48, 71, 232, .2);
+            border-radius: .8rem;
+            color: var(--mail-muted);
+            background: var(--mail-accent-soft);
+            font-size: .8rem;
+        }
+        .omc-mail__translation-copy { display: flex; min-width: 0; align-items: center; gap: .5rem; }
+        .omc-mail__translation-icon { width: 1.05rem; height: 1.05rem; flex: 0 0 auto; color: var(--mail-accent); }
+        .omc-mail__translation-button {
+            flex: 0 0 auto;
+            padding: .45rem .7rem;
+            border: 0;
+            border-radius: .62rem;
+            color: #fff;
+            background: var(--mail-accent);
+            font-size: .76rem;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .omc-mail__translation-button.is-secondary { color: var(--mail-accent); background: var(--mail-surface); }
+        .omc-mail__translation-button:disabled { cursor: wait; opacity: .65; }
         .omc-mail__links { display: grid; gap: .6rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--mail-border); }
         .omc-mail__links-title { margin: 0; color: var(--mail-muted); font-size: .76rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
         .omc-mail__link { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .75rem .9rem; border: 1px solid var(--mail-border); border-radius: .8rem; color: #4f46e5; font-size: .84rem; font-weight: 700; text-decoration: none; }
@@ -273,6 +321,7 @@
             .omc-mail__nav { grid-column: auto; }
             .omc-mail__panel { border-radius: 1rem; }
             .omc-mail__reader { min-height: 70vh; padding: 1rem; }
+            .omc-mail__html-frame { min-height: 72vh; }
             .omc-mail__mobile-back {
                 display: inline-flex;
                 align-items: center;
@@ -289,6 +338,8 @@
             }
             .omc-mail__mobile-back-icon { width: 1.1rem; height: 1.1rem; }
             .omc-mail__reader-head { flex-direction: column; }
+            .omc-mail__translation { align-items: stretch; flex-direction: column; }
+            .omc-mail__translation-button { width: 100%; }
             .omc-mail__actions { width: 100%; justify-content: flex-end; }
             .omc-mail__empty { min-height: 18rem; }
             .omc-mail__form-actions { align-items: stretch; flex-direction: column-reverse; }
@@ -402,13 +453,36 @@
 
             <section class="omc-mail__panel omc-mail__reader">
                 @if ($selectedMessage)
+                    @php
+                        $displayedMessage = $translatedMessage ?? $selectedMessage;
+                        $renderedHtml = $translatedMessage ? null : ($selectedMessage['html'] ?? null);
+                        $downloadableAttachments = collect($selectedMessage['attachments'] ?? [])->filter(
+                            fn (array $attachment): bool => ! $attachment['inline'] || blank($attachment['content_id']),
+                        );
+
+                        if ($renderedHtml) {
+                            foreach ($selectedMessage['attachments'] ?? [] as $attachment) {
+                                if (blank($attachment['content_id'])) {
+                                    continue;
+                                }
+
+                                $inlineUrl = route('admin-pro.mail.attachment', [
+                                    'uid' => $selectedMessage['uid'],
+                                    'part' => $attachment['part'],
+                                    'folder' => $folder,
+                                    'inline' => 1,
+                                ]);
+                                $renderedHtml = str_ireplace('cid:'.$attachment['content_id'], $inlineUrl, $renderedHtml);
+                            }
+                        }
+                    @endphp
                     <button type="button" class="omc-mail__mobile-back" wire:click="closeMessage">
                         <x-filament::icon icon="heroicon-o-arrow-left" class="omc-mail__mobile-back-icon" />
                         <span>Назад до листів</span>
                     </button>
                     <div class="omc-mail__reader-head">
                         <div class="omc-mail__reader-copy">
-                            <h3>{{ $selectedMessage['subject'] }}</h3>
+                            <h3>{{ $displayedMessage['subject'] }}</h3>
                             <p class="omc-mail__from">{{ $selectedMessage['from_name'] }} &lt;{{ $selectedMessage['from_address'] }}&gt;</p>
                             <p class="omc-mail__reader-date">{{ $selectedMessage['date'] ? \Illuminate\Support\Carbon::parse($selectedMessage['date'])->format('d.m.Y H:i') : '' }}</p>
                         </div>
@@ -439,8 +513,59 @@
                             <x-filament::icon-button color="gray" icon="heroicon-o-x-mark" label="Закрити" wire:click="closeMessage" />
                         </div>
                     </div>
-                    <div class="omc-mail__body">{{ $selectedMessage['body'] }}</div>
-                    @if (! empty($selectedMessage['links']))
+                    @if ($translationSuggested || $translatedMessage)
+                        <div class="omc-mail__translation" aria-live="polite">
+                            <div class="omc-mail__translation-copy">
+                                <x-filament::icon icon="heroicon-o-language" class="omc-mail__translation-icon" />
+                                <span>{{ $translatedMessage ? 'Показано переклад українською' : 'Мова листа відрізняється від української' }}</span>
+                            </div>
+                            @if ($translatedMessage)
+                                <button type="button" class="omc-mail__translation-button is-secondary" wire:click="showOriginalMessage">
+                                    Показати оригінал
+                                </button>
+                            @else
+                                <button type="button" class="omc-mail__translation-button" wire:click="translateSelectedMessage"
+                                    wire:loading.attr="disabled" wire:target="translateSelectedMessage">
+                                    <span wire:loading.remove wire:target="translateSelectedMessage">Перекласти українською</span>
+                                    <span wire:loading wire:target="translateSelectedMessage">Перекладаємо…</span>
+                                </button>
+                            @endif
+                        </div>
+                    @endif
+                    @if ($renderedHtml)
+                        <iframe class="omc-mail__html-frame" title="Вміст листа" srcdoc="{{ $renderedHtml }}"
+                            sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"></iframe>
+                    @else
+                        <div class="omc-mail__body">{{ $displayedMessage['body'] }}</div>
+                    @endif
+                    @if ($downloadableAttachments->isNotEmpty())
+                        <div class="omc-mail__attachments" aria-label="Вкладення листа">
+                            <p class="omc-mail__links-title">Вкладення</p>
+                            @foreach ($downloadableAttachments as $attachment)
+                                @php
+                                    $attachmentSize = $attachment['size'] > 0
+                                        ? ($attachment['size'] >= 1048576
+                                            ? number_format($attachment['size'] / 1048576, 1, ',', ' ').' МБ'
+                                            : number_format(max(1, $attachment['size'] / 1024), 0, ',', ' ').' КБ')
+                                        : 'Розмір не вказано';
+                                @endphp
+                                <a class="omc-mail__attachment" href="{{ route('admin-pro.mail.attachment', [
+                                    'uid' => $selectedMessage['uid'],
+                                    'part' => $attachment['part'],
+                                    'folder' => $folder,
+                                    'inline' => 1,
+                                ]) }}" target="_blank" rel="noopener noreferrer">
+                                    <x-filament::icon icon="heroicon-o-paper-clip" class="omc-mail__attachment-icon" />
+                                    <span class="omc-mail__attachment-copy">
+                                        <span class="omc-mail__attachment-name">{{ $attachment['name'] }}</span>
+                                        <span class="omc-mail__attachment-meta">{{ $attachment['mime_type'] }} · {{ $attachmentSize }}</span>
+                                    </span>
+                                    <x-filament::icon icon="heroicon-o-arrow-down-tray" class="omc-mail__attachment-download" />
+                                </a>
+                            @endforeach
+                        </div>
+                    @endif
+                    @if (! empty($selectedMessage['links']) && ! $renderedHtml)
                         <div class="omc-mail__links" aria-label="Посилання з листа">
                             <p class="omc-mail__links-title">Посилання з листа</p>
                             @foreach ($selectedMessage['links'] as $link)

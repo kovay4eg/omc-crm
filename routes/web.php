@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminProMailAttachmentController;
 use App\Http\Controllers\AdminProWebPushController;
 use App\Http\Controllers\AndroidAppDownloadController;
 use App\Http\Controllers\AppDownloadController;
@@ -23,6 +24,11 @@ Route::get('/firebase-messaging-sw.js', FirebaseMessagingServiceWorkerController
 
 Route::middleware('auth')->put('/admin/admin-pro/mail/push-device', [AdminProWebPushController::class, 'store'])
     ->name('admin-pro.mail.push-device');
+
+Route::middleware('auth')->get('/admin/admin-pro/mail/messages/{uid}/attachments/{part}', AdminProMailAttachmentController::class)
+    ->whereNumber('uid')
+    ->where('part', '[0-9]+(?:\.[0-9]+)*')
+    ->name('admin-pro.mail.attachment');
 
 Route::get('/download/android', AndroidAppDownloadController::class)
     ->name('app.download.android');
