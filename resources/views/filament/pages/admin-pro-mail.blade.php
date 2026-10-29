@@ -175,10 +175,17 @@
             text-align: left;
             background: transparent;
             cursor: pointer;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
             transition: background .18s ease;
         }
-        .omc-mail__message:hover,
-        .omc-mail__message:focus-visible { background: var(--mail-accent-soft); outline: none; }
+        .omc-mail__message:focus-visible,
+        .omc-mail__message:active,
+        .omc-mail__message.is-opening { background: var(--mail-accent-soft); outline: none; }
+        .omc-mail__message.is-opening { cursor: progress; }
+        @media (hover: hover) and (pointer: fine) {
+            .omc-mail__message:hover { background: var(--mail-accent-soft); }
+        }
         .omc-mail__message-row { display: flex; align-items: flex-start; gap: .75rem; }
         .omc-mail__unread-dot { flex: 0 0 auto; width: .58rem; height: .58rem; margin-top: .42rem; border-radius: 999px; background: #cbd5e1; }
         .omc-mail__unread-dot.is-unread { background: var(--mail-accent); box-shadow: 0 0 0 4px rgba(48, 71, 232, .1); }
@@ -425,8 +432,10 @@
                 </div>
                 <div class="omc-mail__list">
                     @forelse ($messages as $message)
-                        <button type="button" wire:click="openMessage({{ $message['uid'] }})"
-                            class="omc-mail__message">
+                        <button type="button" wire:key="admin-pro-mail-message-{{ $folder }}-{{ $message['uid'] }}"
+                            wire:click.prevent="openMessage({{ $message['uid'] }})"
+                            wire:loading.class="is-opening" wire:loading.attr="disabled"
+                            wire:target="openMessage({{ $message['uid'] }})" class="omc-mail__message">
                             <span class="omc-mail__message-row">
                                 <span @class(['omc-mail__unread-dot', 'is-unread' => ! $message['read']])></span>
                                 <span class="omc-mail__message-copy">
