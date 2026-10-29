@@ -36,6 +36,9 @@ Route::get('/app', AppDownloadController::class)
 Route::view('/privacy-policy', 'privacy-policy')
     ->name('privacy-policy');
 
+Route::view('/support/omc-crm', 'omc-crm-support')
+    ->name('omc-crm.support');
+
 Route::view('/account-deletion', 'account-deletion')
     ->name('account-deletion');
 
