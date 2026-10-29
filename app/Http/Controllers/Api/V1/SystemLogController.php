@@ -16,7 +16,7 @@ class SystemLogController extends Controller
 
         $filters = $request->validate([
             'search' => ['nullable', 'string', 'max:255'],
-            'source' => ['nullable', 'in:web,mobile_app'],
+            'source' => ['nullable', 'in:web,web_admin,mobile_app,system'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
 

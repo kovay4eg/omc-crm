@@ -50,6 +50,21 @@ class UserAndLogTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.0.source', 'mobile_app')
             ->assertJsonPath('data.0.device_name', 'Test phone');
+
+        SystemLog::query()->create([
+            'action' => 'site_backup_created',
+            'description' => 'Створено резервну копію сайту та БД на резервному сервері.',
+            'source' => 'system',
+            'device_name' => 'site-20261029T211938Z',
+            'platform' => 'server',
+        ]);
+
+        $this->getJson('/api/v1/activity-logs?source=system')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.action', 'site_backup_created')
+            ->assertJsonPath('data.0.source', 'system')
+            ->assertJsonPath('data.0.device_name', 'site-20261029T211938Z');
     }
 
     private function headers(User $user): array
