@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\V1;
 
+use App\Filament\Pages\AdminProMail as AdminProMailPage;
 use App\Models\AdminProAssignment;
 use App\Models\AdminProMailCheckpoint;
 use App\Models\MobilePushDevice;
@@ -12,6 +13,7 @@ use App\Services\FcmPushService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
+use Livewire\Livewire;
 use Mockery\MockInterface;
 use Tests\TestCase;
 
@@ -138,7 +140,61 @@ class AdminProMailTest extends TestCase
             ->assertSee('Спам')
             ->assertSee('Видалені')
             ->assertSee('Увімкнути сповіщення')
+            ->assertSee('omc-mail__mailbox', false)
+            ->assertSee('omc-mail__mobile-back', false)
+            ->assertSee('has-open-message', false)
             ->assertSee('@media (max-width: 640px)', false);
+    }
+
+    public function test_web_mail_opens_a_message_in_the_mobile_reader_and_returns_to_the_list(): void
+    {
+        $adminPro = User::factory()->create(['role' => 'admin']);
+        AdminProAssignment::transferTo($adminPro);
+
+        $this->mock(AdminProMailboxService::class, function (MockInterface $mock): void {
+            $folders = [
+                ['key' => 'inbox', 'label' => 'Вхідні', 'total' => 1, 'unread' => 1],
+                ['key' => 'archive', 'label' => 'Архів', 'total' => 0, 'unread' => 0],
+                ['key' => 'spam', 'label' => 'Спам', 'total' => 0, 'unread' => 0],
+                ['key' => 'trash', 'label' => 'Видалені', 'total' => 0, 'unread' => 0],
+            ];
+            $messages = [
+                'data' => [[
+                    'uid' => 7,
+                    'subject' => 'Перевірка Apple',
+                    'from_name' => 'Apple Developer',
+                    'from_address' => 'developer@email.apple.com',
+                    'date' => now()->toAtomString(),
+                    'read' => false,
+                    'flagged' => false,
+                    'folder' => 'inbox',
+                ]],
+                'meta' => ['current_page' => 1, 'per_page' => 30, 'total' => 1, 'last_page' => 1],
+            ];
+
+            $mock->shouldReceive('configured')->twice()->andReturn(true);
+            $mock->shouldReceive('folders')->twice()->andReturn($folders);
+            $mock->shouldReceive('messages')->twice()->with(1, 30, '', 'inbox', 'all')->andReturn($messages);
+            $mock->shouldReceive('message')->once()->with(7, 'inbox')->andReturn([
+                ...$messages['data'][0],
+                'read' => true,
+                'body' => 'Текст листа для мобільного перегляду.',
+                'links' => [],
+            ]);
+        });
+
+        $this->actingAs($adminPro);
+
+        Livewire::test(AdminProMailPage::class)
+            ->assertSee('Перевірка Apple')
+            ->assertDontSee('Назад до листів')
+            ->call('openMessage', 7)
+            ->assertSet('selectedMessage.uid', 7)
+            ->assertSee('Назад до листів')
+            ->assertSee('Текст листа для мобільного перегляду.')
+            ->call('closeMessage')
+            ->assertSet('selectedMessage', null)
+            ->assertDontSee('Назад до листів');
     }
 
     public function test_admin_pro_can_register_a_private_web_push_device(): void
