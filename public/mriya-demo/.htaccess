@@ -2,6 +2,10 @@ Options -Indexes
 
 # Temporary public lock. Keep the demo files deployed for local development,
 # but deny every HTTP request until the page is ready to be published again.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^ - [F,L]
+</IfModule>
 <IfModule mod_authz_core.c>
   Require all denied
 </IfModule>
