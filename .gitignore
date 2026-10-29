@@ -2,6 +2,8 @@
 .DS_Store
 .env
 .env.backup
+.env.backup-*
+.env.bak-*
 .env.production
 .phpactor.json
 .phpunit.result.cache
@@ -16,9 +18,14 @@
 /public/build
 /public/hot
 /public/storage
+/public/mriya-demo/api/config.php
+/public/mriya-demo/data/*
+!/public/mriya-demo/data/.htaccess
 /storage/*.key
 /storage/pail
 /vendor
 Homestead.json
 Homestead.yaml
 Thumbs.db
+*.bak.*
+*.backup-*
