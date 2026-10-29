@@ -196,6 +196,7 @@
         .omc-mail__star.is-active { color: #f59e0b; fill: currentColor; }
 
         .omc-mail__reader { min-height: 30rem; padding: 1.25rem; }
+        .omc-mail__mobile-back { display: none; }
         .omc-mail__reader-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--mail-border); }
         .omc-mail__reader-copy { min-width: 0; }
         .omc-mail__reader h3 { overflow-wrap: anywhere; margin: 0; color: var(--mail-text); font-size: 1.2rem; font-weight: 800; line-height: 1.35; }
@@ -203,6 +204,11 @@
         .omc-mail__reader-date { margin: .28rem 0 0; color: var(--mail-muted); font-size: .74rem; }
         .omc-mail__actions { display: flex; flex: 0 0 auto; gap: .35rem; }
         .omc-mail__body { overflow-wrap: anywhere; margin-top: 1.25rem; color: var(--mail-text); font-size: .9rem; line-height: 1.75; white-space: pre-wrap; }
+        .omc-mail__links { display: grid; gap: .6rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--mail-border); }
+        .omc-mail__links-title { margin: 0; color: var(--mail-muted); font-size: .76rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+        .omc-mail__link { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .75rem .9rem; border: 1px solid var(--mail-border); border-radius: .8rem; color: #4f46e5; font-size: .84rem; font-weight: 700; text-decoration: none; }
+        .omc-mail__link:hover { border-color: #818cf8; background: rgba(99, 102, 241, .08); }
+        .dark .omc-mail__link { color: #a5b4fc; }
 
         .omc-mail__empty {
             display: flex;
@@ -253,13 +259,35 @@
 
         @media (max-width: 640px) {
             .omc-mail { gap: .9rem; }
+            .omc-mail.has-open-message { gap: 0; }
+            .omc-mail.has-open-message > .omc-mail__hero,
+            .omc-mail.has-open-message > .omc-mail__push,
+            .omc-mail.has-open-message .omc-mail__nav,
+            .omc-mail.has-open-message .omc-mail__mailbox { display: none; }
+            .omc-mail:not(.has-open-message) .omc-mail__reader { display: none; }
             .omc-mail__hero { align-items: stretch; flex-direction: column; padding: 1.1rem; border-radius: 1rem; }
             .omc-mail__hero-action > * { width: 100%; justify-content: center; }
             .omc-mail__layout { gap: .9rem; }
+            .omc-mail.has-open-message .omc-mail__layout { display: block; }
             .omc-mail__layout { grid-template-columns: 1fr; }
             .omc-mail__nav { grid-column: auto; }
             .omc-mail__panel { border-radius: 1rem; }
-            .omc-mail__reader { min-height: 22rem; padding: 1rem; }
+            .omc-mail__reader { min-height: 70vh; padding: 1rem; }
+            .omc-mail__mobile-back {
+                display: inline-flex;
+                align-items: center;
+                gap: .45rem;
+                margin: 0 0 1rem;
+                padding: .55rem .7rem;
+                border: 0;
+                border-radius: .7rem;
+                color: var(--mail-text);
+                background: var(--mail-surface-subtle);
+                font-size: .82rem;
+                font-weight: 800;
+                cursor: pointer;
+            }
+            .omc-mail__mobile-back-icon { width: 1.1rem; height: 1.1rem; }
             .omc-mail__reader-head { flex-direction: column; }
             .omc-mail__actions { width: 100%; justify-content: flex-end; }
             .omc-mail__empty { min-height: 18rem; }
@@ -270,7 +298,7 @@
         }
     </style>
 
-    <div class="omc-mail">
+    <div @class(['omc-mail', 'has-open-message' => $selectedMessage])>
         <div class="omc-mail__hero">
             <div class="omc-mail__hero-copy">
                 <p class="omc-mail__eyebrow">Захищена пошта ОМЦ</p>
@@ -332,7 +360,7 @@
                 @endforeach
             </nav>
 
-            <section class="omc-mail__panel">
+            <section class="omc-mail__panel omc-mail__mailbox">
                 <div class="omc-mail__toolbar">
                     <input type="search" wire:model.live.debounce.400ms="search" placeholder="Пошук листів"
                         class="omc-mail__search" aria-label="Пошук листів" />
@@ -374,6 +402,10 @@
 
             <section class="omc-mail__panel omc-mail__reader">
                 @if ($selectedMessage)
+                    <button type="button" class="omc-mail__mobile-back" wire:click="closeMessage">
+                        <x-filament::icon icon="heroicon-o-arrow-left" class="omc-mail__mobile-back-icon" />
+                        <span>Назад до листів</span>
+                    </button>
                     <div class="omc-mail__reader-head">
                         <div class="omc-mail__reader-copy">
                             <h3>{{ $selectedMessage['subject'] }}</h3>
@@ -408,6 +440,18 @@
                         </div>
                     </div>
                     <div class="omc-mail__body">{{ $selectedMessage['body'] }}</div>
+                    @if (! empty($selectedMessage['links']))
+                        <div class="omc-mail__links" aria-label="Посилання з листа">
+                            <p class="omc-mail__links-title">Посилання з листа</p>
+                            @foreach ($selectedMessage['links'] as $link)
+                                <a class="omc-mail__link" href="{{ $link['url'] }}" target="_blank"
+                                    rel="noopener noreferrer nofollow">
+                                    <span>{{ $link['label'] }}</span>
+                                    <x-filament::icon icon="heroicon-o-arrow-top-right-on-square" style="width:1.1rem;height:1.1rem;flex:0 0 auto" />
+                                </a>
+                            @endforeach
+                        </div>
+                    @endif
                 @else
                     <div class="omc-mail__empty">
                         <x-filament::icon icon="heroicon-o-envelope-open" class="omc-mail__empty-icon" />

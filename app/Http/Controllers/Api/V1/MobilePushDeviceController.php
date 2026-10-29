@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\MobilePushDevice;
 use App\Models\SystemLog;
+use App\Services\FcmPushService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -98,5 +99,23 @@ class MobilePushDeviceController extends Controller
         return response()->json([
             'message' => 'Push-пристрій видалено.',
         ]);
+    }
+
+    public function test(Request $request, FcmPushService $push): JsonResponse
+    {
+        $result = $push->sendToUser(
+            $request->user(),
+            'Сповіщення ОМЦ CRM працюють',
+            'Цей планшет успішно підключено до push-сповіщень.',
+            ['type' => 'push_delivery_check'],
+            'push_system',
+        );
+
+        return response()->json([
+            'message' => $result['sent'] > 0
+                ? 'Контрольне push-повідомлення надіслано.'
+                : 'Не вдалося надіслати контрольне push-повідомлення.',
+            'data' => $result,
+        ], $result['sent'] > 0 ? 200 : 503);
     }
 }

@@ -33,6 +33,15 @@ Route::get('/download/ios', IosAppDownloadController::class)
 Route::get('/app', AppDownloadController::class)
     ->name('app.download');
 
+Route::view('/privacy-policy', 'privacy-policy')
+    ->name('privacy-policy');
+
+Route::view('/support/omc-crm', 'omc-crm-support')
+    ->name('omc-crm.support');
+
+Route::view('/account-deletion', 'account-deletion')
+    ->name('account-deletion');
+
 Route::middleware([EnsureFrontendIsAvailable::class, TrackSiteVisit::class])->group(function () {
     Route::get('/', [HomeController::class, 'index']);
 

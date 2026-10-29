@@ -309,17 +309,18 @@
                 <h2>Android</h2>
             </div>
 
-            <a class="qr-link" href="{{ $androidRecommendedUrl }}" aria-label="Завантажити ОМЦ CRM для Android">
+            <a class="qr-link" href="{{ $androidDownloadUrl }}" aria-label="Завантажити універсальний APK ОМЦ CRM для Android">
                 <img src="{{ asset('images/qr/omc-android-download-qr-square.png') }}" alt="QR-код завантаження ОМЦ CRM для Android">
             </a>
 
-            <a class="button" href="{{ $androidRecommendedUrl }}" download>
+            <a class="button" href="{{ $androidDownloadUrl }}" download>
                 <span aria-hidden="true">↓</span>
                 Завантажити для Android
             </a>
+            <p class="direct-link">Універсальний APK для ARM64 та ARMv7, зокрема для 32-бітних планшетів.</p>
             <p class="direct-link">
                 Посилання:
-                <a href="{{ $androidRecommendedUrl }}">{{ $androidRecommendedUrl }}</a>
+                <a href="{{ $androidDownloadUrl }}">{{ $androidDownloadUrl }}</a>
             </p>
         </article>
 

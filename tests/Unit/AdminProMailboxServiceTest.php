@@ -34,11 +34,72 @@ class AdminProMailboxServiceTest extends TestCase
         );
     }
 
+    public function test_it_turns_html_email_into_readable_text_and_safe_links(): void
+    {
+        $html = <<<'HTML'
+        <html>
+            <head><style>@media only screen { body { color: red; } }</style></head>
+            <body>
+                <p>Hello Nataliia,</p>
+                <p>Your confirmation is required.</p>
+                <a href="https://developer.apple.com/enroll/verify?token=abc&amp;value=1">Complete verification form</a>
+                <a href="javascript:alert('unsafe')">Unsafe link</a>
+                <script>alert('hidden')</script>
+            </body>
+        </html>
+        HTML;
+
+        $content = $this->htmlContent($html);
+
+        $this->assertStringContainsString('Hello Nataliia,', $content['body']);
+        $this->assertStringContainsString('Your confirmation is required.', $content['body']);
+        $this->assertStringNotContainsString('@media', $content['body']);
+        $this->assertStringNotContainsString("alert('hidden')", $content['body']);
+        $this->assertSame([
+            [
+                'label' => 'Complete verification form',
+                'url' => 'https://developer.apple.com/enroll/verify?token=abc&value=1',
+            ],
+        ], $content['links']);
+    }
+
+    public function test_it_uses_html_alternative_when_plain_part_contains_stylesheet_noise(): void
+    {
+        $plain = "96\n\n@media only screen { body { color: red; } }\nHello Nataliia,";
+        $html = '<html><body><p>Hello Nataliia,</p><a href="https://developer.apple.com/verify">Verification form</a></body></html>';
+
+        $content = $this->plainContent($plain, $html);
+
+        $this->assertSame("Hello Nataliia,\nVerification form", $content['body']);
+        $this->assertSame([
+            [
+                'label' => 'Verification form',
+                'url' => 'https://developer.apple.com/verify',
+            ],
+        ], $content['links']);
+    }
+
     private function creationCandidates(array $mailboxes, string $leaf): array
     {
         $method = new ReflectionMethod(AdminProMailboxService::class, 'folderCreationCandidates');
         $method->setAccessible(true);
 
         return $method->invoke(new AdminProMailboxService, $mailboxes, $leaf);
+    }
+
+    private function htmlContent(string $html): array
+    {
+        $method = new ReflectionMethod(AdminProMailboxService::class, 'htmlContent');
+        $method->setAccessible(true);
+
+        return $method->invoke(new AdminProMailboxService, $html);
+    }
+
+    private function plainContent(string $plain, ?string $html): array
+    {
+        $method = new ReflectionMethod(AdminProMailboxService::class, 'plainContent');
+        $method->setAccessible(true);
+
+        return $method->invoke(new AdminProMailboxService, $plain, $html);
     }
 }
