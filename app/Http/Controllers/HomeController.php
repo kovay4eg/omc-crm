@@ -17,7 +17,9 @@ class HomeController extends Controller
     {
         $settings = HomepageSetting::first();
 
-        $departments = Department::with('employees.position')->get();
+        $departments = Department::with([
+            'employees' => fn ($query) => $query->with('position')->orderBy('sort')->orderBy('id'),
+        ])->get();
 
         $siteSettings = SiteSetting::first();
 
@@ -46,7 +48,7 @@ class HomeController extends Controller
                 $event->registration_is_available =
                     $event->has_registration_button
                     && $event->status !== EventStatus::Cancelled
-                    && !$event->is_full;
+                    && ! $event->is_full;
             });
 
         $eventSummaries = EventSummary::query()

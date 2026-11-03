@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\DepartmentResource;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Models\Department;
 use App\Models\Employee;
@@ -36,8 +37,9 @@ class TeamController extends Controller
         $settings = SiteSetting::query()->first();
 
         return response()->json(['data' => [
+            'department_content_supported' => true,
             'positions' => Position::query()->orderBy('name')->get(['id', 'name']),
-            'departments' => Department::query()->orderBy('name')->get(['id', 'name']),
+            'departments' => DepartmentResource::collection(Department::query()->orderBy('name')->get()),
             'team_banner_url' => $settings?->team_banner
                 ? $request->getSchemeAndHttpHost().Storage::url($settings->team_banner)
                 : null,
@@ -122,6 +124,7 @@ class TeamController extends Controller
             'first_name' => ['required', 'string', 'max:120'],
             'last_name' => ['required', 'string', 'max:120'],
             'middle_name' => ['nullable', 'string', 'max:120'],
+            'description' => ['sometimes', 'nullable', 'string', 'max:5000'],
             'position_id' => ['required', 'integer', Rule::exists('positions', 'id')],
             'department_id' => ['nullable', 'integer', Rule::exists('departments', 'id')],
             'sort' => ['nullable', 'integer', 'min:0'],

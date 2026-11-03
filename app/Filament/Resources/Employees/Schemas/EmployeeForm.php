@@ -3,9 +3,10 @@
 namespace App\Filament\Resources\Employees\Schemas;
 
 use App\Support\MediaStorage;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
 class EmployeeForm
@@ -26,6 +27,12 @@ class EmployeeForm
                 TextInput::make('middle_name')
                     ->label('По батькові'),
 
+                Textarea::make('description')
+                    ->label('Опис працівника')
+                    ->rows(5)
+                    ->maxLength(5000)
+                    ->columnSpanFull(),
+
                 Select::make('position_id')
                     ->label('Посада')
                     ->relationship('position', 'name')
@@ -43,6 +50,9 @@ class EmployeeForm
                 FileUpload::make('photo')
                     ->label('Фото')
                     ->image()
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                    ->maxSize(8192)
+                    ->helperText('JPEG, PNG або WebP, до 8 МБ.')
                     ->disk('public')
                     ->visibility('public')
                     ->directory('employees')
@@ -53,7 +63,7 @@ class EmployeeForm
                         return MediaStorage::uploadedFileDetails(
                             $file,
                             $storedFileNames,
-                            $record ? route('employees.photo', ['employee' => $record]) : null,
+                            $record ? route('employees.photo', ['employee' => $record, 'filename' => basename($file), 'v' => substr(sha1($file), 0, 12)]) : null,
                         );
                     })
 
@@ -70,9 +80,7 @@ class EmployeeForm
                     ->imageEditor()
 
                     // 🔥 ПРЕВʼЮ
-                    ->imagePreviewHeight('250')
-
-                    ->avatar(),
+                    ->imagePreviewHeight('250'),
 
                 TextInput::make('sort')
                     ->numeric()

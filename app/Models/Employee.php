@@ -13,6 +13,7 @@ class Employee extends Model
         'first_name',
         'last_name',
         'middle_name',
+        'description',
         'position_id',
         'department_id',
         'photo',

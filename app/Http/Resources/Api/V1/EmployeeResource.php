@@ -4,7 +4,6 @@ namespace App\Http\Resources\Api\V1;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 
 class EmployeeResource extends JsonResource
 {
@@ -15,13 +14,14 @@ class EmployeeResource extends JsonResource
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'middle_name' => $this->middle_name,
+            'description' => $this->description,
             'full_name' => trim(implode(' ', array_filter([
                 $this->last_name,
                 $this->first_name,
                 $this->middle_name,
             ]))),
             'photo_url' => $this->photo
-                ? $request->getSchemeAndHttpHost().Storage::url($this->photo)
+                ? route('employees.photo', ['employee' => $this->id, 'filename' => basename($this->photo), 'v' => substr(sha1($this->photo), 0, 12)])
                 : null,
             'sort' => (int) $this->sort,
             'position' => $this->whenLoaded('position', fn () => $this->position ? [
