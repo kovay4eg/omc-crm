@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminProMailAttachmentController;
 use App\Http\Controllers\AdminProWebPushController;
 use App\Http\Controllers\AndroidAppDownloadController;
 use App\Http\Controllers\AppDownloadController;
+use App\Http\Controllers\DepartmentMediaController;
 use App\Http\Controllers\EmployeePhotoController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventImageController;
@@ -48,11 +49,18 @@ Route::view('/support/omc-crm', 'omc-crm-support')
 Route::view('/account-deletion', 'account-deletion')
     ->name('account-deletion');
 
+Route::get('/team/employees/{employee}/photo/{filename?}', [EmployeePhotoController::class, 'show'])
+    ->name('employees.photo');
+
+Route::get('/team/departments/{department}/photo/{filename?}', [DepartmentMediaController::class, 'photo'])
+    ->name('departments.photo');
+
+Route::get('/team/departments/{department}/slides/{index}/{filename?}', [DepartmentMediaController::class, 'slide'])
+    ->whereNumber('index')
+    ->name('departments.slide');
+
 Route::middleware([EnsureFrontendIsAvailable::class, TrackSiteVisit::class])->group(function () {
     Route::get('/', [HomeController::class, 'index']);
-
-    Route::get('/team/employees/{employee}/photo', [EmployeePhotoController::class, 'show'])
-        ->name('employees.photo');
 
     Route::get('/events/{event}/image', [EventImageController::class, 'show'])
         ->name('events.image');

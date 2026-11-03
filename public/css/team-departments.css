@@ -1,0 +1,374 @@
+.team-section{
+    --blue:#131DA4;
+}
+
+.team-section{
+    font-family:'Commissioner',sans-serif;
+    background: transparent;
+    position:relative;
+    overflow:hidden;
+    padding:120px 0 80px;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.team-section .team-hero{
+    position:relative;
+    overflow:hidden;
+    padding:50px 0 40px;
+    margin-bottom:40px;
+}
+
+.team-section .team-title-block{
+    position:relative;
+    min-height:220px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.team-section .team-hero-bg{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    font-size:clamp(64px, 11vw, 160px);
+    font-weight:800;
+    line-height:1;
+    color:#eef0ff;
+    opacity:1;
+    letter-spacing:-.05em;
+    white-space:nowrap;
+    pointer-events:none;
+    z-index:0;
+    width:max-content;
+    will-change:transform;
+}
+
+.team-section .team-title{
+    position:relative;
+    z-index:2;
+    font-size:64px;
+    font-weight:900;
+    color:var(--blue);
+    margin-bottom:35px;
+    text-transform:uppercase;
+    padding-top: 80px;
+}
+
+.team-section .team-desc{
+    position:relative;
+    z-index:2;
+    text-align:center;
+    font-size:20px;
+    color:#303030;
+    margin:0;
+}
+
+/* =========================
+   TEAM PHOTO
+========================= */
+
+.team-section .team-banner{
+    width:100%;
+    border-radius:32px;
+    overflow:hidden;
+    background:#e5e7f2;
+    margin-bottom:80px;
+    position:relative;
+}
+
+.team-section .team-banner-image{
+    width:100%;
+    height:auto;
+    display:block;
+    object-fit:contain;
+}
+
+.team-section .team-banner-placeholder{
+    width:100%;
+    min-height:500px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#9ea5d1;
+    font-size:42px;
+    font-weight:700;
+}
+
+/* =========================
+   DEPARTMENT
+========================= */
+
+.team-section .dept-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:26px 0;
+    border-bottom:1px solid rgba(43, 36, 193, .12);
+    cursor:pointer;
+}
+
+.team-section .dept-left{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+
+.team-section .dept-icon img{
+    width:34px;
+    transition:.3s;
+}
+
+.team-section .dept-title{
+    color:var(--blue);
+    font-weight:800;
+    font-size:20px;
+    text-transform:uppercase;
+}
+
+/* ===== СТРІЛКА ===== */
+
+.team-section .arrow{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:all .4s ease;
+}
+
+.team-section .arrow .icon-arrow-custom{
+    width:32px;
+    height:32px;
+    display:block;
+    background:url("/images/icons/arrow-inactive.svg") center / contain no-repeat;
+    transition:transform .25s ease, background-image .25s ease;
+}
+
+.team-section .dept-row.active .icon-arrow-custom{
+    background-image:url("/images/icons/arrow-active.svg");
+}
+
+/* =========================
+   EMPLOYEES
+========================= */
+
+
+
+.team-section .employee-card{
+    background:#fff;
+    border-radius:28px;
+    padding:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,.06);
+    transition:.35s ease;
+    height:100%;
+    position:relative;
+    overflow:hidden;
+    transform:translateY(20px);
+    opacity:0;
+}
+
+
+.team-section .employee-card:hover{
+    transform:translateY(-12px) scale(1.02);
+    box-shadow:0 20px 50px rgba(19,29,164,.12);
+}
+
+.team-section .employee-card::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        135deg,
+        rgba(19,29,164,.05),
+        transparent
+    );
+    opacity:0;
+    transition:.35s;
+}
+
+.team-section .employee-card:hover::before{
+    opacity:1;
+}
+
+.team-section .employee-photo{
+    width:100%;
+    height:340px;
+    border-radius:22px;
+    overflow:hidden;
+    margin-bottom:18px;
+    background:#efefef;
+}
+
+.team-section .employee-photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:.4s;
+}
+
+.team-section .employee-card:hover .employee-photo img{
+    transform:scale(1.06);
+}
+
+.team-section .employee-placeholder{
+    width:100%;
+    height:100%;
+    object-fit:contain !important;
+    opacity:.45;
+}
+
+.team-section .employee-name{
+    font-size:20px;
+    font-weight:900;
+    color:#1c1c1c;
+    text-transform:uppercase;
+    margin-bottom:8px;
+}
+
+.team-section .employee-position{
+    color:#666;
+    font-size:16px;
+    line-height:1.4;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:991px){
+
+    .team-section .team-title{
+        font-size:46px;
+    }
+
+    .team-section .employee-photo{
+        height:300px;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .team-section{
+        padding-top:80px;
+    }
+
+    /* Декоративний фон має залишатися видимим і в мобільній версії. */
+    .team-section .team-hero-bg{
+        display:block;
+        visibility:visible;
+        opacity:1;
+        font-size:clamp(64px, 19vw, 94px);
+    }
+
+    .team-section .team-title{
+        font-size:34px;
+        margin-bottom:20px;
+    }
+
+    .team-section .team-desc{
+        font-size:16px;
+    }
+
+    .team-section .team-banner{
+        border-radius:24px;
+        margin-bottom:50px;
+    }
+
+    .team-section .team-banner-placeholder{
+        min-height:240px;
+        font-size:28px;
+    }
+
+    .team-section .dept-title{
+        font-size:15px;
+    }
+
+    .team-section .employee-photo{
+        height:260px;
+    }
+
+    /* На широкій мобільній картці показуємо верх фото, щоб не зрізати обличчя. */
+    .team-section .employee-photo img:not(.employee-placeholder){
+        object-position:center top;
+    }
+
+    .team-section .employee-name{
+        font-size:17px;
+    }
+
+    .team-section .employee-position{
+        font-size:14px;
+    }
+
+}
+
+.team-section [hidden] { display:none !important; }
+.team-section button.dept-row { width:100%; border:0; border-bottom:1px solid rgba(43,36,193,.12); background:transparent; text-align:left; font:inherit; }
+.team-section .dept-left { min-width:0; }
+.team-section .dept-title { min-width:0; overflow-wrap:anywhere; }
+.team-section .dept-icon { flex:0 0 34px; }
+.team-section .dept-row .arrow { flex:0 0 32px; margin-left:20px; }
+.team-section .dept-row:focus-visible,.team-section .department-toggle:focus-visible,.team-section .department-carousel button:focus-visible { outline:3px solid #131da4; outline-offset:5px; }
+.team-section .department-panel { padding:32px 0 24px; }
+.team-section .department-photo { margin:0 0 24px; overflow:hidden; border-radius:32px; background:#eef0ff; }
+.team-section .department-photo img { display:block; width:100%; height:auto; }
+.team-section .department-toggle { display:flex; width:100%; align-items:center; justify-content:space-between; gap:24px; padding:25px 0; border:0; border-bottom:1px solid rgba(43,36,193,.12); background:transparent; color:#131da4; text-align:left; font:800 20px/1.5 'Commissioner',sans-serif; text-transform:uppercase; }
+.team-section .department-toggle .icon-arrow-custom { flex:0 0 32px; width:32px; height:32px; background:url('../images/icons/arrow-inactive.svg') center/contain no-repeat; }
+.team-section .department-toggle[aria-expanded=true] .icon-arrow-custom { background-image:url('../images/icons/arrow-active.svg'); }
+.team-section .department-description { padding:24px 0; color:#303030; font-size:18px; line-height:1.8; }
+.team-section .department-description p { margin:0; white-space:pre-line; overflow-wrap:anywhere; }
+.team-section .department-employees { display:grid; gap:24px; padding:26px 0 12px; }
+.team-section .department-employees .employee-card { display:flex; height:auto; align-items:flex-start; gap:30px; padding:18px; opacity:1; transform:none; }
+.team-section .department-employees .employee-card:hover { transform:none; }
+.team-section .department-employees .employee-card::before { pointer-events:none; }
+.team-section .department-employees .employee-photo { flex:0 0 210px; width:210px; height:280px; margin:0; }
+.team-section .department-employees .employee-photo img { object-position:center top; }
+.team-section .employee-copy { flex:1; min-width:0; padding:12px 10px 12px 0; }
+.team-section .employee-copy .employee-name { margin-top:0; font-family:inherit; line-height:1.4; overflow-wrap:anywhere; }
+.team-section .employee-copy .employee-position { margin-bottom:16px; overflow-wrap:anywhere; }
+.team-section .employee-description { margin:0; color:#303030; font-size:18px; line-height:1.8; white-space:pre-line; overflow-wrap:anywhere; }
+.team-section .department-carousel { margin:26px 0 14px; }
+.team-section .department-carousel-stage { position:relative; height:clamp(240px,36vw,440px); overflow:hidden; touch-action:pan-y; }
+.team-section .department-slide { position:absolute; top:50%; left:50%; width:48%; aspect-ratio:16/10; margin:0; padding:0; overflow:hidden; border:3px solid transparent; border-radius:26px; background:#eef0ff; transform:translate(-50%,-50%) translateX(calc(var(--slide-offset,0)*57%)) scale(var(--slide-scale,1)); opacity:var(--slide-opacity,1); z-index:var(--slide-z,3); transition:transform .55s ease,opacity .55s ease; }
+.team-section .department-slide[aria-current=true] { border-color:#131da4; }
+.team-section .department-slide img { display:block; width:100%; height:100%; object-fit:cover; }
+.team-section .department-carousel-controls { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:18px; padding-top:10px; }
+.team-section .carousel-arrow { width:44px; height:44px; border:1px solid rgba(19,29,164,.25); border-radius:50%; background:white; color:#131da4; font-size:25px; line-height:1; }
+.team-section .carousel-dots { display:flex; max-width:100%; flex-wrap:wrap; justify-content:center; gap:9px; }
+.team-section .carousel-dot { display:grid; place-items:center; width:24px; height:32px; padding:0; border:0; background:transparent; }
+.team-section .carousel-dot::after { content:''; display:block; width:9px; height:9px; border-radius:50%; background:#d7daed; }
+.team-section .carousel-dot[aria-current=true]::after { background:#131da4; }
+.team-section .carousel-pause { padding:8px 12px; border:1px solid rgba(19,29,164,.25); border-radius:18px; background:white; color:#131da4; font:600 14px 'Commissioner',sans-serif; }
+@media(max-width:768px) {
+ .team-section .department-panel { padding-top:22px; }
+ .team-section .department-photo { border-radius:24px; margin-bottom:12px; }
+ .team-section .department-toggle { font-size:15px; padding:21px 0; }
+ .team-section .department-description { font-size:16px; }
+ .team-section .department-employees { gap:18px; }
+ .team-section .department-employees .employee-card { gap:14px; padding:12px; border-radius:22px; }
+ .team-section .department-employees .employee-photo { flex-basis:104px; width:104px; height:139px; border-radius:14px; }
+ .team-section .employee-copy { padding:2px 0; }
+ .team-section .employee-copy .employee-name { font-size:16px; }
+ .team-section .employee-copy .employee-position { font-size:13px; margin-bottom:10px; }
+ .team-section .employee-description { font-size:14px; line-height:1.6; }
+ .team-section .department-carousel-stage { height:clamp(220px,50vw,380px); }
+ .team-section .department-slide { width:76%; border-radius:20px; }
+ .team-section .department-carousel-controls { gap:10px; }
+}
+@media(prefers-reduced-motion:reduce) {
+ .team-section .department-slide,.team-section .employee-card,.team-section .employee-photo img,.team-section .dept-icon img,.team-section .arrow { transition:none; }
+ .team-section .employee-card:hover .employee-photo img { transform:none; }
+}
+html[data-omc-a11y-theme='dark'] .team-section .employee-position { color:#fff !important; }
+html[data-omc-a11y-theme='light'] .team-section .employee-position { color:#000 !important; }
+html[data-omc-a11y-theme='dark'] .team-section .icon-arrow-custom { filter:brightness(0) invert(1); }
+html[data-omc-a11y-theme='light'] .team-section .icon-arrow-custom { filter:brightness(0); }
+html[data-omc-a11y-theme='dark'] .team-section .department-slide[aria-current=true] { border-color:#fff; }
+html[data-omc-a11y-theme='light'] .team-section .department-slide[aria-current=true] { border-color:#000; }
+html[data-omc-a11y-theme='dark'] .team-section .carousel-dot::after,
+html[data-omc-a11y-theme='light'] .team-section .carousel-dot::after { background:currentColor; opacity:.45; }
+html[data-omc-a11y-theme='dark'] .team-section .carousel-dot[aria-current=true]::after,
+html[data-omc-a11y-theme='light'] .team-section .carousel-dot[aria-current=true]::after { opacity:1; outline:2px solid currentColor; outline-offset:3px; }

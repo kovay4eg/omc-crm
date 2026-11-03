@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\CalendarPlan;
+use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Event;
 use App\Models\EventSummary;
@@ -104,6 +105,8 @@ class PruneOrphanedMedia extends Command
     private function referencedMediaPaths(): array
     {
         $values = [
+            Department::query()->pluck('photo')->all(),
+            Department::query()->pluck('slider_photos')->all(),
             Employee::query()->pluck('photo')->all(),
             Event::query()->pluck('image')->all(),
             Event::query()->pluck('smm_image')->all(),

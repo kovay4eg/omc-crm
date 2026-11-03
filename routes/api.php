@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\PartnerController as ApiPartnerController;
 use App\Http\Controllers\Api\V1\SupportConversationController as ApiSupportConversationController;
 use App\Http\Controllers\Api\V1\SystemLogController as ApiSystemLogController;
 use App\Http\Controllers\Api\V1\TeamController as ApiTeamController;
+use App\Http\Controllers\Api\V1\TeamDepartmentController as ApiTeamDepartmentController;
 use App\Http\Controllers\Api\V1\TwoFactorController as ApiTwoFactorController;
 use App\Http\Controllers\Api\V1\UserController as ApiUserController;
 use App\Http\Controllers\EventRegistrationController;
@@ -99,6 +100,9 @@ Route::prefix('v1')->group(function () {
         Route::post('/team', [ApiTeamController::class, 'store']);
         Route::patch('/team/reorder', [ApiTeamController::class, 'reorder']);
         Route::post('/team/banner', [ApiTeamController::class, 'updateBanner']);
+        Route::post('/team/departments', [ApiTeamDepartmentController::class, 'store']);
+        Route::post('/team/departments/{department}', [ApiTeamDepartmentController::class, 'update'])->whereNumber('department');
+        Route::delete('/team/departments/{department}', [ApiTeamDepartmentController::class, 'destroy'])->whereNumber('department');
         Route::post('/team/{employee}', [ApiTeamController::class, 'update']);
         Route::delete('/team/{employee}', [ApiTeamController::class, 'destroy']);
 

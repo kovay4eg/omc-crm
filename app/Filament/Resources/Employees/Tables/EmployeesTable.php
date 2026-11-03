@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Employees\Tables;
 
-use App\Models\Department;
+use App\Filament\Resources\Employees\Actions\ManageDepartments;
 use App\Models\Position;
 use App\Models\SiteSetting;
 use Filament\Actions\Action;
@@ -43,6 +43,10 @@ class EmployeesTable
 
                             ->image()
 
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+
+                            ->maxSize(10240)
+
                             ->disk('public')
 
                             ->visibility('public')
@@ -79,7 +83,7 @@ class EmployeesTable
 
                         $settings = SiteSetting::first();
 
-                        if (!$settings) {
+                        if (! $settings) {
 
                             $settings = SiteSetting::create([
                                 'team_banner' => null,
@@ -96,7 +100,7 @@ class EmployeesTable
 
                         $settings = SiteSetting::first();
 
-                        if (!$settings) {
+                        if (! $settings) {
 
                             $settings = SiteSetting::create([
                                 'team_banner' => null,
@@ -109,71 +113,7 @@ class EmployeesTable
                         ]);
                     }),
 
-                Action::make('manage_departments')
-                    ->label('Редагувати відділи')
-
-                    ->mountUsing(function ($form) {
-
-                        $form->fill([
-                            'departments' => Department::all()->map(fn ($d) => [
-                                'id' => $d->id,
-                                'name' => $d->name,
-                            ])->toArray()
-                        ]);
-
-                    })
-
-                    ->form([
-
-                        Repeater::make('departments')
-                            ->schema([
-
-                                TextInput::make('id')
-                                    ->hidden(),
-
-                                TextInput::make('name')
-                                    ->required()
-                                    ->reactive()
-
-                                    ->afterStateUpdated(function ($state, callable $set) {
-
-                                        $clean = preg_replace('/^відділ\s+/iu', '', $state);
-
-                                        $set('name', $clean);
-
-                                    }),
-
-                            ])
-
-                    ])
-
-                    ->action(function (array $data) {
-
-                        $ids = [];
-
-                        foreach ($data['departments'] as $item) {
-
-                            if (!empty($item['id'])) {
-
-                                Department::where('id', $item['id'])->update([
-                                    'name' => $item['name'],
-                                ]);
-
-                                $ids[] = $item['id'];
-
-                            } else {
-
-                                $new = Department::create([
-                                    'name' => $item['name'],
-                                ]);
-
-                                $ids[] = $new->id;
-                            }
-                        }
-
-                        Department::whereNotIn('id', $ids)->delete();
-
-                    }),
+                ManageDepartments::make(),
 
                 Action::make('manage_positions')
                     ->label('Редагувати посади')
@@ -184,7 +124,7 @@ class EmployeesTable
                             'positions' => Position::all()->map(fn ($p) => [
                                 'id' => $p->id,
                                 'name' => $p->name,
-                            ])->toArray()
+                            ])->toArray(),
                         ]);
 
                     })
@@ -210,7 +150,7 @@ class EmployeesTable
 
                         foreach ($data['positions'] as $item) {
 
-                            if (!empty($item['id'])) {
+                            if (! empty($item['id'])) {
 
                                 Position::where('id', $item['id'])->update([
                                     'name' => $item['name'],
