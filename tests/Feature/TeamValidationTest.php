@@ -181,6 +181,7 @@ class TeamValidationTest extends TestCase
             'too many slides' => [['slider_photos' => array_fill(0, 21, 'team/departments/photo.jpg')]],
             'unsafe path' => [['photo' => 'team/../secret.jpg']],
             'foreign path' => [['photo' => 'events/photo.jpg']],
+            'other team media' => [['photo' => 'team/banner.jpg']],
         ];
     }
 

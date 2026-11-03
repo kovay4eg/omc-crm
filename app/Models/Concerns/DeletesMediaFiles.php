@@ -9,7 +9,7 @@ trait DeletesMediaFiles
 {
     protected static function bootDeletesMediaFiles(): void
     {
-        static::updating(function (Model $model): void {
+        static::updated(function (Model $model): void {
             $fields = $model->mediaFields();
 
             if (! collect($fields)->contains(fn (string $field): bool => $model->isDirty($field))) {
@@ -33,7 +33,7 @@ trait DeletesMediaFiles
             )));
         });
 
-        static::deleting(function (Model $model): void {
+        static::deleted(function (Model $model): void {
             MediaStorage::deleteModelFiles($model, $model->mediaFields());
         });
     }
