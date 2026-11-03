@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\EventController as ApiEventController;
 use App\Http\Controllers\Api\V1\EventRegistrationController as ApiEventRegistrationController;
 use App\Http\Controllers\Api\V1\EventSummaryController as ApiEventSummaryController;
+use App\Http\Controllers\Api\V1\GoogleRegistrationSyncController as ApiGoogleRegistrationSyncController;
 use App\Http\Controllers\Api\V1\HomepageSettingsController as ApiHomepageSettingsController;
 use App\Http\Controllers\Api\V1\MobilePushDeviceController as ApiMobilePushDeviceController;
 use App\Http\Controllers\Api\V1\PartnerController as ApiPartnerController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\Api\V1\TeamDepartmentController as ApiTeamDepartmentCon
 use App\Http\Controllers\Api\V1\TwoFactorController as ApiTwoFactorController;
 use App\Http\Controllers\Api\V1\UserController as ApiUserController;
 use App\Http\Controllers\EventRegistrationController;
+use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MaintenanceGameScoreController;
 use App\Http\Middleware\EnsureCrmApiAccess;
 use App\Http\Middleware\EnsureFrontendIsAvailable;
@@ -50,6 +52,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/auth/two-factor/confirm', [ApiTwoFactorController::class, 'confirm']);
         Route::post('/auth/two-factor/recovery-codes', [ApiTwoFactorController::class, 'regenerate']);
         Route::delete('/auth/two-factor', [ApiTwoFactorController::class, 'disable']);
+        Route::get('/google/status', [GoogleController::class, 'status']);
+        Route::post('/google/authorization', [GoogleController::class, 'authorization'])
+            ->middleware('throttle:5,1');
+        Route::delete('/google', [GoogleController::class, 'disconnect']);
 
         Route::get('/support/conversations', [ApiSupportConversationController::class, 'index']);
         Route::post('/support/conversations', [ApiSupportConversationController::class, 'store']);
@@ -75,6 +81,8 @@ Route::prefix('v1')->group(function () {
         Route::post('/events/{event}/registrations', [ApiEventRegistrationController::class, 'store']);
         Route::match(['put', 'patch'], '/events/{event}/registrations/{registration}', [ApiEventRegistrationController::class, 'update']);
         Route::delete('/events/{event}/registrations/{registration}', [ApiEventRegistrationController::class, 'destroy']);
+        Route::post('/events/{event}/registrations/google-sync', ApiGoogleRegistrationSyncController::class)
+            ->middleware('throttle:6,1');
 
         Route::get('/event-summaries', [ApiEventSummaryController::class, 'index']);
         Route::post('/events/{event}/summary', [ApiEventSummaryController::class, 'update']);

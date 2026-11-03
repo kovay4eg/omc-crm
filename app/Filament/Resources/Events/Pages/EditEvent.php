@@ -5,14 +5,12 @@ namespace App\Filament\Resources\Events\Pages;
 use App\Enums\EventStatus;
 use App\Filament\Resources\Events\EventResource;
 use App\Models\EventHistory;
-use App\Services\GoogleCalendarService;
 use BackedEnum;
 use DateTimeInterface;
 use Filament\Actions;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
-use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 
 class EditEvent extends EditRecord
@@ -35,29 +33,19 @@ class EditEvent extends EditRecord
 
             if ($oldValue != $newValue) {
                 $changes[] = $field
-                    . ': '
-                    . $this->formatChangeValue($oldValue)
-                    . ' → '
-                    . $this->formatChangeValue($newValue);
+                    .': '
+                    .$this->formatChangeValue($oldValue)
+                    .' → '
+                    .$this->formatChangeValue($newValue);
             }
         }
 
         system_log(
             'update_event',
-            'Оновлено івент: ' . $this->record->title .
-            ' | Зміни: ' . implode(', ', $changes)
+            'Оновлено івент: '.$this->record->title.
+            ' | Зміни: '.implode(', ', $changes)
         );
 
-        $success = app(GoogleCalendarService::class)
-            ->updateEvent(auth()->user(), $this->record);
-
-        if (!$success) {
-            Notification::make()
-                ->title('Google не відповів')
-                ->body('Івент оновлено, але не синхронізовано з Google')
-                ->warning()
-                ->send();
-        }
     }
 
     protected function formatChangeValue(mixed $value): string
@@ -144,15 +132,6 @@ class EditEvent extends EditRecord
                         'cancelled_at' => now(),
                     ]);
 
-                    $success = app(GoogleCalendarService::class)
-                        ->updateEvent(auth()->user(), $event);
-
-                    if (!$success) {
-                        Notification::make()
-                            ->title('Google не відповів')
-                            ->warning()
-                            ->send();
-                    }
                 }),
 
             Actions\Action::make('reschedule_event')
@@ -199,15 +178,6 @@ class EditEvent extends EditRecord
                     $this->record->refresh();
                     $this->fillForm();
 
-                    $success = app(GoogleCalendarService::class)
-                        ->updateEvent(auth()->user(), $event);
-
-                    if (!$success) {
-                        Notification::make()
-                            ->title('Google не відповідає')
-                            ->warning()
-                            ->send();
-                    }
                 }),
         ];
     }

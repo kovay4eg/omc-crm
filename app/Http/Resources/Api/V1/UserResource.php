@@ -16,7 +16,8 @@ class UserResource extends JsonResource
             'role' => $this->role,
             'is_admin_pro' => $this->isAdminPro(),
             'mail_access' => $this->canAccessAdminProMail(),
-            'google_connected' => filled($this->google_refresh_token),
+            'google_connected' => $this->hasGoogleConnection(),
+            'google_account_email' => $this->google_email,
             'two_factor_enabled' => $this->hasTwoFactorEnabled(),
         ];
     }

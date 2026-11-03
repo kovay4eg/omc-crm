@@ -32,6 +32,8 @@ class User extends Authenticatable implements FilamentUser, TwoFactorAuthenticat
     protected $hidden = [
         'password',
         'remember_token',
+        'google_token',
+        'google_refresh_token',
     ];
 
     /**
@@ -42,7 +44,15 @@ class User extends Authenticatable implements FilamentUser, TwoFactorAuthenticat
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'google_token' => 'encrypted',
+            'google_refresh_token' => 'encrypted',
+            'google_token_expires_at' => 'datetime',
         ];
+    }
+
+    public function hasGoogleConnection(): bool
+    {
+        return filled($this->google_refresh_token);
     }
 
     /**

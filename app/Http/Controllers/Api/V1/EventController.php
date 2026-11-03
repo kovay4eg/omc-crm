@@ -10,7 +10,6 @@ use App\Http\Requests\Api\V1\RescheduleEventRequest;
 use App\Http\Resources\Api\V1\EventResource;
 use App\Models\Event;
 use App\Models\EventHistory;
-use App\Services\GoogleCalendarService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Arr;
@@ -76,8 +75,6 @@ class EventController extends Controller
 
             return $event;
         });
-
-        app(GoogleCalendarService::class)->createEvent($request->user(), $event);
 
         return new EventResource($this->loadEvent($event));
     }
@@ -192,8 +189,22 @@ class EventController extends Controller
         if (! $registrationEnabled) {
             $data['registration_type'] = 'none';
             $data['google_form_url'] = null;
+            $data['google_sheet_url'] = null;
+            $data['google_sheet_name'] = null;
+            $data['google_sync_user_id'] = null;
         } elseif (($data['registration_type'] ?? $event?->registration_type) !== 'external') {
             $data['google_form_url'] = null;
+            $data['google_sheet_url'] = null;
+            $data['google_sheet_name'] = null;
+            $data['google_sync_user_id'] = null;
+        } elseif (array_key_exists('google_sheet_url', $data)) {
+            if (blank($data['google_sheet_url'])) {
+                $data['google_sheet_url'] = null;
+                $data['google_sheet_name'] = null;
+                $data['google_sync_user_id'] = null;
+            } elseif ($request->user()->hasGoogleConnection()) {
+                $data['google_sync_user_id'] = $request->user()->getKey();
+            }
         }
 
         return $data;

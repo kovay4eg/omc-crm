@@ -3,11 +3,9 @@
 namespace App\Filament\Resources\Events\Pages;
 
 use App\Filament\Resources\Events\EventResource;
+use App\Models\EventHistory;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
-use App\Models\EventHistory;
-use App\Services\GoogleCalendarService;
-use Filament\Notifications\Notification;
 
 class CreateEvent extends CreateRecord
 {
@@ -16,6 +14,7 @@ class CreateEvent extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['user_id'] = Auth::id();
+
         return $data;
     }
 
@@ -35,20 +34,8 @@ class CreateEvent extends CreateRecord
         // SYSTEM LOG
         system_log(
             'create_event',
-            'Створено івент: ' . $this->record->title
+            'Створено івент: '.$this->record->title
         );
 
-        // GOOGLE SYNC
-        $success = app(GoogleCalendarService::class)
-            ->createEvent(Auth::user(), $this->record);
-
-        // ПОПАП ЯКЩО GOOGLE НЕ СПРАЦЮВАВ
-        if (!$success) {
-            Notification::make()
-                ->title('Google не відповів')
-                ->body('Івент створено, але не синхронізовано з Google')
-                ->warning()
-                ->send();
-        }
     }
 }

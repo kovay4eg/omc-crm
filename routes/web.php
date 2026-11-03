@@ -103,6 +103,17 @@ Route::get('/login', function () {
     return redirect('/admin/login');
 })->name('login');
 
-Route::get('/google/redirect', [GoogleController::class, 'redirect'])->name('google.connect');
+Route::middleware('auth')->group(function (): void {
+    Route::get('/google/redirect', [GoogleController::class, 'redirect'])
+        ->name('google.connect');
+    Route::delete('/google/disconnect', [GoogleController::class, 'disconnect'])
+        ->name('google.disconnect');
+});
 
-Route::get('/google/callback', [GoogleController::class, 'callback']);
+Route::get('/google/mobile/{token}', [GoogleController::class, 'mobileRedirect'])
+    ->middleware(['signed', 'throttle:10,1'])
+    ->name('google.mobile.redirect');
+
+Route::get('/google/callback', [GoogleController::class, 'callback'])
+    ->middleware('throttle:20,1')
+    ->name('google.callback');

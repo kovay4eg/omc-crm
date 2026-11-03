@@ -51,6 +51,13 @@ class EventRequest extends FormRequest
                 'url:http,https',
                 'max:2048',
             ],
+            'google_sheet_url' => [
+                'nullable',
+                'url:https',
+                'max:2048',
+                'regex:~^https://docs\.google\.com/spreadsheets/d/[a-zA-Z0-9_-]+~',
+            ],
+            'google_sheet_name' => ['nullable', 'string', 'max:255'],
             'max_participants' => ['nullable', 'integer', 'min:1'],
             'show_available_slots' => ['sometimes', 'boolean'],
             'status' => [...$required, Rule::in(['draft', 'published'])],
