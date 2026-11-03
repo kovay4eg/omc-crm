@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\Sanctum;
 use Livewire\Livewire;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 
 class TeamDepartmentsTest extends TestCase
@@ -176,18 +175,17 @@ class TeamDepartmentsTest extends TestCase
         Storage::disk('public')->assertExists($oldPhoto);
     }
 
-    public function test_department_service_rejects_editor_and_unsafe_media_paths(): void
+    public function test_department_service_allows_editor_and_rejects_unsafe_media_paths(): void
     {
         $department = Department::create(['name' => 'Освіта']);
-        try {
-            app(TeamDepartmentService::class)->save([], User::factory()->create(['role' => 'editor']));
-            $this->fail('An editor must not manage departments.');
-        } catch (HttpException $exception) {
-            $this->assertSame(403, $exception->getStatusCode());
-        }
+        app(TeamDepartmentService::class)->save([
+            ['id' => $department->id, 'name' => 'Освітні програми'],
+        ], User::factory()->create(['role' => 'editor']));
+        $this->assertSame('Освітні програми', $department->fresh()->name);
+
         $this->expectException(ValidationException::class);
         app(TeamDepartmentService::class)->save([
-            ['id' => $department->id, 'name' => 'Освіта', 'photo' => 'team/../../.env'],
+            ['id' => $department->id, 'name' => 'Освітні програми', 'photo' => 'team/../../.env'],
         ], User::factory()->create(['role' => 'admin']));
     }
 

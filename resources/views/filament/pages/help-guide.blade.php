@@ -103,6 +103,7 @@
                 <a href="#smm">SMM і соцмережі</a>
                 <a href="#team">Працівники</a>
                 <a href="#documents">Документи</a>
+                <a href="#holiday">Святкове оформлення</a>
                 <a href="#help">Якщо щось не так</a>
             </nav>
         </section>
@@ -202,6 +203,14 @@
             <div class="omc-guide__grid">
                 <article class="omc-guide__card"><div class="omc-guide__card-body"><h3>Просте правило для всіх документів</h3><ul class="omc-guide__list"><li>Натисни <b>«Створити»</b>, напиши зрозумілу назву та завантаж фінальний файл.</li><li>Для <b>звітності</b> додай рік; підтримуються PDF, Word та Excel.</li><li>Для <b>календарного плану</b> заповни назву та рік; підтримуються PDF, Word та Excel.</li><li>Для <b>статуту</b> додай назву й файл PDF або Word.</li><li>Перед завантаженням перейменуй файл зрозуміло: <b>zvit-2026.pdf</b>, а не <b>final_new_2.pdf</b>.</li></ul><div class="omc-guide__hint">Після збереження документ одразу можна відкрити або завантажити зі списку в адмінці.</div></div></article>
                 <aside class="omc-guide__card"><div class="guide-window"><div class="guide-window__top"><i class="guide-window__dot"></i><i class="guide-window__dot"></i><i class="guide-window__dot"></i><span class="guide-window__title">Новий документ</span></div><div class="guide-field">Назва документа *</div><div class="guide-field">Рік: 2026 *</div><div class="guide-file">📄 PDF / DOCX / XLSX</div><span class="guide-button">СТВОРИТИ</span></div></aside>
+            </div>
+        </section>
+
+        <section id="holiday" class="omc-guide__section">
+            <div class="omc-guide__section-heading"><span class="guide-icon">❄️</span><div><h2>Святкове оформлення</h2><p>На головній сторінці адмін-панелі. Доступно лише AdminPro.</p></div></div>
+            <div class="omc-guide__grid">
+                <article class="omc-guide__card"><div class="omc-guide__card-body"><h3>Два прості перемикачі</h3><ul class="omc-guide__list"><li><b>«Святкові логотипи»</b> вмикає автоматичну тематичну оздобу логотипа у визначені святкові дні. Поза цими датами сайт показує звичайний логотип.</li><li>Наведи курсор на святковий логотип — з’явиться привітання від Полтавського обласного молодіжного центру.</li><li><b>«Гірлянда і сніг»</b> окремо вмикає легку гірлянду під шапкою та декоративний сніг на всіх публічних сторінках.</li><li>Сніг не перекриває кнопки й не заважає натисканням. Для користувачів із вимкненими анімаціями рух снігу автоматично не запускається.</li></ul><div class="omc-guide__hint">Зміна застосовується одразу після натискання кнопки. Онови відкриту сторінку сайту, щоб побачити результат.</div></div></article>
+                <aside class="omc-guide__card"><div class="guide-window"><div class="guide-window__top"><i class="guide-window__dot"></i><i class="guide-window__dot"></i><i class="guide-window__dot"></i><span class="guide-window__title">Святкове оформлення</span></div><span class="guide-toggle">✨ Святкові логотипи</span><span class="guide-toggle">❄️ Гірлянда і сніг</span><div class="guide-file">Лише для AdminPro</div></div></aside>
             </div>
         </section>
 

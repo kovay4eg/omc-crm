@@ -1,5 +1,19 @@
 @php
     $settings = \App\Models\HomepageSetting::first();
+    $siteAppearanceSettings = \App\Models\SiteSetting::first();
+    $holidayTheme = $siteAppearanceSettings?->holiday_logos_enabled
+        ? \App\Support\HolidayTheme::current()
+        : null;
+    $winterDecorEnabled = (bool) $siteAppearanceSettings?->winter_decor_enabled;
+    $holidayIcons = [
+        'new-year' => ['❄', '✦'],
+        'christmas' => ['★', '✦'],
+        'easter' => ['❀', '◉'],
+        'vyshyvanka' => ['✣', '◆'],
+        'independence' => ['🇺🇦', '✦'],
+        'youth' => ['✦', '●'],
+    ];
+    $activeHolidayIcons = $holidayTheme ? ($holidayIcons[$holidayTheme['key']] ?? ['✦', '•']) : [];
     $isStandalonePublicPage = request()->routeIs(
         'event-summaries.*',
         'events.show',
@@ -9,6 +23,10 @@
 @endphp
 
 <x-accessibility-controls />
+
+@if ($winterDecorEnabled)
+    <x-winter-decoration />
+@endif
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -64,6 +82,21 @@
         filter: none !important;
         backface-visibility: hidden;
     }
+
+    .logo > a { position: relative; display: block; text-decoration: none; }
+    .logo--holiday > a::after { position: absolute; right: -7px; bottom: -7px; left: -7px; height: 3px; content: ''; border-radius: 999px; background: linear-gradient(90deg, transparent, var(--holiday-accent, #4c64ff), transparent); opacity: .75; }
+    .holiday-logo-ornament { position: absolute; z-index: 2; color: var(--holiday-accent, #4c64ff); font-size: 17px; line-height: 1; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(31, 41, 55, .16)); }
+    .holiday-logo-ornament--one { top: -9px; right: -8px; transform: rotate(9deg); }
+    .holiday-logo-ornament--two { bottom: -7px; left: -10px; font-size: 13px; transform: rotate(-12deg); }
+    .logo[data-holiday-theme='new-year'] { --holiday-accent: #5b7cff; }
+    .logo[data-holiday-theme='christmas'] { --holiday-accent: #d6a21c; }
+    .logo[data-holiday-theme='easter'] { --holiday-accent: #e3a72f; }
+    .logo[data-holiday-theme='vyshyvanka'] { --holiday-accent: #dc2626; }
+    .logo[data-holiday-theme='independence'] { --holiday-accent: #f4c430; }
+    .logo[data-holiday-theme='youth'] { --holiday-accent: #4665ff; }
+    .holiday-logo-tooltip { position: absolute; top: calc(100% + 18px); left: 0; width: max-content; max-width: min(360px, 78vw); padding: 10px 13px; border: 1px solid rgba(76, 100, 255, .22); border-radius: 11px; background: rgba(17, 24, 39, .94); box-shadow: 0 12px 30px rgba(17, 24, 39, .22); color: #fff; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; line-height: 1.4; opacity: 0; pointer-events: none; transform: translateY(-5px); transition: opacity .18s ease, transform .18s ease; }
+    .logo--holiday:hover .holiday-logo-tooltip,
+    .logo--holiday:focus-within .holiday-logo-tooltip { opacity: 1; transform: translateY(0); }
 
     .nav {
         display: flex;
@@ -500,8 +533,8 @@
 
 <header class="header" id="header">
     <div class="container-1200 header-inner">
-        <div class="logo">
-            <a href="/">
+        <div class="logo {{ $holidayTheme ? 'logo--holiday' : '' }}" @if ($holidayTheme) data-holiday-theme="{{ $holidayTheme['key'] }}" @endif>
+            <a href="/" @if ($holidayTheme) title="{{ $holidayTheme['greeting'] }}" aria-label="{{ $holidayTheme['greeting'] }}" @endif>
                 @php
                     $defaultLogo = !empty($settings?->logo)
                         ? \App\Support\MediaUrl::storage($settings->logo)
@@ -515,6 +548,11 @@
                     alt="Логотип"
                     draggable="false"
                 >
+                @if ($holidayTheme)
+                    <span class="holiday-logo-ornament holiday-logo-ornament--one" aria-hidden="true">{{ $activeHolidayIcons[0] }}</span>
+                    <span class="holiday-logo-ornament holiday-logo-ornament--two" aria-hidden="true">{{ $activeHolidayIcons[1] }}</span>
+                    <span class="holiday-logo-tooltip" role="tooltip">{{ $holidayTheme['greeting'] }}</span>
+                @endif
             </a>
         </div>
 

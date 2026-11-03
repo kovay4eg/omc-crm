@@ -13,6 +13,8 @@ class SiteSetting extends Model
         'team_banner',
         'maintenance_mode',
         'mobile_maintenance_mode',
+        'holiday_logos_enabled',
+        'winter_decor_enabled',
     ];
 
     protected function casts(): array
@@ -20,6 +22,8 @@ class SiteSetting extends Model
         return [
             'maintenance_mode' => 'boolean',
             'mobile_maintenance_mode' => 'boolean',
+            'holiday_logos_enabled' => 'boolean',
+            'winter_decor_enabled' => 'boolean',
         ];
     }
 
