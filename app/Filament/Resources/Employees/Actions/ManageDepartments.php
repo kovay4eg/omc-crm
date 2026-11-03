@@ -23,7 +23,7 @@ class ManageDepartments
     {
         return Action::make('manage_departments')
             ->label('Редагувати відділи')
-            ->visible(fn (): bool => auth()->user()?->getActiveRole() === 'admin')
+            ->visible(fn (): bool => in_array(auth()->user()?->getActiveRole(), ['admin', 'editor'], true))
             ->modalWidth('5xl')
             ->modalSubmitActionLabel('Зберегти')
             ->mountUsing(function ($form): void {

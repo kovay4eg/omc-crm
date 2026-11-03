@@ -123,10 +123,23 @@ class TeamValidationTest extends TestCase
         $this->assertNull($department->fresh()->slider_photos);
     }
 
-    public function test_editor_cannot_open_department_management_action(): void
+    public function test_editor_can_manage_departments_but_content_user_cannot(): void
     {
         $this->actingAs(User::factory()->create(['role' => 'editor']));
         Filament::setCurrentPanel(Filament::getPanel('admin'));
+        $department = Department::create(['name' => 'Освіта']);
+        Livewire::test(ListEmployees::class)
+            ->assertTableActionVisible('manage_departments')
+            ->callTableAction('manage_departments', data: ['departments' => [[
+                'id' => $department->id,
+                'name' => 'Освіта',
+                'description' => 'Оновлено редактором.',
+                'slider_enabled' => false,
+            ]]])
+            ->assertHasNoTableActionErrors();
+        $this->assertSame('Оновлено редактором.', $department->fresh()->description);
+
+        $this->actingAs(User::factory()->create(['role' => 'content']));
         Livewire::test(ListEmployees::class)->assertTableActionHidden('manage_departments');
     }
 
