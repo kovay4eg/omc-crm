@@ -170,16 +170,22 @@ class TeamDepartmentApiTest extends TestCase
         $this->postJson('/api/v1/team/departments', ['name' => 'Освіта', 'description' => str_repeat('x', 10001)])->assertUnprocessable()->assertJsonValidationErrors('description');
     }
 
-    public function test_non_admin_can_read_but_cannot_manage_departments(): void
+    public function test_editor_can_manage_departments_but_content_user_cannot(): void
     {
         $department = Department::create(['name' => 'Освіта']);
-        foreach (['editor', 'content'] as $role) {
-            Sanctum::actingAs(User::factory()->create(['role' => $role]));
-            $this->getJson('/api/v1/team/options')->assertOk();
-            $this->postJson('/api/v1/team/departments', ['name' => 'Інший'])->assertForbidden();
-            $this->postJson('/api/v1/team/departments/'.$department->id, $this->updateData($department))->assertForbidden();
-            $this->deleteJson('/api/v1/team/departments/'.$department->id, ['revision' => TeamDepartmentContent::revision($department)])->assertForbidden();
-        }
+        Sanctum::actingAs(User::factory()->create(['role' => 'editor']));
+        $this->postJson('/api/v1/team/departments/'.$department->id, $this->updateData($department, [
+            'description' => 'Оновлено редактором.',
+        ]))->assertOk();
+        $this->assertSame('Оновлено редактором.', $department->fresh()->description);
+
+        Sanctum::actingAs(User::factory()->create(['role' => 'content']));
+        $this->getJson('/api/v1/team/options')->assertOk();
+        $this->postJson('/api/v1/team/departments', ['name' => 'Інший'])->assertForbidden();
+        $this->postJson('/api/v1/team/departments/'.$department->id, $this->updateData($department))->assertForbidden();
+        $this->deleteJson('/api/v1/team/departments/'.$department->id, [
+            'revision' => TeamDepartmentContent::revision($department),
+        ])->assertForbidden();
     }
 
     public function test_occupied_department_is_protected_and_empty_department_media_is_cleaned_up(): void

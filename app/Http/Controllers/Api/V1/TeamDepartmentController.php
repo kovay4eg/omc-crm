@@ -28,7 +28,7 @@ class TeamDepartmentController extends Controller
 
     public function destroy(Request $request, Department $department): JsonResponse
     {
-        $this->authorizeAdmin($request);
+        $this->authorizeManager($request);
         $request->validate(['revision' => ['required', 'string', 'size:64']]);
         $media = DB::transaction(function () use ($request, $department): array {
             $department = Department::query()->lockForUpdate()->findOrFail($department->id);
@@ -51,7 +51,7 @@ class TeamDepartmentController extends Controller
 
     private function save(Request $request, Department $department): DepartmentResource
     {
-        $this->authorizeAdmin($request);
+        $this->authorizeManager($request);
         if (is_string($request->input('name'))) {
             $request->merge(['name' => trim(preg_replace('/^відділ(?:\s+|$)/iu', '', trim($request->input('name'))))]);
         }
@@ -154,8 +154,12 @@ class TeamDepartmentController extends Controller
         return MediaStorage::paths([$department->photo, $department->slider_photos]);
     }
 
-    private function authorizeAdmin(Request $request): void
+    private function authorizeManager(Request $request): void
     {
-        abort_unless($request->user()->isAdmin(), 403, 'Керування відділами доступне лише адміністраторам.');
+        abort_unless(
+            $request->user()->isAdmin() || $request->user()->isEditor(),
+            403,
+            'Керування відділами доступне адміністраторам і редакторам.',
+        );
     }
 }

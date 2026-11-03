@@ -16,7 +16,7 @@ class TeamDepartmentService
 {
     public function save(array $departments, User $actor): void
     {
-        abort_unless($actor->isAdmin(), 403);
+        abort_unless($actor->isAdmin() || $actor->isEditor(), 403);
 
         foreach ($departments as &$departmentData) {
             if (isset($departmentData['name']) && is_string($departmentData['name'])) {
