@@ -544,7 +544,7 @@
                 <div class="dropdown-menu" id="aboutSubmenu">
                     <a href="#about-section">Про нас</a>
 
-                    <a href="#team-section" class="about-hidden-link">
+                    <a href="#team-section">
                         Команда
                     </a>
 
