@@ -60,12 +60,12 @@ class User extends Authenticatable implements FilamentUser, TwoFactorAuthenticat
      */
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->getActiveRole() === 'admin';
     }
 
     public function isAdminPro(): bool
     {
-        return $this->role === 'admin' && AdminProAssignment::currentUserId() === $this->getKey();
+        return $this->getActiveRole() === 'admin' && AdminProAssignment::currentUserId() === $this->getKey();
     }
 
     public function adminProMailAccess(): HasOne
@@ -80,12 +80,12 @@ class User extends Authenticatable implements FilamentUser, TwoFactorAuthenticat
 
     public function isEditor(): bool
     {
-        return $this->role === 'editor';
+        return $this->getActiveRole() === 'editor';
     }
 
     public function isContent(): bool
     {
-        return $this->role === 'content';
+        return $this->getActiveRole() === 'content';
     }
 
     /**
@@ -94,7 +94,7 @@ class User extends Authenticatable implements FilamentUser, TwoFactorAuthenticat
     public function getActiveRole(): string
     {
         // якщо адмін і включений режим перегляду
-        if ($this->isAdmin() && session()->has('preview_role')) {
+        if ($this->role === 'admin' && session()->has('preview_role')) {
             return session('preview_role');
         }
 
