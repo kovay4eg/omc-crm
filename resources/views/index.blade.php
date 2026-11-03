@@ -949,6 +949,11 @@
     </div>
 </section>
 
+@include('team.index', [
+    'departments' => $departments,
+    'settings' => $teamSettings
+])
+
 <div class="about-toggle-wrapper">
     <button id="toggleAboutMore" class="about-toggle-btn">
         <span class="about-toggle-text">ПОКАЗАТИ БІЛЬШЕ</span>
@@ -957,11 +962,6 @@
 </div>
 
 <div id="aboutMoreWrapper" class="about-more-wrapper">
-    @include('team.index', [
-        'departments' => $departments,
-        'settings' => $teamSettings
-    ])
-
     @include('statuts.status')
     @include('reporting.reporting')
     @include('calendar_plan.calendar_plan')
@@ -990,7 +990,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const header = document.getElementById('header');
 
     const hiddenSections = [
-        '#team-section',
         '#statut-section',
         '#reports-section',
         '#calendar-plan-section',
@@ -1155,6 +1154,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         }, 700);
+    } else if (window.location.hash === '#team-section') {
+        setTimeout(() => {
+            document.getElementById('team-section')?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }, 180);
     }
 
     if ('scrollRestoration' in history) {

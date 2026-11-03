@@ -225,6 +225,13 @@ class TeamDepartmentsTest extends TestCase
 
         $this->get('/')
             ->assertOk()
+            ->assertSeeInOrder([
+                'id="about-section"',
+                'id="team-section"',
+                'id="toggleAboutMore"',
+                'id="aboutMoreWrapper"',
+                'id="statut-section"',
+            ], false)
             ->assertSeeInOrder(['Працівник Перший', 'Працівник Другий'])
             ->assertSee('&lt;script&gt;alert(1)&lt;/script&gt;', false)
             ->assertSee('&lt;img src=x onerror=alert(1)&gt;', false)
