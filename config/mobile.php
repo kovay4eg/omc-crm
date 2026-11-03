@@ -55,8 +55,8 @@ return [
             'update_url' => env('MOBILE_ANDROID_UPDATE_URL', 'https://omc.pl.ua/download/android'),
         ],
         'ios' => [
-            'latest_version' => env('MOBILE_IOS_LATEST_VERSION', '1.0.0'),
-            'latest_build_number' => (int) env('MOBILE_IOS_LATEST_BUILD_NUMBER', 1),
+            'latest_version' => env('MOBILE_IOS_LATEST_VERSION', '1.0.15'),
+            'latest_build_number' => (int) env('MOBILE_IOS_LATEST_BUILD_NUMBER', 18),
             'minimum_version' => env('MOBILE_IOS_MINIMUM_VERSION', '1.0.0'),
             'minimum_build_number' => (int) env('MOBILE_IOS_MINIMUM_BUILD_NUMBER', 1),
             'update_url' => env('MOBILE_IOS_UPDATE_URL', 'https://omc.pl.ua/download/ios'),

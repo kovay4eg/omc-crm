@@ -186,10 +186,14 @@
         </section>
 
         <section id="team" class="omc-guide__section">
-            <div class="omc-guide__section-heading"><span class="guide-icon">👥</span><div><h2>Працівники хабу</h2><p>Меню: «Працівники хабу» → «Створити».</p></div></div>
+            <div class="omc-guide__section-heading"><span class="guide-icon">👥</span><div><h2>Працівники та відділи команди</h2><p>Меню: «Працівники хабу».</p></div></div>
             <div class="omc-guide__grid">
-                <article class="omc-guide__card"><div class="omc-guide__card-body"><h3>Додавання працівника</h3><ul class="omc-guide__list"><li>Заповни ім’я, прізвище та, за потреби, по батькові.</li><li>Обери посаду й відділ зі списків.</li><li>Додай портретне фото. У редакторі обріж його у пропорції <b>3:4</b> — так фото виглядатиме акуратно на сайті.</li><li>Збережи зміни. Для коректного вигляду обирай чітке вертикальне фото людини.</li></ul></div></article>
-                <aside class="omc-guide__card"><div class="guide-window"><div class="guide-window__top"><i class="guide-window__dot"></i><i class="guide-window__dot"></i><i class="guide-window__dot"></i><span class="guide-window__title">Працівник</span></div><div class="guide-file">👤 Фото 3 : 4</div><div class="guide-field">Ім’я *</div><div class="guide-field">Посада *</div><span class="guide-button">ЗБЕРЕГТИ</span></div></aside>
+                <article class="omc-guide__card"><div class="omc-guide__card-body"><h3>Додати або відредагувати працівника</h3><ul class="omc-guide__list"><li>Для нового працівника натисни <b>«Додати нового працівника»</b>. Щоб змінити наявного — натисни <b>«Редагувати»</b> у його рядку.</li><li>Заповни ім’я, прізвище та, за потреби, по батькові й короткий опис працівника.</li><li>Обери посаду й відділ зі списків. Нові посади створюються кнопкою <b>«Редагувати посади»</b>.</li><li>Додай портретне фото. У редакторі обріж його у пропорції <b>3:4</b>; підтримуються JPEG, PNG і WebP до 8 МБ.</li><li>Порядок карток на сайті змінюється перетягуванням рядків у списку працівників.</li></ul><div class="omc-guide__hint">Після збереження перевір картку в розділі «Команда» на головній сторінці сайту.</div></div></article>
+                <aside class="omc-guide__card"><div class="guide-window"><div class="guide-window__top"><i class="guide-window__dot"></i><i class="guide-window__dot"></i><i class="guide-window__dot"></i><span class="guide-window__title">Працівник</span></div><div class="guide-file">👤 Фото 3 : 4</div><div class="guide-field">Ім’я та прізвище *</div><div class="guide-field">Опис працівника</div><div class="guide-field">Посада й відділ *</div><span class="guide-button">ЗБЕРЕГТИ</span></div></aside>
+            </div>
+            <div class="omc-guide__grid" style="margin-top:1rem">
+                <article class="omc-guide__card"><div class="omc-guide__card-body"><h3>Редагування відділів</h3><ul class="omc-guide__list"><li>Натисни <b>«Редагувати відділи»</b> над списком працівників. Ця кнопка доступна адміністратору.</li><li>Для кожного відділу можна змінити назву, опис і загальне фото або додати новий відділ.</li><li>Перемикач <b>«Увімкнути фотослайдер»</b> показує галерею відділу на сайті. Можна завантажити до 20 фото, відредагувати їх і перетягнути для зміни порядку.</li><li>Якщо тимчасово вимкнути слайдер, завантажені фото не видаляються — вони просто не показуються на сайті.</li></ul></div></article>
+                <article class="omc-guide__card"><div class="omc-guide__card-body"><h3>Загальне фото та безпечне збереження</h3><ul class="omc-guide__list"><li>Кнопка <b>«Редагувати загальне фото»</b> змінює широкий банер команди; рекомендована пропорція — <b>21:9</b>.</li><li>Фото працівника, відділу та слайдера можна попередньо переглянути й відкрити у вбудованому редакторі.</li><li>Якщо форма не збереглася через помилку в іншому полі, раніше завантажені фото залишаються на місці.</li><li>Перед видаленням посади або відділу переконайся, що вони не призначені працівникам.</li></ul></div></article>
             </div>
         </section>
 
@@ -208,6 +212,7 @@
                 <details><summary>Не видно підсумок заходу</summary><p>Перевір стан підсумку: має бути «Опубліковано». Чернетка доступна лише в адмінці та через попередній перегляд.</p></details>
                 <details><summary>Іконка соцмережі не з’явилась</summary><p>У «Головній сторінці» увімкни перемикач цієї мережі, встав посилання з https:// та натисни «Зберегти».</p></details>
                 <details><summary>Фото виглядає розтягнутим</summary><p>Завантаж інше фото або обріж його у вбудованому редакторі. Для працівників використовуй вертикальне фото 3:4.</p></details>
+                <details><summary>Зміни в команді не видно на сайті</summary><p>Перевір, що натиснуто «Зберегти», онови головну сторінку сайту й прокрути до розділу «Команда». Для слайдера відділу також має бути ввімкнений перемикач «Увімкнути фотослайдер».</p></details>
             </div>
         </section>
     </div>
