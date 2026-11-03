@@ -13,6 +13,7 @@ class Registration extends Model
         'phone',
         'source',
         'external_url',
+        'google_row_key',
     ];
 
     public function event()

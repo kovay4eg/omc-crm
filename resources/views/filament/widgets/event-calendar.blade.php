@@ -8,7 +8,7 @@
             <p class="text-sm text-gray-400">Перегляд по годинах</p>
         </div>
 
-        <!-- 🔥 GOOGLE BLOCK (ДОДАНО) -->
+        @php($googleUser = auth()->user())
         <div style="
             margin-bottom:12px;
             padding:10px 12px;
@@ -17,22 +17,32 @@
             display:flex;
             justify-content:space-between;
             align-items:center;
+            gap:10px;
+            flex-wrap:wrap;
         ">
             <div style="color:#9ca3af;font-size:13px;">
-                Додати івенти у ваш Google Calendar
+                @if ($googleUser?->hasGoogleConnection())
+                    Google підключено: {{ $googleUser->google_email ?: 'акаунт без email' }}
+                @else
+                    Google Calendar і таблиці відповідей Forms
+                @endif
             </div>
 
-            <a href="{{ route('google.connect') }}"
-               style="
-                background:#2563eb;
-                color:white;
-                padding:6px 12px;
-                border-radius:8px;
-                font-size:13px;
-                text-decoration:none;
-               ">
-                Підключити
-            </a>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <a href="{{ route('google.connect') }}"
+                   style="background:#2563eb;color:white;padding:6px 12px;border-radius:8px;font-size:13px;text-decoration:none;">
+                    {{ $googleUser?->hasGoogleConnection() ? 'Перепідключити' : 'Підключити' }}
+                </a>
+                @if ($googleUser?->hasGoogleConnection())
+                    <form method="POST" action="{{ route('google.disconnect') }}">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" style="background:#374151;border:0;color:white;padding:6px 12px;border-radius:8px;font-size:13px;cursor:pointer;">
+                            Відключити
+                        </button>
+                    </form>
+                @endif
+            </div>
         </div>
 
         @php

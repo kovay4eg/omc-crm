@@ -8,6 +8,11 @@ Schedule::command('admin-pro-mail:check')
     ->everyMinute()
     ->withoutOverlapping(5);
 
+Schedule::command('google:sync-registrations')
+    ->everyTenMinutes()
+    ->withoutOverlapping(15)
+    ->runInBackground();
+
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');

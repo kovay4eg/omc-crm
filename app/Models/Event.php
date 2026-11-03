@@ -23,6 +23,10 @@ class Event extends Model
         'has_registration_button',
         'registration_type',
         'google_form_url',
+        'google_sheet_url',
+        'google_sheet_name',
+        'google_sync_user_id',
+        'google_last_synced_at',
         'max_participants',
         'show_available_slots',
         'user_id',
@@ -48,6 +52,7 @@ class Event extends Model
         'rescheduled_at' => 'datetime',
         'cancel_public' => 'boolean',
         'reschedule_public' => 'boolean',
+        'google_last_synced_at' => 'datetime',
         'status' => EventStatus::class,
     ];
 
@@ -64,6 +69,11 @@ class Event extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function googleSyncUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'google_sync_user_id');
     }
 
     public function summary(): HasOne

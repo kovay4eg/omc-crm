@@ -173,6 +173,25 @@ class EventForm
                     && $get('registration_type') === 'external'
                 ),
 
+            TextInput::make('google_sheet_url')
+                ->label('Таблиця відповідей Google Forms')
+                ->url()
+                ->helperText('У Google Forms відкрий «Відповіді» → значок Google Sheets і встав посилання на створену таблицю. Заявки імпортуються кожні 10 хвилин.')
+                ->visible(fn ($get) =>
+                    $get('has_registration_button')
+                    && $get('registration_type') === 'external'
+                ),
+
+            TextInput::make('google_sheet_name')
+                ->label('Назва аркуша з відповідями')
+                ->maxLength(255)
+                ->helperText('Можна залишити порожнім — буде використано перший аркуш таблиці.')
+                ->visible(fn ($get) =>
+                    $get('has_registration_button')
+                    && $get('registration_type') === 'external'
+                    && filled($get('google_sheet_url'))
+                ),
+
             TextInput::make('max_participants')
                 ->label('Макс. кількість учасників')
                 ->numeric()
