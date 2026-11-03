@@ -10,8 +10,10 @@ use App\Models\Position;
 use App\Models\User;
 use App\Services\TeamDepartmentService;
 use Filament\Facades\Filament;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\Sanctum;
@@ -104,6 +106,74 @@ class TeamDepartmentsTest extends TestCase
         $this->assertSame('Початковий опис', $keep->fresh()->description);
         $this->assertDatabaseHas('departments', ['id' => $remove->id]);
         $this->assertDatabaseHas('employees', ['department_id' => $remove->id]);
+    }
+
+    public function test_department_service_keeps_old_media_when_the_transaction_rolls_back(): void
+    {
+        Storage::fake('public');
+        $oldPhoto = 'team/departments/old.jpg';
+        $newPhoto = 'team/departments/new.jpg';
+        Storage::disk('public')->put($oldPhoto, 'old');
+        Storage::disk('public')->put($newPhoto, 'new');
+        $first = Department::create(['name' => 'Перший', 'photo' => $oldPhoto]);
+        $second = Department::create(['name' => 'Другий']);
+        DB::statement('CREATE TRIGGER fail_second_department_update BEFORE UPDATE ON departments '
+            .'WHEN OLD.id = '.(int) $second->id." BEGIN SELECT RAISE(ABORT, 'forced rollback'); END");
+
+        try {
+            app(TeamDepartmentService::class)->save([
+                ['id' => $first->id, 'name' => 'Перший', 'photo' => $newPhoto],
+                ['id' => $second->id, 'name' => 'Другий оновлений'],
+            ], User::factory()->create(['role' => 'admin']));
+            $this->fail('The forced database failure must roll the transaction back.');
+        } catch (QueryException) {
+            // Очікуваний збій другого UPDATE перевіряє атомарність БД і файлів.
+        }
+
+        $this->assertSame($oldPhoto, $first->fresh()->photo);
+        $this->assertSame('Другий', $second->fresh()->name);
+        Storage::disk('public')->assertExists($oldPhoto);
+        Storage::disk('public')->assertMissing($newPhoto);
+    }
+
+    public function test_department_service_deletes_replaced_media_only_after_success(): void
+    {
+        Storage::fake('public');
+        $oldPhoto = 'team/departments/old.jpg';
+        $newPhoto = 'team/departments/new.jpg';
+        Storage::disk('public')->put($oldPhoto, 'old');
+        Storage::disk('public')->put($newPhoto, 'new');
+        $department = Department::create(['name' => 'Освіта', 'photo' => $oldPhoto]);
+
+        app(TeamDepartmentService::class)->save([
+            ['id' => $department->id, 'name' => 'Освіта', 'photo' => $newPhoto],
+        ], User::factory()->create(['role' => 'admin']));
+
+        $this->assertSame($newPhoto, $department->fresh()->photo);
+        Storage::disk('public')->assertMissing($oldPhoto);
+        Storage::disk('public')->assertExists($newPhoto);
+    }
+
+    public function test_media_model_keeps_old_file_when_its_database_update_fails(): void
+    {
+        Storage::fake('public');
+        $oldPhoto = 'team/departments/old.jpg';
+        $newPhoto = 'team/departments/new.jpg';
+        Storage::disk('public')->put($oldPhoto, 'old');
+        Storage::disk('public')->put($newPhoto, 'new');
+        $department = Department::create(['name' => 'Освіта', 'photo' => $oldPhoto]);
+        DB::statement('CREATE TRIGGER fail_department_media_update BEFORE UPDATE ON departments '
+            .'WHEN OLD.id = '.(int) $department->id." BEGIN SELECT RAISE(ABORT, 'forced update failure'); END");
+
+        try {
+            $department->update(['photo' => $newPhoto]);
+            $this->fail('The forced database update failure must be reported.');
+        } catch (QueryException) {
+            // Подія updated не викликається після невдалого SQL-запиту.
+        }
+
+        $this->assertSame($oldPhoto, $department->fresh()->photo);
+        Storage::disk('public')->assertExists($oldPhoto);
     }
 
     public function test_department_service_rejects_editor_and_unsafe_media_paths(): void
