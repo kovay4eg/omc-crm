@@ -49,9 +49,18 @@ class HolidayAppearanceTest extends TestCase
             $this->get('/')
                 ->assertOk()
                 ->assertSee('data-holiday-theme="christmas"', false)
+                ->assertSee('images/holiday/logos/christmas.svg', false)
+                ->assertDontSee('images/holiday/logos/christmas.png', false)
                 ->assertSee('Полтавський обласний молодіжний центр вітає вас з Різдвом Христовим!')
                 ->assertSee('id="omcSnowfall"', false)
-                ->assertSee('omc-winter-garland', false);
+                ->assertSee('omc-winter-garland', false)
+                ->assertSee('position: absolute', false)
+                ->assertSee('--omc-winter-reserve', false)
+                ->assertSee('id="omcHeaderClearance"', false)
+                ->assertSee('syncHeaderGeometry', false)
+                ->assertSee('initializeGarlandClearance', false)
+                ->assertSee('omc-winter-twinkle', false)
+                ->assertSee('ResizeObserver', false);
 
             SiteSetting::query()->update([
                 'holiday_logos_enabled' => false,
@@ -65,6 +74,50 @@ class HolidayAppearanceTest extends TestCase
         } finally {
             CarbonImmutable::setTestNow();
         }
+    }
+
+    public function test_local_holiday_logo_preview_lists_all_svg_themes(): void
+    {
+        $response = $this->get('/holiday-logo-preview')->assertOk();
+
+        foreach (['new-year', 'christmas', 'easter', 'vyshyvanka', 'independence', 'youth'] as $theme) {
+            $response->assertSee("images/holiday/logos/{$theme}.svg", false);
+            $response->assertSee("holiday-preview={$theme}", false);
+            $response->assertSee('logo-version=', false);
+        }
+    }
+
+    #[DataProvider('holidayPreviewThemes')]
+    public function test_each_holiday_preview_uses_its_own_svg(string $theme): void
+    {
+        $response = $this->get("/?holiday-preview={$theme}")
+            ->assertOk()
+            ->assertSee("data-holiday-theme=\"{$theme}\"", false)
+            ->assertSee("images/holiday/logos/{$theme}.svg?v=", false);
+
+        $markup = file_get_contents(public_path("images/holiday/logos/{$theme}.svg"));
+
+        $this->assertIsString($markup);
+        $this->assertStringContainsString("data-holiday-logo=\"{$theme}\"", $markup);
+        $this->assertStringContainsString('data-source="approved-reference-board"', $markup);
+        $this->assertMatchesRegularExpression('/<svg\b[^>]*\bviewBox="[^"]+"/i', $markup);
+        $this->assertMatchesRegularExpression('/<(?:path|polygon|rect)\b/i', $markup);
+
+        foreach (['<image', 'data:image', 'base64', '<text', '<foreignObject', 'href="http'] as $forbidden) {
+            $this->assertStringNotContainsString($forbidden, $markup, "{$theme} contains {$forbidden}");
+        }
+    }
+
+    public static function holidayPreviewThemes(): array
+    {
+        return [
+            'new year' => ['new-year'],
+            'christmas' => ['christmas'],
+            'easter' => ['easter'],
+            'vyshyvanka' => ['vyshyvanka'],
+            'independence' => ['independence'],
+            'youth' => ['youth'],
+        ];
     }
 
     public function test_only_admin_pro_can_view_and_use_holiday_controls(): void

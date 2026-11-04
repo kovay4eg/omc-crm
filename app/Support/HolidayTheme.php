@@ -10,6 +10,22 @@ final class HolidayTheme
     /**
      * @return array{key: string, greeting: string}|null
      */
+    public static function preview(string $key): ?array
+    {
+        return match ($key) {
+            'new-year' => self::theme('new-year', 'Полтавський обласний молодіжний центр вітає вас з Новим роком!'),
+            'christmas' => self::theme('christmas', 'Полтавський обласний молодіжний центр вітає вас з Різдвом Христовим!'),
+            'easter' => self::theme('easter', 'Полтавський обласний молодіжний центр вітає вас зі світлим святом Великодня!'),
+            'vyshyvanka' => self::theme('vyshyvanka', 'Полтавський обласний молодіжний центр вітає вас із Днем вишиванки!'),
+            'independence' => self::theme('independence', 'Полтавський обласний молодіжний центр вітає вас із Днем Державного Прапора та Днем Незалежності України!'),
+            'youth' => self::theme('youth', 'Полтавський обласний молодіжний центр вітає вас із Днем молоді!'),
+            default => null,
+        };
+    }
+
+    /**
+     * @return array{key: string, greeting: string}|null
+     */
     public static function current(?CarbonInterface $moment = null): ?array
     {
         $timezone = config('app.timezone', 'Europe/Kyiv');
@@ -20,28 +36,28 @@ final class HolidayTheme
         $monthDay = $date->format('m-d');
 
         if ($monthDay >= '12-28' || $monthDay <= '01-02') {
-            return self::theme('new-year', 'Полтавський обласний молодіжний центр вітає вас з Новим роком!');
+            return self::preview('new-year');
         }
 
         if ($monthDay >= '12-23' && $monthDay <= '12-27') {
-            return self::theme('christmas', 'Полтавський обласний молодіжний центр вітає вас з Різдвом Христовим!');
+            return self::preview('christmas');
         }
 
         $easter = self::orthodoxEaster($date->year);
         if ($date->betweenIncluded($easter->subDay(), $easter->addDay())) {
-            return self::theme('easter', 'Полтавський обласний молодіжний центр вітає вас зі світлим святом Великодня!');
+            return self::preview('easter');
         }
 
         if ($date->isSameDay(self::vyshyvankaDay($date->year))) {
-            return self::theme('vyshyvanka', 'Полтавський обласний молодіжний центр вітає вас із Днем вишиванки!');
+            return self::preview('vyshyvanka');
         }
 
         if ($monthDay >= '08-23' && $monthDay <= '08-24') {
-            return self::theme('independence', 'Полтавський обласний молодіжний центр вітає вас із Днем Державного Прапора та Днем Незалежності України!');
+            return self::preview('independence');
         }
 
         if ($monthDay >= '08-11' && $monthDay <= '08-12') {
-            return self::theme('youth', 'Полтавський обласний молодіжний центр вітає вас із Днем молоді!');
+            return self::preview('youth');
         }
 
         return null;

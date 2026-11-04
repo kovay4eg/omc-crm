@@ -49,6 +49,11 @@ Route::view('/support/omc-crm', 'omc-crm-support')
 Route::view('/account-deletion', 'account-deletion')
     ->name('account-deletion');
 
+if (app()->environment(['local', 'testing'])) {
+    Route::view('/holiday-logo-preview', 'holiday-logo-preview')
+        ->name('holiday-logo-preview');
+}
+
 Route::get('/team/employees/{employee}/photo/{filename?}', [EmployeePhotoController::class, 'show'])
     ->name('employees.photo');
 

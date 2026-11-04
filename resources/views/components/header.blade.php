@@ -1,19 +1,15 @@
 @php
     $settings = \App\Models\HomepageSetting::first();
     $siteAppearanceSettings = \App\Models\SiteSetting::first();
-    $holidayTheme = $siteAppearanceSettings?->holiday_logos_enabled
-        ? \App\Support\HolidayTheme::current()
-        : null;
+    $holidayPreviewKey = app()->environment(['local', 'testing'])
+        ? request()->string('holiday-preview')->toString()
+        : '';
+    $holidayTheme = $holidayPreviewKey !== ''
+        ? \App\Support\HolidayTheme::preview($holidayPreviewKey)
+        : ($siteAppearanceSettings?->holiday_logos_enabled
+            ? \App\Support\HolidayTheme::current()
+            : null);
     $winterDecorEnabled = (bool) $siteAppearanceSettings?->winter_decor_enabled;
-    $holidayIcons = [
-        'new-year' => ['❄', '✦'],
-        'christmas' => ['★', '✦'],
-        'easter' => ['❀', '◉'],
-        'vyshyvanka' => ['✣', '◆'],
-        'independence' => ['🇺🇦', '✦'],
-        'youth' => ['✦', '●'],
-    ];
-    $activeHolidayIcons = $holidayTheme ? ($holidayIcons[$holidayTheme['key']] ?? ['✦', '•']) : [];
     $isStandalonePublicPage = request()->routeIs(
         'event-summaries.*',
         'events.show',
@@ -35,9 +31,19 @@
         position: fixed;
         top: 0;
         left: 0;
-        z-index: 1000;
+        z-index: 1002;
         width: 100%;
         transition: .3s ease;
+    }
+
+    .omc-header-clearance {
+        width: 100%;
+        height: calc(
+            var(--omc-header-height, 96px)
+            + var(--omc-winter-reserve, 0px)
+            + 24px
+        );
+        pointer-events: none;
     }
 
     .header,
@@ -84,17 +90,7 @@
     }
 
     .logo > a { position: relative; display: block; text-decoration: none; }
-    .logo--holiday > a::after { position: absolute; right: -7px; bottom: -7px; left: -7px; height: 3px; content: ''; border-radius: 999px; background: linear-gradient(90deg, transparent, var(--holiday-accent, #4c64ff), transparent); opacity: .75; }
-    .holiday-logo-ornament { position: absolute; z-index: 2; color: var(--holiday-accent, #4c64ff); font-size: 17px; line-height: 1; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(31, 41, 55, .16)); }
-    .holiday-logo-ornament--one { top: -9px; right: -8px; transform: rotate(9deg); }
-    .holiday-logo-ornament--two { bottom: -7px; left: -10px; font-size: 13px; transform: rotate(-12deg); }
-    .logo[data-holiday-theme='new-year'] { --holiday-accent: #5b7cff; }
-    .logo[data-holiday-theme='christmas'] { --holiday-accent: #d6a21c; }
-    .logo[data-holiday-theme='easter'] { --holiday-accent: #e3a72f; }
-    .logo[data-holiday-theme='vyshyvanka'] { --holiday-accent: #dc2626; }
-    .logo[data-holiday-theme='independence'] { --holiday-accent: #f4c430; }
-    .logo[data-holiday-theme='youth'] { --holiday-accent: #4665ff; }
-    .holiday-logo-tooltip { position: absolute; top: calc(100% + 18px); left: 0; width: max-content; max-width: min(360px, 78vw); padding: 10px 13px; border: 1px solid rgba(76, 100, 255, .22); border-radius: 11px; background: rgba(17, 24, 39, .94); box-shadow: 0 12px 30px rgba(17, 24, 39, .22); color: #fff; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; line-height: 1.4; opacity: 0; pointer-events: none; transform: translateY(-5px); transition: opacity .18s ease, transform .18s ease; }
+    .holiday-logo-tooltip { position: absolute; top: calc(100% + 18px); left: 0; z-index: 1400; width: max-content; max-width: min(360px, 78vw); padding: 10px 13px; border: 1px solid rgba(76, 100, 255, .22); border-radius: 11px; background: rgba(17, 24, 39, .96); box-shadow: 0 12px 30px rgba(17, 24, 39, .22); color: #fff; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; line-height: 1.4; opacity: 0; pointer-events: none; transform: translateY(-5px); transition: opacity .18s ease, transform .18s ease; }
     .logo--holiday:hover .holiday-logo-tooltip,
     .logo--holiday:focus-within .holiday-logo-tooltip { opacity: 1; transform: translateY(0); }
 
@@ -529,6 +525,21 @@
     html {
         scroll-behavior: smooth;
     }
+
+    .logo--holiday img {
+        width: 150px !important;
+        height: auto !important;
+        max-width: none !important;
+        object-fit: contain;
+    }
+
+    @media (max-width: 1100px) {
+        .logo--holiday img {
+            width: 100px !important;
+            height: auto !important;
+            max-width: none !important;
+        }
+    }
 </style>
 
 <header class="header" id="header">
@@ -539,18 +550,24 @@
                     $defaultLogo = !empty($settings?->logo)
                         ? \App\Support\MediaUrl::storage($settings->logo)
                         : asset('images/logo.png');
+                    $holidayLogoPath = $holidayTheme
+                        ? 'images/holiday/logos/'.$holidayTheme['key'].'.svg'
+                        : null;
+                    $holidayLogo = $holidayLogoPath
+                        ? asset($holidayLogoPath).'?v='.substr(hash_file('sha256', public_path($holidayLogoPath)), 0, 12)
+                        : null;
+                    $displayLogo = $holidayLogo ?: $defaultLogo;
+                    $darkLogo = $holidayLogo ?: asset('images/logo-white.png');
                 @endphp
                 <img
                     id="siteLogo"
-                    src="{{ $defaultLogo }}"
-                    data-logo-default="{{ $defaultLogo }}"
-                    data-logo-dark="{{ asset('images/logo-white.png') }}"
+                    src="{{ $displayLogo }}"
+                    data-logo-default="{{ $displayLogo }}"
+                    data-logo-dark="{{ $darkLogo }}"
                     alt="Логотип"
                     draggable="false"
                 >
                 @if ($holidayTheme)
-                    <span class="holiday-logo-ornament holiday-logo-ornament--one" aria-hidden="true">{{ $activeHolidayIcons[0] }}</span>
-                    <span class="holiday-logo-ornament holiday-logo-ornament--two" aria-hidden="true">{{ $activeHolidayIcons[1] }}</span>
                     <span class="holiday-logo-tooltip" role="tooltip">{{ $holidayTheme['greeting'] }}</span>
                 @endif
             </a>
@@ -694,18 +711,31 @@
     </div>
 </header>
 
+<div id="omcHeaderClearance" class="omc-header-clearance" aria-hidden="true"></div>
+
 <script>
     const mobileNavigationBreakpoint = 1100;
     const burger = document.getElementById('burger');
     const burgerControl = document.getElementById('burgerControl');
     const nav = document.getElementById('navMenu');
     const header = document.getElementById('header');
+    const headerClearance = document.getElementById('omcHeaderClearance');
     const aboutDropdown = document.getElementById('aboutDropdown');
     const aboutMenuButton = document.getElementById('aboutMenuButton');
     const eventsNavLink = document.getElementById('eventsNavLink');
     const eventSummariesNavLink = document.getElementById('eventSummariesNavLink');
     const contactsNavLink = document.getElementById('contactsNavLink');
     const siteLogo = document.getElementById('siteLogo');
+    let headerResizeObserver = null;
+
+    function syncHeaderGeometry() {
+        if (!header || !headerClearance) {
+            return;
+        }
+
+        const headerHeight = Math.ceil(header.getBoundingClientRect().height);
+        document.documentElement.style.setProperty('--omc-header-height', `${headerHeight}px`);
+    }
 
     // Обмеження працюють лише у фронтенді: Filament має власний layout і не використовує цей компонент.
     document.body?.classList.add('omc-public-copy-protection');
@@ -936,8 +966,22 @@
         passive: true,
     });
 
+    window.addEventListener('resize', syncHeaderGeometry, {
+        passive: true,
+    });
+
+    if (header && 'ResizeObserver' in window) {
+        headerResizeObserver = new ResizeObserver(syncHeaderGeometry);
+        headerResizeObserver.observe(header);
+    }
+
+    window.addEventListener('pagehide', () => {
+        headerResizeObserver?.disconnect();
+    }, { once: true });
+
     window.addEventListener('omc-accessibility-change', syncContrastLogo);
 
+    syncHeaderGeometry();
     syncContrastLogo();
     updateHeaderState();
 </script>
