@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Support\MediaUrl;
 use App\Support\PartnerLogoOptimizer;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -28,5 +29,19 @@ class PartnerLogoOptimizerTest extends TestCase
         $this->assertSame(246, $width);
         $this->assertSame(81, $height);
         $this->assertFalse(PartnerLogoOptimizer::optimize($path));
+    }
+
+    public function test_versioned_media_url_changes_when_the_file_changes(): void
+    {
+        Storage::fake('public');
+        $path = 'footer-partners/partner.png';
+        Storage::disk('public')->put($path, 'first');
+        $firstUrl = MediaUrl::storageVersioned($path);
+
+        Storage::disk('public')->put($path, 'second-version');
+        $secondUrl = MediaUrl::storageVersioned($path);
+
+        $this->assertNotSame($firstUrl, $secondUrl);
+        $this->assertStringContainsString('/storage/footer-partners/partner.png?v=', $secondUrl);
     }
 }
