@@ -119,15 +119,16 @@
     .site-footer-partner-logo {
         display: grid;
         min-width: 0;
-        min-height: 88px;
+        min-height: 120px;
         place-items: center;
     }
 
     .site-footer-partner-logo img {
         display: block;
-        width: clamp(148px, 13vw, 190px);
-        max-width: 100%;
-        max-height: 88px;
+        width: auto;
+        height: auto;
+        max-width: min(100%, 220px);
+        max-height: 108px;
         object-fit: contain;
     }
 
@@ -178,14 +179,14 @@
 
         .site-footer-partner-logo {
             min-width: 0;
-            min-height: 72px;
+            min-height: 86px;
         }
 
         .site-footer-partner-logo img {
-            width: min(100%, 118px);
-            min-width: 0;
-            max-width: 118px;
-            max-height: 72px;
+            width: auto;
+            height: auto;
+            max-width: min(100%, 112px);
+            max-height: 82px;
         }
 
         .site-footer-credit {
