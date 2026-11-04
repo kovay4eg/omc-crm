@@ -8,7 +8,9 @@
             <p class="text-sm text-gray-400">Перегляд по годинах</p>
         </div>
 
-        @php($googleUser = auth()->user())
+        @php
+            $googleUser = auth()->user();
+        @endphp
         <div style="
             margin-bottom:12px;
             padding:10px 12px;

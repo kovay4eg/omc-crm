@@ -2,16 +2,37 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Pages\Dashboard;
 use App\Filament\Widgets\HolidayAppearanceControl;
 use App\Filament\Widgets\MaintenanceModeControl;
 use App\Models\AdminProAssignment;
 use App\Models\User;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class PreviewRoleAccessTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_admin_can_switch_preview_role_through_dashboard_action(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $this->actingAs($admin);
+        Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+        Livewire::test(Dashboard::class)
+            ->callAction('preview_role', ['role' => 'editor'])
+            ->assertRedirect(route('filament.admin.pages.dashboard'));
+
+        $this->assertSame('editor', session('preview_role'));
+
+        $this->get(route('filament.admin.pages.dashboard'))
+            ->assertOk()
+            ->assertSee('увімкнено режим перегляду як', false);
+    }
 
     public function test_admin_previewing_editor_loses_admin_and_admin_pro_permissions(): void
     {
