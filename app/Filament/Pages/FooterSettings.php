@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Models\FooterSetting;
 use App\Support\MediaStorage;
+use App\Support\PartnerLogoOptimizer;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -17,7 +18,7 @@ class FooterSettings extends Page implements HasForms
 
     protected static ?string $navigationLabel = 'Футер';
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-photo';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-photo';
 
     protected string $view = 'filament.pages.footer-settings';
 
@@ -69,9 +70,15 @@ class FooterSettings extends Page implements HasForms
 
     public function save(): void
     {
-        $settings = FooterSetting::first() ?? new FooterSetting();
+        $settings = FooterSetting::first() ?? new FooterSetting;
+        $previousLogos = MediaStorage::paths($settings->partner_logos);
+        $partnerLogos = $this->form->getState()['partner_logos'] ?? [];
 
-        $settings->partner_logos = $this->form->getState()['partner_logos'] ?? [];
+        foreach (array_diff(MediaStorage::paths($partnerLogos), $previousLogos) as $logo) {
+            PartnerLogoOptimizer::optimize($logo);
+        }
+
+        $settings->partner_logos = $partnerLogos;
         $settings->save();
 
         $this->form->fill([

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\FooterSetting;
+use App\Support\PartnerLogoOptimizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -25,7 +26,9 @@ class PartnerController extends Controller
         $logos = $settings->partner_logos ?? [];
         abort_if(count($logos) + count($data['logos']) > 5, 422, 'Можна зберегти не більше 5 логотипів.');
         foreach ($request->file('logos') as $logo) {
-            $logos[] = $logo->store('footer-partners', 'public');
+            $path = $logo->store('footer-partners', 'public');
+            PartnerLogoOptimizer::optimize($path);
+            $logos[] = $path;
         }
         $settings->partner_logos = $logos;
         $settings->save();
