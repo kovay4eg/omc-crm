@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Widgets\EventCalendar;
 use App\Models\Event;
 use App\Models\User;
 use App\Services\GoogleCalendarService;
@@ -9,12 +10,31 @@ use App\Services\GoogleSheetsReader;
 use App\Services\GoogleSheetsRegistrationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Livewire\Livewire;
 use Mockery\MockInterface;
 use Tests\TestCase;
 
 class GoogleIntegrationTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_event_calendar_widget_renders_for_admin_and_preview_roles(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $this->actingAs($admin);
+
+        Livewire::test(EventCalendar::class)
+            ->assertOk()
+            ->assertSee('Календар івентів')
+            ->assertSee('Google Calendar і таблиці відповідей Forms');
+
+        session(['preview_role' => 'editor']);
+
+        Livewire::test(EventCalendar::class)
+            ->assertOk()
+            ->assertSee('Календар івентів');
+    }
 
     public function test_google_api_reports_configuration_and_requires_crm_authentication(): void
     {
