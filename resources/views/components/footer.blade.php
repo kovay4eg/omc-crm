@@ -243,7 +243,7 @@
                 @foreach ($partnerLogos as $logo)
                     <div class="site-footer-partner-logo">
                         <img
-                            src="{{ \App\Support\MediaUrl::storage($logo) }}"
+                            src="{{ \App\Support\MediaUrl::storageVersioned($logo) }}"
                             alt="Логотип партнера {{ $loop->iteration }}"
                         >
                     </div>
