@@ -685,8 +685,6 @@
 
 <x-preloader />
 
-<div style="height:195px;"></div>
-
 <x-header />
 
 @php

@@ -32,7 +32,7 @@
     <style>
         html, body { margin: 0; padding: 0; overflow-x: hidden; }
         body { background: #fff; color: #171717; font-family: 'Commissioner', sans-serif; }
-        .summary-page { min-height: 100vh; padding: 150px 0 100px; }
+        .summary-page { min-height: 100vh; padding: 40px 0 100px; }
         .summary-container { position: relative; max-width: 1200px; margin: 0 auto; padding: 0 15px; }
         .summary-watermark { position: absolute; top: 86px; left: 0; width: 100vw; overflow: hidden; color: #eef0ff; font-size: clamp(64px, 11vw, 160px); font-weight: 800; letter-spacing: -.05em; line-height: 1; white-space: nowrap; pointer-events: none; }
         .summary-title { position: relative; z-index: 1; margin: 0 0 36px; color: #2d35c8; font-size: clamp(24px, 3vw, 36px); font-weight: 800; text-transform: uppercase; }
@@ -54,7 +54,7 @@
         .summary-gallery-item:hover img { transform: scale(1.04); }
         .summary-back { display: inline-flex; margin-top: 36px; color: #2d35c8; font-weight: 800; text-decoration: none; }
         .summary-back:hover { color: #201fb1; }
-        @media (max-width: 767px) { .summary-page { padding-top: 115px; } .summary-event-card { grid-template-columns: 1fr; } .summary-event-poster { min-height: 220px; } .summary-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } }
+        @media (max-width: 767px) { .summary-page { padding-top: 32px; } .summary-event-card { grid-template-columns: 1fr; } .summary-event-poster { min-height: 220px; } .summary-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } }
     </style>
 </head>
 <body>

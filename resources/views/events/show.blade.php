@@ -31,7 +31,7 @@
     <style>
         html, body { margin: 0; padding: 0; overflow-x: hidden; }
         body { background: #fff; color: #171717; font-family: 'Commissioner', sans-serif; }
-        .event-detail-page { position: relative; min-height: 100vh; padding: 150px 0 100px; overflow: hidden; }
+        .event-detail-page { position: relative; min-height: 100vh; padding: 40px 0 100px; overflow: hidden; }
         .event-detail-container { position: relative; z-index: 1; width: min(1100px, calc(100% - 40px)); margin: 0 auto; }
         .event-detail-watermark { position: absolute; top: 145px; left: 0; width: 100vw; overflow: hidden; color: #eef0ff; font-size: clamp(64px, 11vw, 160px); font-weight: 800; line-height: 1; white-space: nowrap; pointer-events: none; }
         .event-detail-kicker { position: relative; z-index: 1; margin: 0 0 18px; color: #2d35c8; font-size: 14px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
@@ -53,7 +53,7 @@
         .event-detail-action--muted { border-color: #a7a7b1; background: #a7a7b1; pointer-events: none; }
         .event-detail-back { display: inline-flex; margin-top: 30px; color: #2d35c8; font-size: 14px; font-weight: 800; text-decoration: none; }
         .event-detail-back:hover { color: #201fb1; }
-        @media (max-width: 767px) { .event-detail-page { padding-top: 115px; padding-bottom: 72px; } .event-detail-card { grid-template-columns: 1fr; } .event-detail-poster, .event-detail-placeholder { min-height: 250px; } }
+        @media (max-width: 767px) { .event-detail-page { padding-top: 32px; padding-bottom: 72px; } .event-detail-card { grid-template-columns: 1fr; } .event-detail-poster, .event-detail-placeholder { min-height: 250px; } }
     </style>
 </head>
 <body>
