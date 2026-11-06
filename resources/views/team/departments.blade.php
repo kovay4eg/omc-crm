@@ -1,7 +1,8 @@
 @foreach($departments as $department)
     @php
         $cleanName = trim(preg_replace('/^відділ\s+/iu', '', mb_strtolower($department->name)));
-        $title = in_array($cleanName, ['адміністрація', 'адміністрація установи'], true)
+        $isAdministration = $department->isAdministration();
+        $title = $isAdministration
             ? 'АДМІНІСТРАЦІЯ' : 'ВІДДІЛ '.mb_strtoupper($cleanName);
         $sliderPhotos = collect(array_values($department->slider_photos ?? []))
             ->filter(fn ($photo) => is_string($photo) && filled($photo));
@@ -22,49 +23,51 @@
             </figure>
         @endif
 
-        <button type="button" class="department-toggle" data-department-section aria-expanded="false"
-            aria-controls="department-description-{{ $department->id }}" id="department-description-toggle-{{ $department->id }}">
-            <span>Чим займається відділ?</span><span class="icon-arrow-custom" aria-hidden="true"></span>
-        </button>
-        <div id="department-description-{{ $department->id }}" data-department-content hidden
-            role="region" aria-labelledby="department-description-toggle-{{ $department->id }}">
-            @if(filled($department->description))
-                <div class="department-description"><p>{{ $department->description }}</p></div>
-            @endif
-            @if($department->slider_enabled && $sliderPhotos->isNotEmpty())
-                <div class="department-carousel" data-team-carousel role="region" aria-roledescription="карусель"
-                    aria-label="Фотографії роботи: {{ $department->name }}">
-                    <div class="department-carousel-stage">
-                        @foreach($sliderPhotos as $photoIndex => $photo)
-                            <figure class="department-slide" data-slide aria-current="{{ $loop->first ? 'true' : 'false' }}"
-                                aria-hidden="{{ $loop->first ? 'false' : 'true' }}">
-                                <img draggable="false" src="{{ route('departments.slide', ['department' => $department, 'index' => $photoIndex, 'v' => substr(sha1($photo), 0, 12)]) }}"
-                                    alt="{{ $department->name }}: фото {{ $loop->iteration }} з {{ $sliderPhotos->count() }}" loading="lazy">
-                            </figure>
-                        @endforeach
-                    </div>
-                    @if($sliderPhotos->count() > 1)
-                        <div class="department-carousel-controls">
-                            <button type="button" class="carousel-arrow" data-carousel-previous aria-label="Попереднє фото">←</button>
-                            <div class="carousel-dots" aria-label="Вибрати фотографію">
-                                @foreach($sliderPhotos as $photoIndex => $photo)
-                                    <button type="button" class="carousel-dot" data-slide-dot
-                                        aria-label="Перейти до фото {{ $loop->iteration }}"
-                                        aria-current="{{ $loop->first ? 'true' : 'false' }}"></button>
-                                @endforeach
-                            </div>
-                            <button type="button" class="carousel-arrow" data-carousel-next aria-label="Наступне фото">→</button>
-                            <button type="button" class="carousel-pause" data-carousel-pause aria-pressed="false"
-                                aria-label="Призупинити або відновити автоматичну зміну фото">Зупинити</button>
+        @unless($isAdministration)
+            <button type="button" class="department-toggle" data-department-section aria-expanded="false"
+                aria-controls="department-description-{{ $department->id }}" id="department-description-toggle-{{ $department->id }}">
+                <span>Чим займається відділ?</span><span class="icon-arrow-custom" aria-hidden="true"></span>
+            </button>
+            <div id="department-description-{{ $department->id }}" data-department-content hidden
+                role="region" aria-labelledby="department-description-toggle-{{ $department->id }}">
+                @if(filled($department->description))
+                    <div class="department-description"><p>{{ $department->description }}</p></div>
+                @endif
+                @if($department->slider_enabled && $sliderPhotos->isNotEmpty())
+                    <div class="department-carousel" data-team-carousel role="region" aria-roledescription="карусель"
+                        aria-label="Фотографії роботи: {{ $department->name }}">
+                        <div class="department-carousel-stage">
+                            @foreach($sliderPhotos as $photoIndex => $photo)
+                                <figure class="department-slide" data-slide aria-current="{{ $loop->first ? 'true' : 'false' }}"
+                                    aria-hidden="{{ $loop->first ? 'false' : 'true' }}">
+                                    <img draggable="false" src="{{ route('departments.slide', ['department' => $department, 'index' => $photoIndex, 'v' => substr(sha1($photo), 0, 12)]) }}"
+                                        alt="{{ $department->name }}: фото {{ $loop->iteration }} з {{ $sliderPhotos->count() }}" loading="lazy">
+                                </figure>
+                            @endforeach
                         </div>
-                    @endif
-                </div>
-            @endif
-        </div>
+                        @if($sliderPhotos->count() > 1)
+                            <div class="department-carousel-controls">
+                                <button type="button" class="carousel-arrow" data-carousel-previous aria-label="Попереднє фото">←</button>
+                                <div class="carousel-dots" aria-label="Вибрати фотографію">
+                                    @foreach($sliderPhotos as $photoIndex => $photo)
+                                        <button type="button" class="carousel-dot" data-slide-dot
+                                            aria-label="Перейти до фото {{ $loop->iteration }}"
+                                            aria-current="{{ $loop->first ? 'true' : 'false' }}"></button>
+                                    @endforeach
+                                </div>
+                                <button type="button" class="carousel-arrow" data-carousel-next aria-label="Наступне фото">→</button>
+                                <button type="button" class="carousel-pause" data-carousel-pause aria-pressed="false"
+                                    aria-label="Призупинити або відновити автоматичну зміну фото">Зупинити</button>
+                            </div>
+                        @endif
+                    </div>
+                @endif
+            </div>
+        @endunless
 
         <button type="button" class="department-toggle" data-department-section aria-expanded="false"
             aria-controls="department-employees-{{ $department->id }}" id="department-employees-toggle-{{ $department->id }}">
-            <span>Склад відділу</span><span class="icon-arrow-custom" aria-hidden="true"></span>
+            <span>{{ $isAdministration ? 'Склад адміністрації' : 'Склад відділу' }}</span><span class="icon-arrow-custom" aria-hidden="true"></span>
         </button>
         <div id="department-employees-{{ $department->id }}" data-department-content hidden
             role="region" aria-labelledby="department-employees-toggle-{{ $department->id }}">

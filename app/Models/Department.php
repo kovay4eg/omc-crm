@@ -9,6 +9,19 @@ class Department extends Model
 {
     use DeletesMediaFiles;
 
+    public static function isAdministrationName(?string $name): bool
+    {
+        $normalized = mb_strtolower(trim((string) $name));
+        $normalized = trim((string) preg_replace('/^відділ(?:\s+|$)/iu', '', $normalized));
+
+        return in_array($normalized, ['адміністрація', 'адміністрація установи'], true);
+    }
+
+    public function isAdministration(): bool
+    {
+        return self::isAdministrationName($this->name);
+    }
+
     protected $fillable = [
         'name',
         'description',
