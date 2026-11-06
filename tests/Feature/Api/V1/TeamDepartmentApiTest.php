@@ -47,6 +47,7 @@ class TeamDepartmentApiTest extends TestCase
             ->assertJsonPath('data.department_content_supported', true)
             ->assertJsonPath('data.departments.0.id', $department->id)
             ->assertJsonPath('data.departments.0.name', 'Освіта')
+            ->assertJsonPath('data.departments.0.is_administration', false)
             ->assertJsonPath('data.departments.0.description', 'Навчання')
             ->assertJsonPath('data.departments.0.slider_enabled', true)
             ->assertJsonPath('data.departments.0.slider_photos.0.id', TeamDepartmentContent::photoId($slide));
@@ -54,6 +55,16 @@ class TeamDepartmentApiTest extends TestCase
         $this->assertStringContainsString('/slides/0/'.basename($slide).'?v=', $response->json('data.departments.0.slider_photos.0.url'));
         $this->assertArrayNotHasKey('photo', $response->json('data.departments.0'));
         $this->assertSame(64, strlen($response->json('data.departments.0.revision')));
+    }
+
+    public function test_options_identify_administration_for_mobile_presentation(): void
+    {
+        $department = Department::create(['name' => 'Адміністрація установи']);
+
+        $this->getJson('/api/v1/team/options')
+            ->assertOk()
+            ->assertJsonPath('data.departments.0.id', $department->id)
+            ->assertJsonPath('data.departments.0.is_administration', true);
     }
 
     public function test_admin_creates_department_with_cover_and_ordered_gallery_uploads(): void

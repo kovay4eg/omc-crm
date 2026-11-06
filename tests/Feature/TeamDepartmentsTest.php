@@ -243,6 +243,63 @@ class TeamDepartmentsTest extends TestCase
         $this->get('/')->assertOk()->assertDontSee('data-team-carousel', false);
     }
 
+    public function test_frontend_uses_administration_specific_sections_without_affecting_departments(): void
+    {
+        $department = Department::create([
+            'name' => 'Адміністрація установи',
+            'description' => 'Цей опис не повинен відображатися.',
+            'slider_enabled' => true,
+            'slider_photos' => ['team/departments/administration-slide.jpg'],
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('АДМІНІСТРАЦІЯ')
+            ->assertSee('Склад адміністрації')
+            ->assertDontSee('Чим займається відділ?')
+            ->assertDontSee('Цей опис не повинен відображатися.')
+            ->assertDontSee('data-team-carousel', false);
+
+        $department->update(['name' => 'Освіта']);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('ВІДДІЛ ОСВІТА')
+            ->assertSee('Чим займається відділ?')
+            ->assertSee('Склад відділу')
+            ->assertSee('Цей опис не повинен відображатися.')
+            ->assertSee('data-team-carousel', false);
+    }
+
+    public function test_admin_department_form_hides_irrelevant_administration_fields_without_erasing_data(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => 'admin']));
+        Filament::setCurrentPanel(Filament::getPanel('admin'));
+        $department = Department::create([
+            'name' => 'Адміністрація',
+            'description' => 'Збережений опис.',
+            'slider_enabled' => true,
+            'slider_photos' => ['team/departments/administration-slide.jpg'],
+        ]);
+
+        Livewire::test(ListEmployees::class)
+            ->mountTableAction('manage_departments')
+            ->assertDontSee('Чим займається відділ?')
+            ->assertDontSee('Увімкнути фотослайдер');
+
+        Livewire::test(ListEmployees::class)
+            ->callTableAction('manage_departments', data: ['departments' => [[
+                'id' => $department->id,
+                'name' => 'Адміністрація',
+            ]]])
+            ->assertHasNoTableActionErrors();
+
+        $department->refresh();
+        $this->assertSame('Збережений опис.', $department->description);
+        $this->assertTrue($department->slider_enabled);
+        $this->assertSame(['team/departments/administration-slide.jpg'], $department->slider_photos);
+    }
+
     public function test_existing_mobile_update_preserves_the_new_employee_description(): void
     {
         $department = Department::create([

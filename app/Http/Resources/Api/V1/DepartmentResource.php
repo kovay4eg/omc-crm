@@ -13,6 +13,7 @@ class DepartmentResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'is_administration' => $this->resource->isAdministration(),
             'description' => $this->description,
             'photo_url' => $this->photo ? route('departments.photo', [
                 'department' => $this->id, 'filename' => basename($this->photo),

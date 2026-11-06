@@ -45,22 +45,27 @@ class ManageDepartments
                     ->collapsible()
                     ->schema([
                         Hidden::make('id'),
-                        TextInput::make('name')->label('Назва відділу')->required()->maxLength(255),
-                        Textarea::make('description')->label('Чим займається відділ?')->rows(5)->maxLength(10000),
+                        TextInput::make('name')->label('Назва відділу')->required()->maxLength(255)->live(onBlur: true),
+                        Textarea::make('description')
+                            ->label('Чим займається відділ?')
+                            ->rows(5)
+                            ->maxLength(10000)
+                            ->hidden(fn (Get $get): bool => Department::isAdministrationName($get('name'))),
                         self::upload('photo', 'Загальне фото відділу'),
                         Toggle::make('slider_enabled')
                             ->label('Увімкнути фотослайдер')
                             ->helperText('Вимкнення приховує слайдер на сайті та зберігає завантажені фотографії.')
                             ->default(false)
-                            ->live(),
+                            ->live()
+                            ->hidden(fn (Get $get): bool => Department::isAdministrationName($get('name'))),
                         self::upload('slider_photos', 'Фотографії слайдера')
                             ->multiple()
                             ->reorderable()
                             ->appendFiles()
                             ->maxFiles(20)
                             ->helperText('Відредагуйте фото кнопкою редактора, перегляньте його або перетягніть для зміни порядку. До 20 фотографій.')
-                            ->hidden(fn (Get $get): bool => ! $get('slider_enabled'))
-                            ->dehydratedWhenHidden(),
+                            ->hidden(fn (Get $get): bool => Department::isAdministrationName($get('name')) || ! $get('slider_enabled'))
+                            ->dehydratedWhenHidden(fn (Get $get): bool => ! Department::isAdministrationName($get('name'))),
                     ]),
             ])
             ->action(function (array $data, Schema $schema): void {
