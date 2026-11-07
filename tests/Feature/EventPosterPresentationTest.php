@@ -88,7 +88,7 @@ class EventPosterPresentationTest extends TestCase
         $this->assertSame('4:5', $imageUpload->getPanelAspectRatio());
     }
 
-    public function test_detail_posters_stay_nine_by_sixteen_without_stretching_to_long_content(): void
+    public function test_detail_posters_show_the_full_image_and_use_the_source_ratio_on_mobile(): void
     {
         $event = Event::query()->create([
             'title' => 'Детальна сторінка анонсу',
@@ -127,10 +127,14 @@ class EventPosterPresentationTest extends TestCase
             $eventHtml,
         );
         $this->assertMatchesRegularExpression(
-            '/\.event-detail-poster\s+img\s*\{[^}]*object-fit:\s*cover\s*;/s',
+            '/\.event-detail-poster\s+img\s*\{[^}]*object-fit:\s*contain\s*;/s',
             $eventHtml,
         );
-        $this->assertSame(1, substr_count($eventHtml, '.event-detail-poster {'));
+        $this->assertMatchesRegularExpression(
+            '/@media\s*\(max-width:\s*767px\)\s*\{.*?\.event-detail-poster\s*\{[^}]*aspect-ratio:\s*4\s*\/\s*5\s*;/s',
+            $eventHtml,
+        );
+        $this->assertSame(2, substr_count($eventHtml, '.event-detail-poster {'));
         $this->assertDoesNotMatchRegularExpression(
             '/\.event-detail-poster[^{]*\{[^}]*min-height\s*:/s',
             $eventHtml,
@@ -159,10 +163,14 @@ class EventPosterPresentationTest extends TestCase
             $summaryHtml,
         );
         $this->assertMatchesRegularExpression(
-            '/\.summary-event-poster\s+img\s*\{[^}]*object-fit:\s*cover\s*;/s',
+            '/\.summary-event-poster\s+img\s*\{[^}]*object-fit:\s*contain\s*;/s',
             $summaryHtml,
         );
-        $this->assertSame(1, substr_count($summaryHtml, '.summary-event-poster {'));
+        $this->assertMatchesRegularExpression(
+            '/@media\s*\(max-width:\s*767px\)\s*\{.*?\.summary-event-poster\s*\{[^}]*aspect-ratio:\s*4\s*\/\s*5\s*;/s',
+            $summaryHtml,
+        );
+        $this->assertSame(2, substr_count($summaryHtml, '.summary-event-poster {'));
         $this->assertDoesNotMatchRegularExpression(
             '/\.summary-event-poster[^{]*\{[^}]*min-height\s*:/s',
             $summaryHtml,
