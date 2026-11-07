@@ -7,8 +7,10 @@ use App\Filament\Resources\Employees\Pages\ListEmployees;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Position;
+use App\Models\SiteSetting;
 use App\Models\User;
 use App\Services\TeamDepartmentService;
+use App\Support\MediaUrl;
 use Filament\Facades\Filament;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -241,6 +243,28 @@ class TeamDepartmentsTest extends TestCase
         $this->get('/')->assertOk()->assertDontSee('data-team-carousel', false);
         $department->update(['slider_enabled' => true, 'slider_photos' => []]);
         $this->get('/')->assertOk()->assertDontSee('data-team-carousel', false);
+    }
+
+    public function test_homepage_preloads_and_decodes_the_team_banner_before_hiding_the_preloader(): void
+    {
+        Storage::fake('public');
+        $banner = 'team/Загальне фото команди.jpg';
+        Storage::disk('public')->put($banner, 'team-photo');
+        SiteSetting::query()->create(['team_banner' => $banner]);
+
+        $bannerUrl = MediaUrl::storageVersioned($banner);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('<link rel="preload" as="image" href="'.$bannerUrl.'" fetchpriority="high">', false)
+            ->assertSee('src="'.$bannerUrl.'"', false)
+            ->assertSee('loading="eager"', false)
+            ->assertSee('fetchpriority="high"', false)
+            ->assertSee('decoding="async"', false)
+            ->assertSee('data-site-preloader-image', false)
+            ->assertSee("document.querySelectorAll('[data-site-preloader-image]')", false)
+            ->assertSee('Promise.allSettled', false)
+            ->assertSee('image.decode()', false);
     }
 
     public function test_frontend_uses_administration_specific_sections_without_affecting_departments(): void

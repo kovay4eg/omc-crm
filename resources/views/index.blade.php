@@ -8,6 +8,7 @@
         $homepageSmmTitle = $settings?->smm_title ?: 'Обласний молодіжний центр Полтавської обласної ради';
         $homepageSmmDescription = $settings?->smm_description ?: 'Молодіжні можливості, події та ініціативи Полтавщини.';
         $homepageSmmImage = $settings?->smm_image ?: $settings?->banner_image ?: $settings?->logo;
+        $teamBannerUrl = \App\Support\MediaUrl::storageVersioned($teamSettings?->team_banner);
     @endphp
     <x-social-meta
         :title="$homepageSmmTitle"
@@ -15,6 +16,10 @@
         :image="$homepageSmmImage"
         :url="url('/')"
     />
+
+    @if ($teamBannerUrl)
+        <link rel="preload" as="image" href="{{ $teamBannerUrl }}" fetchpriority="high">
+    @endif
 
     <link href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">

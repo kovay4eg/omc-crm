@@ -181,7 +181,30 @@
             window.setTimeout(() => preloader.remove(), 600);
         }
 
-        function finishLoading() { window.setTimeout(hidePreloader, 320); }
+        function waitForCriticalImage(image) {
+            const waitForLoad = image.complete
+                ? Promise.resolve()
+                : new Promise(resolve => {
+                    image.addEventListener('load', resolve, { once: true });
+                    image.addEventListener('error', resolve, { once: true });
+                });
+
+            return waitForLoad.then(() => {
+                if (!image.naturalWidth || typeof image.decode !== 'function') return;
+
+                return image.decode().catch(() => undefined);
+            });
+        }
+
+        function finishLoading() {
+            const criticalImages = [...document.querySelectorAll('[data-site-preloader-image]')];
+
+            Promise.allSettled(criticalImages.map(waitForCriticalImage)).then(() => {
+                window.requestAnimationFrame(() => {
+                    window.requestAnimationFrame(() => window.setTimeout(hidePreloader, 320));
+                });
+            });
+        }
 
         if (document.readyState === 'complete') {
             finishLoading();

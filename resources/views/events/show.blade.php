@@ -38,9 +38,8 @@
         .event-detail-watermark-text { display: block; padding-right: 52px; }
         .event-detail-kicker { position: relative; z-index: 1; margin: 0 0 18px; color: #2d35c8; font-size: 14px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
         .event-detail-card { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(270px, .85fr) minmax(0, 1.35fr); overflow: hidden; border-radius: 22px; background: #ececff; box-shadow: 0 18px 40px rgba(30, 27, 117, .09); }
-        .event-detail-poster { position: relative; isolation: isolate; align-self: start; width: 100%; aspect-ratio: 9 / 16; overflow: hidden; background: #d8d9f1; }
-        .event-detail-poster-backdrop { position: absolute; inset: -12%; z-index: 0; width: 124%; height: 124%; object-fit: cover; filter: blur(28px) saturate(1.2) brightness(.88); opacity: .94; pointer-events: none; transform: scale(1.08); }
-        .event-detail-poster-image { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: contain; }
+        .event-detail-poster { align-self: start; width: 100%; aspect-ratio: 4 / 5; overflow: hidden; background: #d8d9f1; }
+        .event-detail-poster-image { display: block; width: 100%; height: 100%; object-fit: cover; }
         .event-detail-placeholder { display: grid; width: 100%; height: 100%; place-items: center; color: #6870bf; font-weight: 800; text-transform: uppercase; }
         .event-detail-content { display: flex; flex-direction: column; padding: clamp(26px, 5vw, 52px); }
         .event-detail-status { display: inline-flex; width: fit-content; margin-bottom: 16px; padding: 7px 11px; border-radius: 999px; color: #fff; font-size: 12px; font-weight: 800; text-transform: uppercase; }
@@ -56,7 +55,7 @@
         .event-detail-action--muted { border-color: #a7a7b1; background: #a7a7b1; pointer-events: none; }
         .event-detail-back { display: inline-flex; margin-top: 30px; color: #2d35c8; font-size: 14px; font-weight: 800; text-decoration: none; }
         .event-detail-back:hover { color: #201fb1; }
-        @media (max-width: 767px) { .event-detail-page { padding-top: 32px; padding-bottom: 72px; } .event-detail-card { grid-template-columns: 1fr; } .event-detail-poster { aspect-ratio: 4 / 5; } }
+        @media (max-width: 767px) { .event-detail-page { padding-top: 32px; padding-bottom: 72px; } .event-detail-card { grid-template-columns: 1fr; } }
         @media (prefers-reduced-motion: reduce) { .event-detail-watermark-track { will-change: auto; } }
     </style>
 </head>
@@ -79,7 +78,6 @@
             <article class="event-detail-card">
                 <div class="event-detail-poster">
                     @if ($event->image)
-                        <img class="event-detail-poster-backdrop" src="{{ route('events.image', ['event' => $event]) }}" alt="" aria-hidden="true">
                         <img class="event-detail-poster-image" src="{{ route('events.image', ['event' => $event]) }}" alt="Афіша заходу {{ $event->title }}">
                     @else
                         <div class="event-detail-placeholder">Афіша заходу</div>
