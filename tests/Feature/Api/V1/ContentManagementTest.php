@@ -9,6 +9,7 @@ use App\Models\Event;
 use App\Models\HomepageSetting;
 use App\Models\Position;
 use App\Models\Report;
+use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -73,6 +74,50 @@ class ContentManagementTest extends TestCase
 
         Sanctum::actingAs(User::factory()->create(['role' => 'editor']));
         $this->deleteJson('/api/v1/team/'.$employee->id)->assertForbidden();
+    }
+
+    public function test_admin_can_replace_and_remove_the_overall_team_photo(): void
+    {
+        Storage::fake('public');
+        $oldBanner = UploadedFile::fake()->image('old-banner.jpg', 1600, 900)->store('team', 'public');
+        $settings = SiteSetting::query()->create(['team_banner' => $oldBanner]);
+        Sanctum::actingAs(User::factory()->create(['role' => 'admin']));
+
+        $this->post('/api/v1/team/banner', [
+            'banner' => UploadedFile::fake()->image('new-banner.jpg', 1600, 900)->size(15360),
+        ], ['Accept' => 'application/json'])
+            ->assertOk()
+            ->assertJsonPath('data.team_banner_url', fn ($url) => str_contains($url, '/storage/team/'));
+
+        $newBanner = $settings->refresh()->team_banner;
+        $this->assertNotNull($newBanner);
+        $this->assertNotSame($oldBanner, $newBanner);
+        Storage::disk('public')->assertExists($newBanner);
+        Storage::disk('public')->assertMissing($oldBanner);
+        $this->assertDatabaseHas('system_logs', ['action' => 'update_team_banner']);
+
+        $this->postJson('/api/v1/team/banner', ['remove_banner' => true])
+            ->assertOk()
+            ->assertJsonPath('data.team_banner_url', null);
+        Storage::disk('public')->assertMissing($newBanner);
+        $this->assertNull($settings->refresh()->team_banner);
+    }
+
+    public function test_team_photo_upload_enforces_permissions_type_and_size(): void
+    {
+        Storage::fake('public');
+        Sanctum::actingAs(User::factory()->create(['role' => 'editor']));
+        $this->post('/api/v1/team/banner', [
+            'banner' => UploadedFile::fake()->image('banner.jpg', 1600, 900),
+        ], ['Accept' => 'application/json'])->assertForbidden();
+
+        Sanctum::actingAs(User::factory()->create(['role' => 'admin']));
+        $this->post('/api/v1/team/banner', [
+            'banner' => UploadedFile::fake()->create('banner.pdf', 10, 'application/pdf'),
+        ], ['Accept' => 'application/json'])->assertUnprocessable()->assertJsonValidationErrors('banner');
+        $this->post('/api/v1/team/banner', [
+            'banner' => UploadedFile::fake()->image('banner.jpg', 1600, 900)->size(25601),
+        ], ['Accept' => 'application/json'])->assertUnprocessable()->assertJsonValidationErrors('banner');
     }
 
     public function test_crm_user_can_create_summary_upload_gallery_and_delete_image(): void

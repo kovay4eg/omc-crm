@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{{ asset('css/team-departments.css') }}?v=20261103">
+<link rel="stylesheet" href="{{ asset('css/team-departments.css') }}?v=20261107">
 <section id="team-section" class="team-section">
 <div class="team-hero">
 
