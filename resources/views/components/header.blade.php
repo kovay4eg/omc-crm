@@ -82,8 +82,6 @@
         width: auto !important;
         height: auto !important;
         max-width: 120px;
-        image-rendering: crisp-edges;
-        image-rendering: -webkit-optimize-contrast;
         transform: none !important;
         filter: none !important;
         backface-visibility: hidden;
@@ -547,9 +545,7 @@
         <div class="logo {{ $holidayTheme ? 'logo--holiday' : '' }}" @if ($holidayTheme) data-holiday-theme="{{ $holidayTheme['key'] }}" @endif>
             <a href="/" @if ($holidayTheme) title="{{ $holidayTheme['greeting'] }}" aria-label="{{ $holidayTheme['greeting'] }}" @endif>
                 @php
-                    $defaultLogo = !empty($settings?->logo)
-                        ? \App\Support\MediaUrl::storage($settings->logo)
-                        : asset('images/logo.png');
+                    $defaultLogo = \App\Support\BrandLogo::resolve($settings?->logo);
                     $holidayLogoPath = $holidayTheme
                         ? 'images/holiday/logos/'.$holidayTheme['key'].'.svg'
                         : null;
@@ -564,7 +560,7 @@
                     src="{{ $displayLogo }}"
                     data-logo-default="{{ $displayLogo }}"
                     data-logo-dark="{{ $darkLogo }}"
-                    alt="Логотип"
+                    alt="Обласний молодіжний центр Полтавської обласної ради"
                     draggable="false"
                 >
                 @if ($holidayTheme)

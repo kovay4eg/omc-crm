@@ -49,9 +49,10 @@
         }
 
         .brand img {
-            width: 44px;
+            width: auto;
             height: 44px;
-            border-radius: 14px;
+            max-width: 72px;
+            flex: none;
             object-fit: contain;
         }
 
@@ -154,7 +155,7 @@
 <body>
 <main>
     <a class="brand" href="{{ url('/') }}">
-        <img src="{{ asset('images/omc-logo.png') }}" alt="Логотип Полтавського обласного молодіжного центру">
+        <img src="{{ \App\Support\BrandLogo::url() }}" alt="Логотип Обласного молодіжного центру Полтавської обласної ради">
         Полтавський обласний молодіжний центр
     </a>
 

@@ -16,7 +16,7 @@ use App\Filament\Resources\Statutes\StatuteResource;
 use App\Filament\Resources\SystemLogs\SystemLogResource;
 use App\Filament\Resources\UserResource;
 use App\Models\HomepageSetting;
-use App\Support\MediaUrl;
+use App\Support\BrandLogo;
 // РЕСУРСИ
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -48,9 +48,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(function (): string {
                 $logo = HomepageSetting::query()->value('logo');
 
-                return $logo
-                    ? MediaUrl::storage($logo)
-                    : MediaUrl::storage('homepage/Лого ПОМЦ.png');
+                return BrandLogo::resolve($logo);
             })
             ->darkModeBrandLogo(asset('images/logo-white.png'))
             ->brandLogoHeight('3.5rem')

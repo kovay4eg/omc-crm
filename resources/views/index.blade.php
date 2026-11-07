@@ -7,7 +7,9 @@
     @php
         $homepageSmmTitle = $settings?->smm_title ?: 'Обласний молодіжний центр Полтавської обласної ради';
         $homepageSmmDescription = $settings?->smm_description ?: 'Молодіжні можливості, події та ініціативи Полтавщини.';
-        $homepageSmmImage = $settings?->smm_image ?: $settings?->banner_image ?: $settings?->logo;
+        $homepageSmmImage = $settings?->smm_image
+            ?: $settings?->banner_image
+            ?: \App\Support\BrandLogo::resolve($settings?->logo);
         $teamBannerUrl = \App\Support\MediaUrl::storageVersioned($teamSettings?->team_banner);
     @endphp
     <x-social-meta

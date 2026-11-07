@@ -1,8 +1,6 @@
 @php
     $preloaderSettings = \App\Models\HomepageSetting::first();
-    $preloaderLogo = $preloaderSettings?->logo
-        ? \App\Support\MediaUrl::storage($preloaderSettings->logo)
-        : \App\Support\MediaUrl::storage('homepage/Лого ПОМЦ.png');
+    $preloaderLogo = \App\Support\BrandLogo::resolve($preloaderSettings?->logo);
 @endphp
 
 <script>document.documentElement.classList.add('is-site-loading');</script>
@@ -109,7 +107,9 @@
         position: relative;
         z-index: 1;
         display: block;
-        width: 100%;
+        width: auto;
+        max-width: 100%;
+        height: auto;
         max-height: 104px;
         object-fit: contain;
         animation: preloaderLogoReveal 1.2s cubic-bezier(.22, 1, .36, 1) both;
@@ -156,7 +156,7 @@
         <div class="site-preloader-orbit" aria-hidden="true"></div>
 
         <div class="site-preloader-logo-wrap">
-            <img class="site-preloader-logo" src="{{ $preloaderLogo }}" alt="Обласний молодіжний центр">
+            <img class="site-preloader-logo" src="{{ $preloaderLogo }}" alt="Обласний молодіжний центр Полтавської обласної ради">
         </div>
 
         <div class="site-preloader-dots" aria-hidden="true"><span></span><span></span><span></span></div>

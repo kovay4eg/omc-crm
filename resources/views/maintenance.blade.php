@@ -1,7 +1,5 @@
 @php
-    $maintenanceLogo = $settings?->logo
-        ? \App\Support\MediaUrl::storage($settings->logo)
-        : \App\Support\MediaUrl::storage('homepage/Лого ПОМЦ.png');
+    $maintenanceLogo = \App\Support\BrandLogo::resolve($settings?->logo);
 
     $maintenanceSocialNetworks = [
         ['enabled' => $settings?->facebook_enabled, 'url' => $settings?->facebook_url, 'name' => 'Facebook', 'icon' => 'facebook.svg'],
@@ -36,7 +34,7 @@
         .maintenance-page::before { top: -35%; left: -20%; background: rgba(52, 48, 210, .13); }
         .maintenance-page::after { right: -22%; bottom: -42%; background: rgba(111, 116, 255, .15); }
         .maintenance-card { position: relative; z-index: 1; width: min(650px, 100%); padding: clamp(34px, 7vw, 70px); border: 1px solid rgba(52, 48, 210, .12); border-radius: 30px; background: rgba(255, 255, 255, .9); box-shadow: 0 26px 80px rgba(39, 43, 158, .15); text-align: center; }
-        .maintenance-logo { display: block; width: min(310px, 72vw); max-height: 88px; margin: 0 auto 38px; object-fit: contain; }
+        .maintenance-logo { display: block; width: auto; max-width: min(310px, 72vw); height: auto; max-height: 110px; margin: 0 auto 38px; object-fit: contain; }
         .maintenance-badge { display: inline-flex; align-items: center; gap: 9px; margin-bottom: 18px; padding: 9px 14px; border-radius: 999px; background: #eeecff; color: #3430d2; font-size: 12px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
         .maintenance-badge::before { width: 8px; height: 8px; border-radius: 50%; background: #3430d2; content: ''; animation: maintenancePulse 1.5s ease-in-out infinite; }
         .maintenance-card h1 { margin: 0; color: #2d35c8; font-size: clamp(30px, 5vw, 48px); font-weight: 800; line-height: 1.08; text-transform: uppercase; }
@@ -88,7 +86,7 @@
 
     <main class="maintenance-page">
         <section class="maintenance-card" aria-labelledby="maintenanceTitle">
-            <img class="maintenance-logo" src="{{ $maintenanceLogo }}" alt="Обласний молодіжний центр">
+            <img class="maintenance-logo" src="{{ $maintenanceLogo }}" alt="Обласний молодіжний центр Полтавської обласної ради">
 
             <span class="maintenance-badge">Тимчасово недоступно</span>
             <h1 id="maintenanceTitle">Проводимо технічні роботи</h1>
