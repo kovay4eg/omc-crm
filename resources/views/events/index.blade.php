@@ -105,6 +105,19 @@
         box-shadow: 0 18px 34px rgba(30, 27, 117, .13);
     }
 
+    .event-card-overlay-link {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        border-radius: inherit;
+        cursor: pointer;
+    }
+
+    .event-card-overlay-link:focus-visible {
+        outline: 3px solid var(--events-blue);
+        outline-offset: -4px;
+    }
+
     .event-image {
         position: absolute;
         top: 0;
@@ -229,11 +242,12 @@
 
     .event-card-body {
         position: relative;
-        z-index: 1;
+        z-index: 3;
         display: flex;
         flex: 1;
         flex-direction: column;
         padding: calc(125% + 17px) 17px 15px;
+        pointer-events: none;
     }
 
     .event-title {
@@ -308,12 +322,19 @@
     }
 
     .event-card-footer {
+        position: relative;
+        z-index: 3;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 10px;
         min-height: 38px;
         margin-top: 12px;
+        pointer-events: none;
+    }
+
+    .event-card-footer > * {
+        pointer-events: auto;
     }
 
     .event-details-link {
@@ -691,6 +712,12 @@
 
                     <div class="col-12 col-md-6 col-lg-4 event-grid-item">
                         <article class="event-card {{ $isCancelled ? 'is-cancelled' : '' }}">
+                            <a
+                                class="event-card-overlay-link"
+                                href="{{ route('events.show', ['event' => $event]) }}"
+                                aria-label="Детальніше про захід: {{ $event->title }}"
+                            ></a>
+
                             @if ($isRescheduled)
                                 <span
                                     class="event-status-badge event-status-badge--rescheduled {{ $rescheduleTooltip ? 'event-tooltip' : '' }}"
