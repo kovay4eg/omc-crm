@@ -93,6 +93,7 @@ class EventPosterPresentationTest extends TestCase
         $event = Event::query()->create([
             'title' => 'Детальна сторінка анонсу',
             'description' => str_repeat('Довгий опис заходу. ', 80),
+            'image' => 'events/detail-poster.jpg',
             'event_date' => now()->addDay(),
             'status' => EventStatus::Published->value,
             'has_registration_button' => false,
@@ -103,6 +104,7 @@ class EventPosterPresentationTest extends TestCase
         $pastEvent = Event::query()->create([
             'title' => 'Детальна сторінка підсумку',
             'description' => str_repeat('Довгий опис підсумку. ', 80),
+            'image' => 'events/summary-poster.jpg',
             'event_date' => now()->subDay(),
             'status' => EventStatus::Published->value,
             'has_registration_button' => false,
@@ -127,7 +129,19 @@ class EventPosterPresentationTest extends TestCase
             $eventHtml,
         );
         $this->assertMatchesRegularExpression(
-            '/\.event-detail-poster\s+img\s*\{[^}]*object-fit:\s*contain\s*;/s',
+            '/\.event-detail-poster-image\s*\{[^}]*object-fit:\s*contain\s*;/s',
+            $eventHtml,
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.event-detail-poster-backdrop\s*\{[^}]*object-fit:\s*cover\s*;[^}]*filter:\s*blur\(28px\)[^}]*;/s',
+            $eventHtml,
+        );
+        $this->assertStringContainsString(
+            '<img class="event-detail-poster-backdrop" src="'.route('events.image', ['event' => $event]).'" alt="" aria-hidden="true">',
+            $eventHtml,
+        );
+        $this->assertStringContainsString(
+            '<img class="event-detail-poster-image" src="'.route('events.image', ['event' => $event]).'" alt="Афіша заходу Детальна сторінка анонсу">',
             $eventHtml,
         );
         $this->assertMatchesRegularExpression(
@@ -163,7 +177,19 @@ class EventPosterPresentationTest extends TestCase
             $summaryHtml,
         );
         $this->assertMatchesRegularExpression(
-            '/\.summary-event-poster\s+img\s*\{[^}]*object-fit:\s*contain\s*;/s',
+            '/\.summary-event-poster-image\s*\{[^}]*object-fit:\s*contain\s*;/s',
+            $summaryHtml,
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.summary-event-poster-backdrop\s*\{[^}]*object-fit:\s*cover\s*;[^}]*filter:\s*blur\(28px\)[^}]*;/s',
+            $summaryHtml,
+        );
+        $this->assertStringContainsString(
+            '<img class="summary-event-poster-backdrop" src="'.route('events.image', ['event' => $pastEvent]).'" alt="" aria-hidden="true">',
+            $summaryHtml,
+        );
+        $this->assertStringContainsString(
+            '<img class="summary-event-poster-image" src="'.route('events.image', ['event' => $pastEvent]).'" alt="Афіша заходу Детальна сторінка підсумку">',
             $summaryHtml,
         );
         $this->assertMatchesRegularExpression(
