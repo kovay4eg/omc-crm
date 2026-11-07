@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Api\V1;
 
+use App\Support\BrandLogo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -14,7 +15,7 @@ class HomepageSettingResource extends JsonResource
             'id' => $this->id,
             'banner_image_url' => $this->mediaUrl($request, $this->banner_image),
             'mobile_banner_image_url' => $this->mediaUrl($request, $this->mobile_banner_image),
-            'logo_url' => $this->mediaUrl($request, $this->logo),
+            'logo_url' => BrandLogo::resolve($this->logo),
             'contact_address' => $this->contact_address,
             'contact_phone' => $this->contact_phone,
             'contact_email' => $this->contact_email,

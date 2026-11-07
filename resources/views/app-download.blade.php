@@ -47,8 +47,9 @@
         }
 
         .brand img {
-            width: min(310px, 76vw);
-            max-height: 96px;
+            width: auto;
+            height: min(96px, 24vw);
+            max-width: 76vw;
             object-fit: contain;
         }
 
@@ -291,7 +292,7 @@
 <main class="page">
     <header class="brand">
         <a href="{{ url('/') }}" aria-label="Перейти на головну сторінку ОМЦ">
-            <img src="{{ asset('images/omc-logo.png') }}" width="3334" height="2084" decoding="async" alt="Обласний молодіжний центр">
+            <img src="{{ \App\Support\BrandLogo::url() }}" width="2084" height="1366" decoding="async" alt="Обласний молодіжний центр Полтавської обласної ради">
         </a>
     </header>
 
