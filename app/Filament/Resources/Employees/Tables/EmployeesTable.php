@@ -45,7 +45,7 @@ class EmployeesTable
 
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
 
-                            ->maxSize(10240)
+                            ->maxSize(25600)
 
                             ->disk('public')
 
@@ -58,12 +58,22 @@ class EmployeesTable
                             ->imageEditorMode(2)
 
                             ->imageEditorAspectRatios([
+                                null,
+                                '16:9',
                                 '21:9',
                             ])
 
-                            ->imageCropAspectRatio('21:9')
+                            ->imageResizeMode('contain')
 
-                            ->panelAspectRatio('21:9')
+                            ->imageResizeTargetWidth('3000')
+
+                            ->imageResizeTargetHeight('3000')
+
+                            ->imageResizeUpscale(false)
+
+                            ->panelAspectRatio('16:9')
+
+                            ->helperText('Фото зберігається без примусового обрізання. Рекомендований формат — 16:9, до 25 МБ.')
 
                             ->panelLayout('integrated')
 
