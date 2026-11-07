@@ -79,6 +79,12 @@ class EventForm
             FileUpload::make('image')
                 ->label('Фото')
                 ->image()
+                ->imageEditor()
+                ->imageEditorMode(2)
+                ->imageAspectRatio('4:5')
+                ->automaticallyCropImagesToAspectRatio()
+                ->automaticallyOpenImageEditorForAspectRatio()
+                ->panelAspectRatio('4:5')
                 ->disk('public')
                 ->visibility('public')
                 ->directory('events')
@@ -101,6 +107,7 @@ class EventForm
                         $set('_smm_image_autofill', $state);
                     }
                 })
+                ->helperText('Формат афіші — 4:5. Після завантаження відкадруйте зображення так, щоб важливі елементи залишилися в кадрі.')
                 ->nullable(),
 
             Hidden::make('_smm_title_autofill')->dehydrated(false),

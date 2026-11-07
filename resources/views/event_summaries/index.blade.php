@@ -69,7 +69,7 @@
 
     .event-summary-card-poster {
         width: 100%;
-        aspect-ratio: 1 / .78;
+        aspect-ratio: 4 / 5;
         overflow: hidden;
         background: #d8d9f1;
     }
