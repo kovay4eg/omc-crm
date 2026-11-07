@@ -111,7 +111,7 @@
         left: 0;
         z-index: 0;
         width: 100%;
-        aspect-ratio: 1 / .82;
+        aspect-ratio: 4 / 5;
         overflow: hidden;
         border-radius: 0;
         background: #d8d7ee;
@@ -233,7 +233,7 @@
         display: flex;
         flex: 1;
         flex-direction: column;
-        padding: calc(82% + 17px) 17px 15px;
+        padding: calc(125% + 17px) 17px 15px;
     }
 
     .event-title {

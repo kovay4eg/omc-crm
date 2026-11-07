@@ -1,0 +1,90 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Enums\EventStatus;
+use App\Filament\Resources\Events\Schemas\EventForm;
+use App\Models\Event;
+use App\Models\EventSummary;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\FormsComponent;
+use Filament\Schemas\Schema;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class EventPosterPresentationTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_public_event_and_summary_cards_render_posters_at_four_by_five(): void
+    {
+        Event::query()->create([
+            'title' => 'Майбутній захід',
+            'description' => 'Анонс для перевірки формату афіші.',
+            'event_date' => now()->addDay(),
+            'status' => EventStatus::Published->value,
+            'has_registration_button' => false,
+            'registration_type' => 'none',
+            'show_available_slots' => true,
+        ]);
+
+        $pastEvent = Event::query()->create([
+            'title' => 'Минулий захід',
+            'description' => 'Підсумок для перевірки формату афіші.',
+            'event_date' => now()->subDay(),
+            'status' => EventStatus::Published->value,
+            'has_registration_button' => false,
+            'registration_type' => 'none',
+            'show_available_slots' => true,
+        ]);
+
+        EventSummary::query()->create([
+            'event_id' => $pastEvent->getKey(),
+            'summary' => 'Захід відбувся.',
+            'status' => EventSummary::STATUS_PUBLISHED,
+            'published_at' => now(),
+        ]);
+
+        $html = $this->get('/')
+            ->assertOk()
+            ->assertSee('<div class="event-image">', false)
+            ->assertSee('<div class="event-summary-card-poster">', false)
+            ->getContent();
+
+        $this->assertMatchesRegularExpression(
+            '/\.event-image\s*\{[^}]*aspect-ratio:\s*4\s*\/\s*5\s*;/s',
+            $html,
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.event-card-body\s*\{[^}]*padding:\s*calc\(125%\s*\+\s*17px\)\s+17px\s+15px\s*;/s',
+            $html,
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.event-summary-card-poster\s*\{[^}]*aspect-ratio:\s*4\s*\/\s*5\s*;/s',
+            $html,
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.event-image\s+img\s*\{[^}]*object-fit:\s*cover\s*;/s',
+            $html,
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.event-summary-card-poster\s+img\s*\{[^}]*object-fit:\s*cover\s*;/s',
+            $html,
+        );
+    }
+
+    public function test_event_form_forces_the_main_poster_to_four_by_five(): void
+    {
+        $schema = EventForm::schema(Schema::make(new class extends FormsComponent {}));
+
+        $imageUpload = collect($schema->getFlatComponents(withHidden: true))
+            ->first(fn (mixed $component): bool => $component instanceof FileUpload && $component->getName() === 'image');
+
+        $this->assertInstanceOf(FileUpload::class, $imageUpload);
+        $this->assertTrue($imageUpload->hasImageEditor());
+        $this->assertTrue($imageUpload->shouldAutomaticallyOpenImageEditorForAspectRatio());
+        $this->assertSame('4:5', $imageUpload->getImageAspectRatio());
+        $this->assertSame('4:5', $imageUpload->getAutomaticallyCropImagesAspectRatio());
+        $this->assertSame('4:5', $imageUpload->getPanelAspectRatio());
+    }
+}
