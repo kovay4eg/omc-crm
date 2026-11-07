@@ -251,14 +251,25 @@ class TeamDepartmentsTest extends TestCase
             'slider_enabled' => true,
             'slider_photos' => ['team/departments/administration-slide.jpg'],
         ]);
+        $position = Position::create(['name' => 'Керівниця']);
+        Employee::create([
+            'first_name' => 'Олена',
+            'last_name' => 'Петренко',
+            'department_id' => $department->id,
+            'position_id' => $position->id,
+        ]);
 
         $this->get('/')
             ->assertOk()
             ->assertSee('АДМІНІСТРАЦІЯ')
-            ->assertSee('Склад адміністрації')
+            ->assertSee('Петренко Олена')
+            ->assertDontSee('Склад адміністрації')
+            ->assertDontSee('Склад відділу')
             ->assertDontSee('Чим займається відділ?')
             ->assertDontSee('Цей опис не повинен відображатися.')
-            ->assertDontSee('data-team-carousel', false);
+            ->assertDontSee('data-team-carousel', false)
+            ->assertDontSee('data-department-section', false)
+            ->assertDontSee('data-department-content', false);
 
         $department->update(['name' => 'Освіта']);
 

@@ -65,12 +65,16 @@
             </div>
         @endunless
 
-        <button type="button" class="department-toggle" data-department-section aria-expanded="false"
-            aria-controls="department-employees-{{ $department->id }}" id="department-employees-toggle-{{ $department->id }}">
-            <span>{{ $isAdministration ? 'Склад адміністрації' : 'Склад відділу' }}</span><span class="icon-arrow-custom" aria-hidden="true"></span>
-        </button>
-        <div id="department-employees-{{ $department->id }}" data-department-content hidden
-            role="region" aria-labelledby="department-employees-toggle-{{ $department->id }}">
+        @unless($isAdministration)
+            <button type="button" class="department-toggle" data-department-section aria-expanded="false"
+                aria-controls="department-employees-{{ $department->id }}" id="department-employees-toggle-{{ $department->id }}">
+                <span>Склад відділу</span><span class="icon-arrow-custom" aria-hidden="true"></span>
+            </button>
+        @endunless
+        <div id="department-employees-{{ $department->id }}"
+            @unless($isAdministration)
+                data-department-content hidden role="region" aria-labelledby="department-employees-toggle-{{ $department->id }}"
+            @endunless>
             <div class="department-employees">
                 @forelse($department->employees as $employee)
                     <article class="employee-card">
