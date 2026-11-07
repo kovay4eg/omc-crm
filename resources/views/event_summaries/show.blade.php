@@ -38,8 +38,9 @@
         .summary-title { position: relative; z-index: 1; margin: 0 0 36px; color: #2d35c8; font-size: clamp(24px, 3vw, 36px); font-weight: 800; text-transform: uppercase; }
         .summary-preview-note { position: relative; z-index: 2; display: inline-block; margin-bottom: 20px; padding: 9px 14px; border-radius: 999px; background: #fff1bf; color: #734f00; font-size: 14px; font-weight: 700; }
         .summary-event-card { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(220px, .8fr) minmax(0, 1.5fr); overflow: hidden; border-radius: 20px; background: #e9e9ff; }
-        .summary-event-poster { align-self: start; width: 100%; aspect-ratio: 9 / 16; overflow: hidden; background: #d8d9f1; }
-        .summary-event-poster img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        .summary-event-poster { position: relative; isolation: isolate; align-self: start; width: 100%; aspect-ratio: 9 / 16; overflow: hidden; background: #d8d9f1; }
+        .summary-event-poster-backdrop { position: absolute; inset: -12%; z-index: 0; width: 124%; height: 124%; object-fit: cover; filter: blur(28px) saturate(1.2) brightness(.88); opacity: .94; pointer-events: none; transform: scale(1.08); }
+        .summary-event-poster-image { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: contain; }
         .summary-event-placeholder { display: grid; width: 100%; height: 100%; place-items: center; color: #6870bf; font-weight: 700; text-transform: uppercase; }
         .summary-event-content { padding: clamp(22px, 4vw, 42px); }
         .summary-event-content h1 { margin: 0 0 15px; color: #171717; font-size: clamp(22px, 3vw, 34px); font-weight: 800; line-height: 1.15; text-transform: uppercase; }
@@ -79,7 +80,8 @@
             <article class="summary-event-card">
                 <div class="summary-event-poster">
                     @if ($summary->event->image)
-                        <img src="{{ route('events.image', ['event' => $summary->event]) }}" alt="Афіша заходу {{ $summary->event->title }}">
+                        <img class="summary-event-poster-backdrop" src="{{ route('events.image', ['event' => $summary->event]) }}" alt="" aria-hidden="true">
+                        <img class="summary-event-poster-image" src="{{ route('events.image', ['event' => $summary->event]) }}" alt="Афіша заходу {{ $summary->event->title }}">
                     @else
                         <div class="summary-event-placeholder">Афіша заходу</div>
                     @endif
