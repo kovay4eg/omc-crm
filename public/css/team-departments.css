@@ -72,11 +72,11 @@
 ========================= */
 
 .team-section .team-banner{
-    width:100%;
+    width:min(92%, 1120px);
     border-radius:32px;
     overflow:hidden;
     background:#e5e7f2;
-    margin-bottom:80px;
+    margin:0 auto 64px;
     position:relative;
 }
 
@@ -273,6 +273,7 @@
     }
 
     .team-section .team-banner{
+        width:100%;
         border-radius:24px;
         margin-bottom:50px;
     }

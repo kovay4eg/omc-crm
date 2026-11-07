@@ -91,7 +91,10 @@ class TeamController extends Controller
     public function updateBanner(Request $request): JsonResponse
     {
         $this->authorizeAdmin($request);
-        $data = $request->validate(['banner' => ['nullable', 'image', 'max:10240'], 'remove_banner' => ['nullable', 'boolean']]);
+        $request->validate([
+            'banner' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:25600'],
+            'remove_banner' => ['nullable', 'boolean'],
+        ]);
         $settings = SiteSetting::query()->firstOrCreate([]);
         if ($request->boolean('remove_banner')) {
             $settings->team_banner = null;
