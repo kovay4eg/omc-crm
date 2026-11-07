@@ -33,12 +33,14 @@
         body { background: #fff; color: #171717; font-family: 'Commissioner', sans-serif; }
         .event-detail-page { position: relative; min-height: 100vh; padding: 40px 0 100px; overflow: hidden; }
         .event-detail-container { position: relative; z-index: 1; width: min(1100px, calc(100% - 40px)); margin: 0 auto; }
-        .event-detail-watermark { position: absolute; top: 145px; left: 0; width: 100vw; overflow: hidden; color: #eef0ff; font-size: clamp(64px, 11vw, 160px); font-weight: 800; line-height: 1; white-space: nowrap; pointer-events: none; }
+        .event-detail-watermark { position: absolute; top: 145px; left: 50%; z-index: 0; width: 100vw; height: 180px; overflow: hidden; pointer-events: none; transform: translate3d(-50%, 0, 0); user-select: none; }
+        .event-detail-watermark-track { position: absolute; top: 50%; left: 50%; width: max-content; color: #eef0ff; font-size: clamp(64px, 11vw, 160px); font-weight: 800; letter-spacing: -.05em; line-height: 1; white-space: nowrap; will-change: transform; transform: translate3d(-50%, -50%, 0); }
+        .event-detail-watermark-text { display: block; padding-right: 52px; }
         .event-detail-kicker { position: relative; z-index: 1; margin: 0 0 18px; color: #2d35c8; font-size: 14px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
         .event-detail-card { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(270px, .85fr) minmax(0, 1.35fr); overflow: hidden; border-radius: 22px; background: #ececff; box-shadow: 0 18px 40px rgba(30, 27, 117, .09); }
-        .event-detail-poster { min-height: 390px; background: #d8d9f1; }
+        .event-detail-poster { align-self: start; width: 100%; aspect-ratio: 9 / 16; overflow: hidden; background: #d8d9f1; }
         .event-detail-poster img { display: block; width: 100%; height: 100%; object-fit: cover; }
-        .event-detail-placeholder { display: grid; width: 100%; height: 100%; min-height: 390px; place-items: center; color: #6870bf; font-weight: 800; text-transform: uppercase; }
+        .event-detail-placeholder { display: grid; width: 100%; height: 100%; place-items: center; color: #6870bf; font-weight: 800; text-transform: uppercase; }
         .event-detail-content { display: flex; flex-direction: column; padding: clamp(26px, 5vw, 52px); }
         .event-detail-status { display: inline-flex; width: fit-content; margin-bottom: 16px; padding: 7px 11px; border-radius: 999px; color: #fff; font-size: 12px; font-weight: 800; text-transform: uppercase; }
         .event-detail-status--rescheduled { background: #e48b00; }
@@ -53,7 +55,8 @@
         .event-detail-action--muted { border-color: #a7a7b1; background: #a7a7b1; pointer-events: none; }
         .event-detail-back { display: inline-flex; margin-top: 30px; color: #2d35c8; font-size: 14px; font-weight: 800; text-decoration: none; }
         .event-detail-back:hover { color: #201fb1; }
-        @media (max-width: 767px) { .event-detail-page { padding-top: 32px; padding-bottom: 72px; } .event-detail-card { grid-template-columns: 1fr; } .event-detail-poster, .event-detail-placeholder { min-height: 250px; } }
+        @media (max-width: 767px) { .event-detail-page { padding-top: 32px; padding-bottom: 72px; } .event-detail-card { grid-template-columns: 1fr; } }
+        @media (prefers-reduced-motion: reduce) { .event-detail-watermark-track { will-change: auto; } }
     </style>
 </head>
 <body>
@@ -61,7 +64,13 @@
     <x-header />
 
     <main class="event-detail-page">
-        <div class="event-detail-watermark" aria-hidden="true">АНОНС ЗАХОДУ&nbsp;&nbsp;АНОНС ЗАХОДУ</div>
+        <div class="event-detail-watermark" aria-hidden="true">
+            <div class="event-detail-watermark-track" id="eventDetailWatermarkTrack">
+                <span class="event-detail-watermark-text">
+                    АНОНСИ ЗАХОДІВ&nbsp;&nbsp;АНОНСИ ЗАХОДІВ&nbsp;&nbsp;АНОНСИ ЗАХОДІВ&nbsp;&nbsp;АНОНСИ ЗАХОДІВ&nbsp;&nbsp;АНОНСИ ЗАХОДІВ
+                </span>
+            </div>
+        </div>
 
         <div class="event-detail-container">
             <p class="event-detail-kicker">Анонс заходу</p>
@@ -124,5 +133,39 @@
     </main>
 
     <x-footer />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const detailPage = document.querySelector('.event-detail-page');
+            const watermarkTrack = document.getElementById('eventDetailWatermarkTrack');
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+            function updateWatermarkPosition() {
+                if (!detailPage || !watermarkTrack) {
+                    return;
+                }
+
+                if (reducedMotion.matches) {
+                    watermarkTrack.style.transform = 'translate3d(-50%, -50%, 0)';
+
+                    return;
+                }
+
+                const pageTop = detailPage.getBoundingClientRect().top + window.scrollY;
+                const scrollInsidePage = Math.max(0, window.scrollY - pageTop);
+                const offset = scrollInsidePage * 0.28;
+
+                watermarkTrack.style.transform =
+                    `translate3d(calc(-50% - ${offset}px), -50%, 0)`;
+            }
+
+            window.addEventListener('scroll', updateWatermarkPosition, {
+                passive: true,
+            });
+            reducedMotion.addEventListener?.('change', updateWatermarkPosition);
+
+            updateWatermarkPosition();
+        });
+    </script>
 </body>
 </html>

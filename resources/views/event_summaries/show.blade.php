@@ -38,9 +38,9 @@
         .summary-title { position: relative; z-index: 1; margin: 0 0 36px; color: #2d35c8; font-size: clamp(24px, 3vw, 36px); font-weight: 800; text-transform: uppercase; }
         .summary-preview-note { position: relative; z-index: 2; display: inline-block; margin-bottom: 20px; padding: 9px 14px; border-radius: 999px; background: #fff1bf; color: #734f00; font-size: 14px; font-weight: 700; }
         .summary-event-card { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(220px, .8fr) minmax(0, 1.5fr); overflow: hidden; border-radius: 20px; background: #e9e9ff; }
-        .summary-event-poster { min-height: 260px; background: #d8d9f1; }
+        .summary-event-poster { align-self: start; width: 100%; aspect-ratio: 9 / 16; overflow: hidden; background: #d8d9f1; }
         .summary-event-poster img { display: block; width: 100%; height: 100%; object-fit: cover; }
-        .summary-event-placeholder { display: grid; width: 100%; height: 100%; min-height: 260px; place-items: center; color: #6870bf; font-weight: 700; text-transform: uppercase; }
+        .summary-event-placeholder { display: grid; width: 100%; height: 100%; place-items: center; color: #6870bf; font-weight: 700; text-transform: uppercase; }
         .summary-event-content { padding: clamp(22px, 4vw, 42px); }
         .summary-event-content h1 { margin: 0 0 15px; color: #171717; font-size: clamp(22px, 3vw, 34px); font-weight: 800; line-height: 1.15; text-transform: uppercase; }
         .summary-event-content p { margin: 0; color: #40404a; font-size: 16px; line-height: 1.6; }
@@ -54,7 +54,7 @@
         .summary-gallery-item:hover img { transform: scale(1.04); }
         .summary-back { display: inline-flex; margin-top: 36px; color: #2d35c8; font-weight: 800; text-decoration: none; }
         .summary-back:hover { color: #201fb1; }
-        @media (max-width: 767px) { .summary-page { padding-top: 32px; } .summary-event-card { grid-template-columns: 1fr; } .summary-event-poster { min-height: 220px; } .summary-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } }
+        @media (max-width: 767px) { .summary-page { padding-top: 32px; } .summary-event-card { grid-template-columns: 1fr; } .summary-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } }
     </style>
 </head>
 <body>
