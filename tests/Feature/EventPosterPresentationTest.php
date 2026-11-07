@@ -88,7 +88,7 @@ class EventPosterPresentationTest extends TestCase
         $this->assertSame('4:5', $imageUpload->getPanelAspectRatio());
     }
 
-    public function test_detail_posters_show_the_full_image_and_use_the_source_ratio_on_mobile(): void
+    public function test_detail_posters_match_the_four_by_five_preview_without_filler_backdrops(): void
     {
         $event = Event::query()->create([
             'title' => 'Детальна сторінка анонсу',
@@ -125,30 +125,19 @@ class EventPosterPresentationTest extends TestCase
             ->getContent();
 
         $this->assertMatchesRegularExpression(
-            '/\.event-detail-poster\s*\{[^}]*align-self:\s*start\s*;[^}]*aspect-ratio:\s*9\s*\/\s*16\s*;[^}]*overflow:\s*hidden\s*;/s',
+            '/\.event-detail-poster\s*\{[^}]*align-self:\s*start\s*;[^}]*aspect-ratio:\s*4\s*\/\s*5\s*;[^}]*overflow:\s*hidden\s*;/s',
             $eventHtml,
         );
         $this->assertMatchesRegularExpression(
-            '/\.event-detail-poster-image\s*\{[^}]*object-fit:\s*contain\s*;/s',
+            '/\.event-detail-poster-image\s*\{[^}]*object-fit:\s*cover\s*;/s',
             $eventHtml,
         );
-        $this->assertMatchesRegularExpression(
-            '/\.event-detail-poster-backdrop\s*\{[^}]*object-fit:\s*cover\s*;[^}]*filter:\s*blur\(28px\)[^}]*;/s',
-            $eventHtml,
-        );
-        $this->assertStringContainsString(
-            '<img class="event-detail-poster-backdrop" src="'.route('events.image', ['event' => $event]).'" alt="" aria-hidden="true">',
-            $eventHtml,
-        );
+        $this->assertStringNotContainsString('event-detail-poster-backdrop', $eventHtml);
         $this->assertStringContainsString(
             '<img class="event-detail-poster-image" src="'.route('events.image', ['event' => $event]).'" alt="Афіша заходу Детальна сторінка анонсу">',
             $eventHtml,
         );
-        $this->assertMatchesRegularExpression(
-            '/@media\s*\(max-width:\s*767px\)\s*\{.*?\.event-detail-poster\s*\{[^}]*aspect-ratio:\s*4\s*\/\s*5\s*;/s',
-            $eventHtml,
-        );
-        $this->assertSame(2, substr_count($eventHtml, '.event-detail-poster {'));
+        $this->assertSame(1, substr_count($eventHtml, '.event-detail-poster {'));
         $this->assertDoesNotMatchRegularExpression(
             '/\.event-detail-poster[^{]*\{[^}]*min-height\s*:/s',
             $eventHtml,
@@ -173,30 +162,19 @@ class EventPosterPresentationTest extends TestCase
             ->getContent();
 
         $this->assertMatchesRegularExpression(
-            '/\.summary-event-poster\s*\{[^}]*align-self:\s*start\s*;[^}]*aspect-ratio:\s*9\s*\/\s*16\s*;[^}]*overflow:\s*hidden\s*;/s',
+            '/\.summary-event-poster\s*\{[^}]*align-self:\s*start\s*;[^}]*aspect-ratio:\s*4\s*\/\s*5\s*;[^}]*overflow:\s*hidden\s*;/s',
             $summaryHtml,
         );
         $this->assertMatchesRegularExpression(
-            '/\.summary-event-poster-image\s*\{[^}]*object-fit:\s*contain\s*;/s',
+            '/\.summary-event-poster-image\s*\{[^}]*object-fit:\s*cover\s*;/s',
             $summaryHtml,
         );
-        $this->assertMatchesRegularExpression(
-            '/\.summary-event-poster-backdrop\s*\{[^}]*object-fit:\s*cover\s*;[^}]*filter:\s*blur\(28px\)[^}]*;/s',
-            $summaryHtml,
-        );
-        $this->assertStringContainsString(
-            '<img class="summary-event-poster-backdrop" src="'.route('events.image', ['event' => $pastEvent]).'" alt="" aria-hidden="true">',
-            $summaryHtml,
-        );
+        $this->assertStringNotContainsString('summary-event-poster-backdrop', $summaryHtml);
         $this->assertStringContainsString(
             '<img class="summary-event-poster-image" src="'.route('events.image', ['event' => $pastEvent]).'" alt="Афіша заходу Детальна сторінка підсумку">',
             $summaryHtml,
         );
-        $this->assertMatchesRegularExpression(
-            '/@media\s*\(max-width:\s*767px\)\s*\{.*?\.summary-event-poster\s*\{[^}]*aspect-ratio:\s*4\s*\/\s*5\s*;/s',
-            $summaryHtml,
-        );
-        $this->assertSame(2, substr_count($summaryHtml, '.summary-event-poster {'));
+        $this->assertSame(1, substr_count($summaryHtml, '.summary-event-poster {'));
         $this->assertDoesNotMatchRegularExpression(
             '/\.summary-event-poster[^{]*\{[^}]*min-height\s*:/s',
             $summaryHtml,

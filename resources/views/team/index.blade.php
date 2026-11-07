@@ -1,4 +1,8 @@
 <link rel="stylesheet" href="{{ asset('css/team-departments.css') }}?v=20261107">
+@php
+    $teamBannerUrl = $teamBannerUrl
+        ?? \App\Support\MediaUrl::storageVersioned($settings?->team_banner);
+@endphp
 <section id="team-section" class="team-section">
 <div class="team-hero">
 
@@ -30,12 +34,16 @@
 
     <div class="team-banner">
 
-       @if(isset($settings) && !empty($settings->team_banner))
+       @if ($teamBannerUrl)
 
             <img
-                src="{{ \App\Support\MediaUrl::storage($settings->team_banner) }}"
+                src="{{ $teamBannerUrl }}"
                 class="team-banner-image"
                 alt="Team Photo"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+                data-site-preloader-image
             >
 
         @else
