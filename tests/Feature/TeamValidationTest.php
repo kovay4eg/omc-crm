@@ -109,6 +109,23 @@ class TeamValidationTest extends TestCase
         Storage::disk('public')->assertExists($photo);
     }
 
+    public function test_overall_team_photo_accepts_files_above_the_previous_ten_megabyte_limit(): void
+    {
+        Storage::fake('public');
+        $this->administrator();
+
+        Livewire::test(ListEmployees::class)
+            ->callTableAction('edit_team_banner', data: [
+                'team_banner' => [UploadedFile::fake()->image('large-banner.jpg', 1600, 900)->size(15360)],
+            ])
+            ->assertHasNoTableActionErrors();
+
+        $photo = SiteSetting::firstOrFail()->team_banner;
+        $this->assertNotNull($photo);
+        Storage::disk('public')->assertExists($photo);
+        $this->assertSame(['required', 'file', 'max:25600'], config('livewire.temporary_file_upload.rules'));
+    }
+
     public function test_twenty_one_slides_are_rejected_in_the_actual_admin_form(): void
     {
         Storage::fake('public');
@@ -151,17 +168,28 @@ class TeamValidationTest extends TestCase
         $department = Department::create(['name' => 'Освіта']);
         $position = Position::create(['name' => 'Координатор']);
         $employee = Employee::create(['first_name' => 'Олена', 'last_name' => 'Петренко', 'department_id' => $department->id, 'position_id' => $position->id]);
-        $invalid = fn () => match ($kind) {
+        $invalidEmployeePhoto = fn () => match ($kind) {
             'pdf' => UploadedFile::fake()->create('photo.pdf', 10, 'application/pdf'),
             'svg' => UploadedFile::fake()->create('photo.svg', 10, 'image/svg+xml'),
             default => UploadedFile::fake()->image('photo.jpg')->size(10241),
         };
+        $invalidBanner = fn () => match ($kind) {
+            'pdf' => UploadedFile::fake()->create('banner.pdf', 10, 'application/pdf'),
+            'svg' => UploadedFile::fake()->create('banner.svg', 10, 'image/svg+xml'),
+            default => UploadedFile::fake()->image('banner.jpg')->size(25601),
+        };
         Livewire::test(EditEmployee::class, ['record' => $employee->getRouteKey()])
-            ->fillForm(['photo' => [$invalid()]])
+            ->fillForm(['photo' => [$invalidEmployeePhoto()]])
             ->call('save')
             ->assertHasFormErrors(['photo']);
+
+        // Keep the transport limit above the field limit here so this assertion
+        // exercises the banner field validation instead of Livewire rejecting
+        // the temporary upload before Filament receives it.
+        config()->set('livewire.temporary_file_upload.rules', ['required', 'file', 'max:30720']);
+
         Livewire::test(ListEmployees::class)
-            ->callTableAction('edit_team_banner', data: ['team_banner' => [$invalid()]])
+            ->callTableAction('edit_team_banner', data: ['team_banner' => [$invalidBanner()]])
             ->assertHasTableActionErrors(['team_banner']);
         $this->assertNull($employee->fresh()->photo);
     }
