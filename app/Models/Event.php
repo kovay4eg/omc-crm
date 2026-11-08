@@ -85,4 +85,11 @@ class Event extends Model
     {
         return ['image', 'smm_image'];
     }
+
+    protected function mediaImageProfile(string $field): array
+    {
+        return $field === 'smm_image'
+            ? ['max_width' => 1200, 'max_height' => 1200, 'quality' => 86]
+            : ['max_width' => 1600, 'max_height' => 2000, 'quality' => 88];
+    }
 }

@@ -44,4 +44,9 @@ class Department extends Model
     {
         return ['photo', 'slider_photos'];
     }
+
+    protected function mediaImageProfile(string $field): array
+    {
+        return ['max_width' => 1800, 'max_height' => 1400, 'quality' => 84];
+    }
 }

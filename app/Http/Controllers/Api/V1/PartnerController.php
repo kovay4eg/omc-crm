@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\FooterSetting;
+use App\Support\MediaUrl;
 use App\Support\PartnerLogoOptimizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class PartnerController extends Controller
 {
@@ -54,7 +54,7 @@ class PartnerController extends Controller
     {
         return collect($settings?->partner_logos ?? [])->values()->map(fn (string $path, int $index) => [
             'index' => $index,
-            'image_url' => $request->getSchemeAndHttpHost().Storage::url($path),
+            'image_url' => MediaUrl::storage($path),
         ])->all();
     }
 }

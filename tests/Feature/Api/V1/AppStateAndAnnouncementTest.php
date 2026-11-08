@@ -119,6 +119,7 @@ class AppStateAndAnnouncementTest extends TestCase
             ->assertJsonPath('data.link_label', 'Докладніше');
 
         $announcement = AppAnnouncement::query()->firstOrFail();
+        $this->assertStringEndsWith('.webp', $announcement->image_path);
         Storage::disk('public')->assertExists($announcement->image_path);
         $this->assertNotNull($announcement->push_requested_at);
         $this->assertDatabaseHas('system_logs', [

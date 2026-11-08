@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\AppAnnouncement;
 use App\Models\CalendarPlan;
 use App\Models\Department;
 use App\Models\Employee;
@@ -13,6 +14,7 @@ use App\Models\HomepageSetting;
 use App\Models\Report;
 use App\Models\SiteSetting;
 use App\Models\Statute;
+use App\Services\MediaArchiveManager;
 use App\Support\MediaStorage;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
@@ -25,7 +27,7 @@ class PruneOrphanedMedia extends Command
      * @var string
      */
     protected $signature = 'media:prune-orphans
-                            {--force : Видалити знайдені файли після перевірки списку}';
+                            {--force : Поставити знайдені файли в безпечну чергу архівування}';
 
     /**
      * The console command description.
@@ -87,16 +89,20 @@ class PruneOrphanedMedia extends Command
         ));
 
         if (! $this->option('force')) {
-            $this->line('Нічого не видалено. Після перевірки запусти: php artisan media:prune-orphans --force');
+            $this->line('Нічого не змінено. Для постановки файлів у безпечну чергу архіву запусти: php artisan media:prune-orphans --force');
 
             return self::SUCCESS;
         }
 
         foreach ($orphans as $file) {
-            Storage::disk($file['disk'])->delete($file['file']);
+            $relativePath = $file['disk'] === 'local' && str_starts_with($file['file'], 'private/')
+                ? substr($file['file'], strlen('private/'))
+                : $file['file'];
+
+            app(MediaArchiveManager::class)->retire($relativePath, 'orphan');
         }
 
-        $this->info('Невикористані медіафайли видалено.');
+        $this->info('Невикористані медіафайли поставлено в чергу архівування; локальні копії збережено до повної перевірки OMC Cloud.');
 
         return self::SUCCESS;
     }
@@ -112,6 +118,7 @@ class PruneOrphanedMedia extends Command
             Event::query()->pluck('smm_image')->all(),
             EventSummary::query()->pluck('smm_image')->all(),
             EventSummaryImage::query()->pluck('image')->all(),
+            AppAnnouncement::query()->pluck('image_path')->all(),
             HomepageSetting::query()->pluck('banner_image')->all(),
             HomepageSetting::query()->pluck('mobile_banner_image')->all(),
             HomepageSetting::query()->pluck('logo')->all(),

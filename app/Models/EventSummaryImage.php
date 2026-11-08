@@ -26,4 +26,9 @@ class EventSummaryImage extends Model
     {
         return ['image'];
     }
+
+    protected function mediaImageProfile(string $field): array
+    {
+        return ['max_width' => 2400, 'max_height' => 2400, 'quality' => 84];
+    }
 }

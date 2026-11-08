@@ -9,11 +9,11 @@ use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Position;
 use App\Models\SiteSetting;
+use App\Support\MediaUrl;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class TeamController extends Controller
@@ -41,7 +41,7 @@ class TeamController extends Controller
             'positions' => Position::query()->orderBy('name')->get(['id', 'name']),
             'departments' => DepartmentResource::collection(Department::query()->orderBy('name')->get()),
             'team_banner_url' => $settings?->team_banner
-                ? $request->getSchemeAndHttpHost().Storage::url($settings->team_banner)
+                ? MediaUrl::storage($settings->team_banner)
                 : null,
         ]]);
     }

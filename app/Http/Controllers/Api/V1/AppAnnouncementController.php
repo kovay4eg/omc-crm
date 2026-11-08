@@ -10,7 +10,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Storage;
 
 class AppAnnouncementController extends Controller
 {
@@ -56,9 +55,6 @@ class AppAnnouncementController extends Controller
     {
         $this->authorizeAdmin($request);
         $title = $announcement->title;
-        if ($announcement->image_path) {
-            Storage::disk('public')->delete($announcement->image_path);
-        }
         $announcement->delete();
         system_log('delete_app_announcement', 'Видалено оголошення для застосунку: '.$title);
 
@@ -73,14 +69,10 @@ class AppAnnouncementController extends Controller
         $attributes = Arr::except($data, ['image', 'remove_image', 'send_push']);
 
         if ($request->boolean('remove_image') && $announcement?->image_path) {
-            Storage::disk('public')->delete($announcement->image_path);
             $attributes['image_path'] = null;
         }
 
         if ($request->hasFile('image')) {
-            if ($announcement?->image_path) {
-                Storage::disk('public')->delete($announcement->image_path);
-            }
             $attributes['image_path'] = $request->file('image')->store('app-announcements', 'public');
         }
 

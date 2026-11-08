@@ -7,6 +7,7 @@ use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Event;
 use App\Models\HomepageSetting;
+use App\Models\MediaArchive;
 use App\Models\Position;
 use App\Models\Report;
 use App\Models\SiteSetting;
@@ -81,25 +82,32 @@ class ContentManagementTest extends TestCase
         Storage::fake('public');
         $oldBanner = UploadedFile::fake()->image('old-banner.jpg', 1600, 900)->store('team', 'public');
         $settings = SiteSetting::query()->create(['team_banner' => $oldBanner]);
+        $previousBanner = $settings->refresh()->team_banner;
         Sanctum::actingAs(User::factory()->create(['role' => 'admin']));
 
         $this->post('/api/v1/team/banner', [
             'banner' => UploadedFile::fake()->image('new-banner.jpg', 1600, 900)->size(15360),
         ], ['Accept' => 'application/json'])
             ->assertOk()
-            ->assertJsonPath('data.team_banner_url', fn ($url) => str_contains($url, '/storage/team/'));
+            ->assertJsonPath('data.team_banner_url', fn ($url) => str_contains($url, '/media/team/'));
 
         $newBanner = $settings->refresh()->team_banner;
         $this->assertNotNull($newBanner);
         $this->assertNotSame($oldBanner, $newBanner);
         Storage::disk('public')->assertExists($newBanner);
-        Storage::disk('public')->assertMissing($oldBanner);
+        Storage::disk('public')->assertExists([$oldBanner, $previousBanner]);
+        $this->assertDatabaseHas('media_archives', ['original_path' => $previousBanner, 'reason' => 'replaced']);
         $this->assertDatabaseHas('system_logs', ['action' => 'update_team_banner']);
 
         $this->postJson('/api/v1/team/banner', ['remove_banner' => true])
             ->assertOk()
             ->assertJsonPath('data.team_banner_url', null);
-        Storage::disk('public')->assertMissing($newBanner);
+        Storage::disk('public')->assertExists($newBanner);
+        $this->assertDatabaseHas('media_archives', [
+            'original_path' => $newBanner,
+            'reason' => 'replaced',
+            'status' => MediaArchive::STATUS_PENDING,
+        ]);
         $this->assertNull($settings->refresh()->team_banner);
     }
 

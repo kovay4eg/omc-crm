@@ -42,6 +42,6 @@ class PartnerLogoOptimizerTest extends TestCase
         $secondUrl = MediaUrl::storageVersioned($path);
 
         $this->assertNotSame($firstUrl, $secondUrl);
-        $this->assertStringContainsString('/storage/footer-partners/partner.png?v=', $secondUrl);
+        $this->assertStringContainsString('/media/footer-partners/partner.png?v=', $secondUrl);
     }
 }

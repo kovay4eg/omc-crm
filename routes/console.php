@@ -13,6 +13,12 @@ Schedule::command('google:sync-registrations')
     ->withoutOverlapping(15)
     ->runInBackground();
 
+Schedule::command('media:archive-if-low')
+    ->everyFifteenMinutes()
+    ->withoutOverlapping(120)
+    ->onOneServer()
+    ->runInBackground();
+
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');

@@ -38,14 +38,8 @@ class EventShareImageController extends Controller
         $jpeg = null;
 
         foreach ($sourcePaths as $sourcePath) {
-            $media = MediaStorage::find($sourcePath);
-
-            if ($media === null) {
-                continue;
-            }
-
-            $source = @file_get_contents($media['absolute_path']);
-            $image = $source === false ? false : @imagecreatefromstring($source);
+            $source = MediaStorage::contents($sourcePath);
+            $image = $source === null ? false : @imagecreatefromstring($source);
 
             if ($image === false) {
                 continue;

@@ -6,6 +6,7 @@ use App\Filament\Resources\Employees\Pages\EditEmployee;
 use App\Filament\Resources\Employees\Pages\ListEmployees;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\MediaArchive;
 use App\Models\Position;
 use App\Models\SiteSetting;
 use App\Models\User;
@@ -44,9 +45,13 @@ class TeamDepartmentsTest extends TestCase
             ]]])
             ->assertHasNoTableActionErrors();
 
-        $this->assertSame('Тренінги та навчання.', $department->fresh()->description);
-        $this->assertTrue($department->fresh()->slider_enabled);
-        $this->assertSame([$slide, $secondSlide], $department->fresh()->slider_photos);
+        $department->refresh();
+        $this->assertSame('Тренінги та навчання.', $department->description);
+        $this->assertTrue($department->slider_enabled);
+        $this->assertContainsOnly('string', $department->slider_photos);
+        $this->assertTrue(collect($department->slider_photos)->every(fn (string $path): bool => str_ends_with($path, '.webp')));
+        [$slide, $secondSlide] = $department->slider_photos;
+        $photo = $department->photo;
 
         Livewire::test(ListEmployees::class)
             ->callTableAction('manage_departments', data: ['departments' => [[
@@ -55,7 +60,10 @@ class TeamDepartmentsTest extends TestCase
             ]]])
             ->assertHasNoTableActionErrors();
 
-        $this->assertSame([$secondSlide, $slide], $department->fresh()->slider_photos);
+        $department->refresh();
+        $this->assertSame([$secondSlide, $slide], $department->slider_photos);
+        [$secondSlide, $slide] = $department->slider_photos;
+        $photo = $department->photo;
 
         Livewire::test(ListEmployees::class)
             ->callTableAction('manage_departments', data: ['departments' => [[
@@ -64,8 +72,9 @@ class TeamDepartmentsTest extends TestCase
             ]]])
             ->assertHasNoTableActionErrors();
 
-        $this->assertFalse($department->fresh()->slider_enabled);
-        $this->assertSame([$secondSlide, $slide], $department->fresh()->slider_photos);
+        $department->refresh();
+        $this->assertFalse($department->slider_enabled);
+        $this->assertSame([$secondSlide, $slide], $department->slider_photos);
         Storage::disk('public')->assertExists([$photo, $slide, $secondSlide]);
     }
 
@@ -137,7 +146,7 @@ class TeamDepartmentsTest extends TestCase
         Storage::disk('public')->assertMissing($newPhoto);
     }
 
-    public function test_department_service_deletes_replaced_media_only_after_success(): void
+    public function test_department_service_queues_replaced_media_only_after_success(): void
     {
         Storage::fake('public');
         $oldPhoto = 'team/departments/old.jpg';
@@ -151,8 +160,13 @@ class TeamDepartmentsTest extends TestCase
         ], User::factory()->create(['role' => 'admin']));
 
         $this->assertSame($newPhoto, $department->fresh()->photo);
-        Storage::disk('public')->assertMissing($oldPhoto);
+        Storage::disk('public')->assertExists($oldPhoto);
         Storage::disk('public')->assertExists($newPhoto);
+        $this->assertDatabaseHas('media_archives', [
+            'original_path' => $oldPhoto,
+            'reason' => 'replaced',
+            'status' => MediaArchive::STATUS_PENDING,
+        ]);
     }
 
     public function test_media_model_keeps_old_file_when_its_database_update_fails(): void
@@ -198,8 +212,16 @@ class TeamDepartmentsTest extends TestCase
         $photo = UploadedFile::fake()->image('department.jpg')->store('team/departments', 'public');
         $slide = UploadedFile::fake()->image('slide.jpg')->store('team/departments', 'public');
         $department = Department::create(['name' => 'Освіта', 'photo' => $photo, 'slider_photos' => [$slide]]);
+        $department->refresh();
+        $photo = $department->photo;
+        [$slide] = $department->slider_photos;
 
         $this->get(route('departments.photo', $department))->assertOk();
+        $versionedResponse = $this->get(route('departments.photo', ['department' => $department, 'v' => 'version']))
+            ->assertOk();
+        $this->assertStringContainsString('public', $versionedResponse->headers->get('Cache-Control'));
+        $this->assertStringContainsString('max-age=31536000', $versionedResponse->headers->get('Cache-Control'));
+        $this->assertStringContainsString('immutable', $versionedResponse->headers->get('Cache-Control'));
         $this->get(route('departments.slide', [$department, 0]))->assertOk();
         $this->get(route('departments.photo', [$department, basename($photo)]))->assertOk();
         $this->get(route('departments.slide', [$department, 0, basename($slide)]))->assertOk();
@@ -210,7 +232,9 @@ class TeamDepartmentsTest extends TestCase
         $department->update(['photo' => null, 'slider_photos' => [$photo, $slide]]);
         Storage::disk('public')->assertExists($photo);
         $department->delete();
-        Storage::disk('public')->assertMissing([$photo, $slide]);
+        Storage::disk('public')->assertExists([$photo, $slide]);
+        $this->assertDatabaseHas('media_archives', ['original_path' => $photo, 'reason' => 'deleted']);
+        $this->assertDatabaseHas('media_archives', ['original_path' => $slide, 'reason' => 'deleted']);
     }
 
     public function test_frontend_keeps_old_content_orders_employees_and_escapes_descriptions(): void
@@ -265,6 +289,53 @@ class TeamDepartmentsTest extends TestCase
             ->assertSee("document.querySelectorAll('[data-site-preloader-image]')", false)
             ->assertSee('Promise.allSettled', false)
             ->assertSee('image.decode()', false);
+    }
+
+    public function test_administration_portraits_are_preloaded_while_other_departments_warm_on_demand(): void
+    {
+        $administration = Department::query()->create(['name' => 'Адміністрація']);
+        $education = Department::query()->create(['name' => 'Освіта']);
+        $position = Position::query()->create(['name' => 'Фахівець']);
+        Employee::query()->create([
+            'first_name' => 'Олена',
+            'last_name' => 'Петренко',
+            'department_id' => $administration->id,
+            'position_id' => $position->id,
+            'photo' => 'employees/administration.webp',
+        ]);
+        Employee::query()->create([
+            'first_name' => 'Ірина',
+            'last_name' => 'Коваль',
+            'department_id' => $education->id,
+            'position_id' => $position->id,
+            'photo' => 'employees/education.webp',
+        ]);
+
+        $html = $this->get('/')->assertOk()->getContent();
+
+        $this->assertMatchesRegularExpression(
+            '/alt="Петренко Олена"[^>]+loading="eager"[^>]+data-team-photo[^>]+data-site-preloader-image/s',
+            $html,
+        );
+        $this->assertMatchesRegularExpression(
+            '/alt="Коваль Ірина"[^>]+loading="lazy"[^>]+data-team-photo(?![^>]+data-site-preloader-image)/s',
+            $html,
+        );
+        $script = file_get_contents(public_path('js/team-departments.js'));
+        $this->assertStringContainsString("warmDepartment(department, 'high')", $script);
+        $this->assertStringContainsString("'pointerover', 'focusin', 'touchstart'", $script);
+    }
+
+    public function test_switching_departments_preserves_the_clicked_toggle_viewport_position(): void
+    {
+        $script = file_get_contents(public_path('js/team-departments.js'));
+
+        $this->assertStringContainsString('const preserveViewportAnchor = (element, mutate) =>', $script);
+        $this->assertStringContainsString('const initialTop = element.getBoundingClientRect().top;', $script);
+        $this->assertStringContainsString('element.focus({preventScroll: true});', $script);
+        $this->assertStringContainsString('window.scrollBy(0, delta);', $script);
+        $this->assertStringContainsString('window.requestAnimationFrame(() => {', $script);
+        $this->assertStringContainsString('preserveViewportAnchor(department, () => {', $script);
     }
 
     public function test_frontend_uses_administration_specific_sections_without_affecting_departments(): void

@@ -6,6 +6,7 @@ use App\Http\Middleware\EnsureFrontendIsAvailable;
 use App\Http\Middleware\TrackSiteVisit;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\MediaArchive;
 use App\Models\Position;
 use App\Models\User;
 use App\Support\TeamDepartmentContent;
@@ -43,6 +44,9 @@ class TeamDepartmentApiTest extends TestCase
         $photo = $this->photo('cover.jpg');
         $slide = $this->photo('slide.jpg');
         $department = Department::create(['name' => 'Освіта', 'description' => 'Навчання', 'photo' => $photo, 'slider_enabled' => true, 'slider_photos' => [$slide]]);
+        $department->refresh();
+        $photo = $department->photo;
+        [$slide] = $department->slider_photos;
         $response = $this->getJson('/api/v1/team/options')->assertOk()
             ->assertJsonPath('data.department_content_supported', true)
             ->assertJsonPath('data.departments.0.id', $department->id)
@@ -79,6 +83,10 @@ class TeamDepartmentApiTest extends TestCase
         $this->assertSame('Освіта', $department->name);
         $this->assertTrue($department->slider_enabled);
         $this->assertCount(2, $department->slider_photos);
+        $this->assertStringEndsWith('.webp', $department->photo);
+        $this->assertTrue(collect($department->slider_photos)->every(
+            fn (string $path): bool => str_ends_with($path, '.webp'),
+        ));
         Storage::disk('public')->assertExists([$department->photo, ...$department->slider_photos]);
         $this->getJson('/api/v1/team/options')->assertJsonPath('data.departments.0.slider_photos.0.id', TeamDepartmentContent::photoId($department->slider_photos[0]));
     }
@@ -89,6 +97,9 @@ class TeamDepartmentApiTest extends TestCase
         $first = $this->photo('first.jpg');
         $second = $this->photo('second.jpg');
         $department = Department::create(['name' => 'Освіта', 'photo' => $cover, 'slider_enabled' => true, 'slider_photos' => [$first, $second]]);
+        $department->refresh();
+        $cover = $department->photo;
+        [$first, $second] = $department->slider_photos;
         $this->postJson('/api/v1/team/departments/'.$department->id, $this->updateData($department, [
             'gallery_order' => json_encode(['existing:'.TeamDepartmentContent::photoId($second), 'existing:'.TeamDepartmentContent::photoId($first)]),
         ]))->assertOk();
@@ -103,7 +114,9 @@ class TeamDepartmentApiTest extends TestCase
         $this->assertFalse($department->slider_enabled);
         $this->assertSame($first, $department->slider_photos[1]);
         Storage::disk('public')->assertExists([$first, $department->slider_photos[0]]);
-        Storage::disk('public')->assertMissing([$cover, $second]);
+        Storage::disk('public')->assertExists([$cover, $second]);
+        $this->assertDatabaseHas('media_archives', ['original_path' => $cover, 'reason' => 'replaced']);
+        $this->assertDatabaseHas('media_archives', ['original_path' => $second, 'reason' => 'replaced']);
         $this->get('/')->assertOk()->assertDontSee('data-team-carousel', false);
     }
 
@@ -112,6 +125,9 @@ class TeamDepartmentApiTest extends TestCase
         $cover = $this->photo('cover.jpg');
         $slide = $this->photo('slide.jpg');
         $department = Department::create(['name' => 'Освіта', 'description' => 'Збережений опис', 'photo' => $cover, 'slider_enabled' => true, 'slider_photos' => [$slide]]);
+        $department->refresh();
+        $cover = $department->photo;
+        [$slide] = $department->slider_photos;
         $this->postJson('/api/v1/team/departments/'.$department->id, $this->updateData($department, ['name' => 'Оновлена назва']))->assertOk();
         $department->refresh();
         $this->assertSame('Збережений опис', $department->description);
@@ -136,7 +152,11 @@ class TeamDepartmentApiTest extends TestCase
         $first = $this->photo('first.jpg');
         $foreign = $this->photo('foreign.jpg');
         $department = Department::create(['name' => 'Освіта', 'slider_photos' => [$first]]);
-        Department::create(['name' => 'Інший', 'slider_photos' => [$foreign]]);
+        $other = Department::create(['name' => 'Інший', 'slider_photos' => [$foreign]]);
+        $department->refresh();
+        $other->refresh();
+        [$first] = $department->slider_photos;
+        [$foreign] = $other->slider_photos;
         foreach ([['existing:'.TeamDepartmentContent::photoId($foreign)], ['existing:'.TeamDepartmentContent::photoId($first), 'existing:'.TeamDepartmentContent::photoId($first)], ['upload:0'], ['team/../../.env']] as $order) {
             $this->postJson('/api/v1/team/departments/'.$department->id, $this->updateData($department, ['gallery_order' => json_encode($order)]))->assertUnprocessable()->assertJsonValidationErrors('gallery_order');
         }
@@ -199,10 +219,12 @@ class TeamDepartmentApiTest extends TestCase
         ])->assertForbidden();
     }
 
-    public function test_occupied_department_is_protected_and_empty_department_media_is_cleaned_up(): void
+    public function test_occupied_department_is_protected_and_empty_department_media_is_queued_for_archive(): void
     {
         $photo = $this->photo('cover.jpg');
         $department = Department::create(['name' => 'Освіта', 'photo' => $photo]);
+        $department->refresh();
+        $photo = $department->photo;
         $position = Position::create(['name' => 'Координатор']);
         $employee = Employee::create(['first_name' => 'Олена', 'last_name' => 'Петренко', 'position_id' => $position->id, 'department_id' => $department->id]);
         $this->deleteJson('/api/v1/team/departments/'.$department->id, ['revision' => TeamDepartmentContent::revision($department)])->assertUnprocessable();
@@ -210,7 +232,12 @@ class TeamDepartmentApiTest extends TestCase
         $employee->update(['department_id' => null]);
         $this->deleteJson('/api/v1/team/departments/'.$department->id, ['revision' => TeamDepartmentContent::revision($department)])->assertOk();
         $this->assertDatabaseMissing('departments', ['id' => $department->id]);
-        Storage::disk('public')->assertMissing($photo);
+        Storage::disk('public')->assertExists($photo);
+        $this->assertDatabaseHas('media_archives', [
+            'original_path' => $photo,
+            'reason' => 'deleted',
+            'status' => MediaArchive::STATUS_PENDING,
+        ]);
     }
 
     public function test_team_media_stays_available_to_crm_during_frontend_maintenance(): void

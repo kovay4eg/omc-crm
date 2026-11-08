@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\DepartmentResource;
 use App\Models\Department;
+use App\Services\MediaArchiveManager;
 use App\Support\MediaStorage;
 use App\Support\TeamDepartmentContent;
 use Illuminate\Http\JsonResponse;
@@ -44,7 +45,7 @@ class TeamDepartmentController extends Controller
 
             return $media;
         });
-        MediaStorage::delete($media);
+        app(MediaArchiveManager::class)->retire($media, 'deleted', $department);
 
         return response()->json(['message' => 'Відділ видалено.']);
     }
@@ -138,7 +139,8 @@ class TeamDepartmentController extends Controller
             MediaStorage::delete($uploaded);
             throw $exception;
         }
-        MediaStorage::delete($removed);
+        $saved->refresh()->optimizeMediaImages(true);
+        app(MediaArchiveManager::class)->retire($removed, 'replaced', $saved);
 
         return new DepartmentResource($saved->refresh());
     }
