@@ -36,4 +36,16 @@ class HomepageSetting extends Model
     {
         return ['banner_image', 'mobile_banner_image', 'logo', 'smm_image'];
     }
+
+    protected function optimizableMediaFields(): array
+    {
+        return ['banner_image', 'mobile_banner_image', 'smm_image'];
+    }
+
+    protected function mediaImageProfile(string $field): array
+    {
+        return $field === 'smm_image'
+            ? ['max_width' => 1200, 'max_height' => 1200, 'quality' => 86]
+            : ['max_width' => 2400, 'max_height' => 1800, 'quality' => 85];
+    }
 }

@@ -14,6 +14,7 @@ use App\Http\Controllers\FirebaseMessagingServiceWorkerController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IosAppDownloadController;
+use App\Http\Controllers\PublicMediaController;
 use App\Http\Middleware\EnsureFrontendIsAvailable;
 use App\Http\Middleware\TrackSiteVisit;
 use App\Models\CalendarPlan;
@@ -48,6 +49,17 @@ Route::view('/support/omc-crm', 'omc-crm-support')
 
 Route::view('/account-deletion', 'account-deletion')
     ->name('account-deletion');
+
+Route::get('/media/{path}', PublicMediaController::class)
+    ->where('path', '.*')
+    ->name('media.show');
+
+// Backward-compatible fallback for links issued before managed media moved to
+// /media. Existing public/storage files are still served directly by the web
+// server; once archived, the missing file reaches Laravel and resolves here.
+Route::get('/storage/{path}', PublicMediaController::class)
+    ->where('path', '.*')
+    ->name('media.legacy');
 
 if (app()->environment(['local', 'testing'])) {
     Route::view('/holiday-logo-preview', 'holiday-logo-preview')

@@ -31,4 +31,9 @@ class SiteSetting extends Model
     {
         return ['team_banner'];
     }
+
+    protected function mediaImageProfile(string $field): array
+    {
+        return ['max_width' => 2400, 'max_height' => 1800, 'quality' => 85];
+    }
 }

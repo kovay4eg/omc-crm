@@ -51,7 +51,7 @@ class BrandLogoTest extends TestCase
 
         $this->get('/')
             ->assertOk()
-            ->assertSee('storage/homepage/custom-logo.svg', false)
+            ->assertSee('media/homepage/custom-logo.svg', false)
             ->assertDontSee(BrandLogo::ASSET_PATH, false);
     }
 
@@ -64,7 +64,7 @@ class BrandLogoTest extends TestCase
         $this->get('/')
             ->assertOk()
             ->assertSee(BrandLogo::ASSET_PATH, false)
-            ->assertDontSee('storage/homepage/Logo_1%201.svg', false);
+            ->assertDontSee('media/homepage/Logo_1%201.svg', false);
 
         $resource = new HomepageSettingResource($settings);
         $payload = $resource->toArray(Request::create('/api/v1/homepage-settings'));

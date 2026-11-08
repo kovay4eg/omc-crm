@@ -2,9 +2,13 @@
 
 namespace App\Support;
 
+use App\Models\MediaArchive;
+use App\Services\MediaArchiveManager;
+use App\Services\MediaArchiveReader;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 final class MediaStorage
 {
@@ -22,6 +26,7 @@ final class MediaStorage
             'team',
             'smm',
             'event-summaries',
+            'app-announcements',
             'footer-partners',
             'calendar-plans',
             'reports',
@@ -96,7 +101,11 @@ final class MediaStorage
             $previous = self::paths($model->getOriginal($field));
             $current = self::paths($model->getAttribute($field));
 
-            self::delete(array_values(array_diff($previous, $current)));
+            app(MediaArchiveManager::class)->retire(
+                array_values(array_diff($previous, $current)),
+                'replaced',
+                $model,
+            );
         }
     }
 
@@ -106,7 +115,11 @@ final class MediaStorage
     public static function deleteModelFiles(Model $model, array $fields): void
     {
         foreach ($fields as $field) {
-            self::delete($model->getAttribute($field));
+            app(MediaArchiveManager::class)->retire(
+                $model->getAttribute($field),
+                'deleted',
+                $model,
+            );
         }
     }
 
@@ -122,7 +135,32 @@ final class MediaStorage
         $location = self::find($path);
 
         if ($location === null) {
-            return null;
+            $normalizedPath = self::normalizePath($path);
+
+            if ($normalizedPath === null || ! Schema::hasTable('media_archives')) {
+                return null;
+            }
+
+            $archive = MediaArchive::query()
+                ->where('original_path', $normalizedPath)
+                ->whereIn('status', ['verified', 'archived'])
+                ->latest('verified_at')
+                ->first();
+
+            if ($archive === null) {
+                return null;
+            }
+
+            $name = is_array($storedFileNames)
+                ? ($storedFileNames[$path] ?? basename($path))
+                : ($storedFileNames ?: basename($path));
+
+            return [
+                'name' => $name,
+                'size' => (int) $archive->size,
+                'type' => $archive->mime_type,
+                'url' => $legacyUrl ?: MediaUrl::storageVersioned($normalizedPath),
+            ];
         }
 
         $storage = Storage::disk($location['disk']);
@@ -137,19 +175,48 @@ final class MediaStorage
             // Для вже збережених записів використовуємо контрольований маршрут.
             // Він працює і для старих, і для нових шляхів зберігання та не
             // залежить від символічного посилання public/storage на сервері.
-            'url' => $legacyUrl ?: $storage->url($location['path']),
+            'url' => $legacyUrl ?: MediaUrl::storageVersioned($path),
         ];
     }
 
-    public static function response(string $path): BinaryFileResponse
+    public static function response(string $path): Response
     {
+        $path = self::normalizePath($path);
+
+        abort_if($path === null, 404);
+
         $location = self::find($path);
 
-        abort_if($location === null, 404);
+        if ($location === null) {
+            return app(MediaArchiveReader::class)->response($path);
+        }
+
+        $cacheControl = request()->filled('v')
+            ? 'public, max-age=31536000, immutable'
+            : 'public, max-age=86400';
 
         return response()->file($location['absolute_path'], [
-            'Cache-Control' => 'public, max-age=86400',
+            'Cache-Control' => $cacheControl,
         ]);
+    }
+
+    public static function contents(string $path): ?string
+    {
+        $path = self::normalizePath($path);
+
+        if ($path === null) {
+            return null;
+        }
+
+        $location = self::find($path);
+
+        if ($location !== null) {
+            $contents = @file_get_contents($location['absolute_path']);
+
+            return $contents === false ? null : $contents;
+        }
+
+        return app(MediaArchiveReader::class)->contents($path);
     }
 
     /**
@@ -191,7 +258,7 @@ final class MediaStorage
         ];
     }
 
-    private static function normalizePath(string $path): ?string
+    public static function normalizePath(string $path): ?string
     {
         $path = str_replace('\\', '/', ltrim(trim($path), '/\\'));
 
@@ -204,5 +271,22 @@ final class MediaStorage
         }
 
         return $path;
+    }
+
+    public static function isManagedPath(string $path): bool
+    {
+        $path = self::normalizePath($path);
+
+        if ($path === null) {
+            return false;
+        }
+
+        foreach (self::managedDirectories() as $directory) {
+            if ($path === $directory || str_starts_with($path, $directory.'/')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

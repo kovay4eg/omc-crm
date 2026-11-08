@@ -78,11 +78,16 @@
             <div class="department-employees">
                 @forelse($department->employees as $employee)
                     <article class="employee-card">
-                        <div class="employee-photo">
+                        <div class="employee-photo {{ $employee->photo ? 'is-photo-loading' : 'is-photo-ready' }}" data-team-photo-frame>
                             @if($employee->photo)
                                 <img src="{{ route('employees.photo', ['employee' => $employee, 'v' => substr(sha1($employee->photo), 0, 12)]) }}"
-                                    alt="{{ $employee->last_name }} {{ $employee->first_name }}" loading="lazy"
-                                    onerror="this.onerror=null; this.src='{{ asset('images/default-avatar.png') }}';">
+                                    alt="{{ $employee->last_name }} {{ $employee->first_name }}"
+                                    loading="{{ $isAdministration ? 'eager' : 'lazy' }}"
+                                    decoding="async"
+                                    fetchpriority="{{ $isAdministration ? 'high' : 'low' }}"
+                                    data-team-photo
+                                    data-fallback-src="{{ asset('images/default-avatar.png') }}"
+                                    @if($isAdministration) data-site-preloader-image @endif>
                             @else
                                 <img src="{{ asset('images/default-avatar.png') }}" alt="" class="employee-placeholder" loading="lazy">
                             @endif

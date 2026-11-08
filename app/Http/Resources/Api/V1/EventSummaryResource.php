@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources\Api\V1;
 
+use App\Support\MediaUrl;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 
 class EventSummaryResource extends JsonResource
 {
@@ -49,6 +49,6 @@ class EventSummaryResource extends JsonResource
 
     private function mediaUrl(Request $request, ?string $path): ?string
     {
-        return $path ? $request->getSchemeAndHttpHost().Storage::url($path) : null;
+        return MediaUrl::storage($path);
     }
 }

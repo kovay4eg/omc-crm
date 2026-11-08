@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources\Api\V1;
 
+use App\Support\MediaUrl;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 
 class AppAnnouncementResource extends JsonResource
 {
@@ -14,9 +14,7 @@ class AppAnnouncementResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'body' => $this->body,
-            'image_url' => $this->image_path
-                ? $request->getSchemeAndHttpHost().Storage::url($this->image_path)
-                : null,
+            'image_url' => MediaUrl::storage($this->image_path),
             'link_url' => $this->link_url,
             'link_label' => $this->link_label,
             'starts_at' => $this->starts_at?->toIso8601String(),

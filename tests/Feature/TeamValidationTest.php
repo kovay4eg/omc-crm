@@ -6,6 +6,7 @@ use App\Filament\Resources\Employees\Pages\EditEmployee;
 use App\Filament\Resources\Employees\Pages\ListEmployees;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\MediaArchive;
 use App\Models\Position;
 use App\Models\SiteSetting;
 use App\Models\User;
@@ -93,7 +94,12 @@ class TeamValidationTest extends TestCase
             ->assertHasNoFormErrors();
         $employee->refresh();
         Storage::disk('public')->assertExists($employee->photo);
-        Storage::disk('local')->assertMissing($oldPhoto);
+        Storage::disk('local')->assertExists($oldPhoto);
+        $this->assertDatabaseHas('media_archives', [
+            'original_path' => $oldPhoto,
+            'reason' => 'optimized_original',
+            'status' => MediaArchive::STATUS_PENDING,
+        ]);
         $this->get(route('employees.photo', [$employee, basename($employee->photo)]))->assertOk();
     }
 

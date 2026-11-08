@@ -24,4 +24,11 @@ class FooterSetting extends Model
     {
         return ['partner_logos'];
     }
+
+    protected function optimizableMediaFields(): array
+    {
+        // Partner logos have their own lossless whitespace optimizer. Brand
+        // artwork and SVG files must never be passed through photo compression.
+        return [];
+    }
 }

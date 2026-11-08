@@ -61,4 +61,9 @@ class EventSummary extends Model
     {
         return ['smm_image'];
     }
+
+    protected function mediaImageProfile(string $field): array
+    {
+        return ['max_width' => 1200, 'max_height' => 1200, 'quality' => 86];
+    }
 }

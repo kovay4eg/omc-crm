@@ -34,4 +34,9 @@ class Employee extends Model
     {
         return ['photo'];
     }
+
+    protected function mediaImageProfile(string $field): array
+    {
+        return ['max_width' => 600, 'max_height' => 800, 'quality' => 82];
+    }
 }

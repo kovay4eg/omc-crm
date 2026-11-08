@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Contracts\CloudArchiveClient;
 use App\Models\Event;
 use App\Observers\EventObserver;
+use App\Services\OmcCloudArchiveClient;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -14,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->singleton(CloudArchiveClient::class, OmcCloudArchiveClient::class);
     }
 
     public function boot(): void

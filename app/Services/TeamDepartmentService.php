@@ -50,9 +50,10 @@ class TeamDepartmentService
             ->flatMap(fn (array $item): array => [$item['photo'] ?? null, $item['slider_photos'] ?? []])
             ->all());
         $staleMedia = [];
+        $savedDepartmentIds = [];
 
         try {
-            DB::transaction(function () use ($data, $removed, &$staleMedia): void {
+            DB::transaction(function () use ($data, $removed, &$staleMedia, &$savedDepartmentIds): void {
                 foreach ($data['departments'] as $item) {
                     $department = filled($item['id'] ?? null)
                         ? Department::query()->findOrFail($item['id'])
@@ -60,6 +61,7 @@ class TeamDepartmentService
                     $previousMedia = $this->media($department);
                     $attributes = Arr::except($item, ['id']);
                     $department->fill($attributes)->saveQuietly();
+                    $savedDepartmentIds[] = $department->getKey();
                     $staleMedia = [...$staleMedia, ...array_diff($previousMedia, $this->media($department))];
                 }
 
@@ -71,12 +73,17 @@ class TeamDepartmentService
         } catch (Throwable $exception) {
             // Livewire зберігає нові завантаження до виклику сервісу. Якщо БД
             // відкотилася, прибираємо лише ті файли, які не використовує жоден відділ.
-            $this->deleteUnreferenced($submittedMedia);
+            $this->deleteUnreferencedImmediately($submittedMedia);
 
             throw $exception;
         }
 
-        $this->deleteUnreferenced($staleMedia);
+        Department::query()
+            ->whereKey(array_unique($savedDepartmentIds))
+            ->get()
+            ->each(fn (Department $department) => $department->optimizeMediaImages(true));
+
+        $this->retireUnreferenced($staleMedia);
 
         system_log('update_departments', 'Оновлено відділи, описи та фотослайдери команди.');
     }
@@ -92,10 +99,27 @@ class TeamDepartmentService
     /**
      * @param  array<int, string>  $paths
      */
-    private function deleteUnreferenced(array $paths): void
+    private function retireUnreferenced(array $paths): void
+    {
+        app(MediaArchiveManager::class)->retire(
+            $this->unreferenced($paths),
+            'replaced',
+        );
+    }
+
+    /** @param array<int, string> $paths */
+    private function deleteUnreferencedImmediately(array $paths): void
+    {
+        MediaStorage::delete($this->unreferenced($paths));
+    }
+
+    /** @param array<int, string> $paths
+     * @return array<int, string>
+     */
+    private function unreferenced(array $paths): array
     {
         if ($paths === []) {
-            return;
+            return [];
         }
 
         $referenced = MediaStorage::paths(Department::query()
@@ -103,6 +127,6 @@ class TeamDepartmentService
             ->flatMap(fn (Department $department): array => [$department->photo, $department->slider_photos])
             ->all());
 
-        MediaStorage::delete(array_values(array_diff(array_unique($paths), $referenced)));
+        return array_values(array_diff(array_unique($paths), $referenced));
     }
 }
