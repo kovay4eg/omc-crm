@@ -80,4 +80,27 @@ class PublicTouchInteractionTest extends TestCase
             $structureTemplate,
         );
     }
+
+    public function test_overlay_carousel_arrows_are_semitransparent_over_photos(): void
+    {
+        $teamStyles = file_get_contents(public_path('css/team-departments.css'));
+        $structureTemplate = file_get_contents(resource_path('views/structure/structure.blade.php'));
+
+        $this->assertMatchesRegularExpression(
+            '/\.innovation-gallery__arrow\s*\{[^}]*background:\s*rgba\(43,\s*36,\s*193,\s*\.58\)\s*;/s',
+            $teamStyles,
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.innovation-gallery__arrow:hover:not\(:disabled\)\s*\{[^}]*background:\s*rgba\(31,\s*25,\s*158,\s*\.78\)\s*;/s',
+            $teamStyles,
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.structure-carousel__arrow\s*\{[^}]*background:\s*rgba\(43,\s*36,\s*193,\s*\.58\)\s*;/s',
+            $structureTemplate,
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.structure-carousel__arrow:hover:not\(:disabled\)\s*\{[^}]*background:\s*rgba\(31,\s*25,\s*158,\s*\.78\)\s*;/s',
+            $structureTemplate,
+        );
+    }
 }

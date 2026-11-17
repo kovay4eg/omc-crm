@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{{ asset('css/team-departments.css') }}?v=20261117-3">
+<link rel="stylesheet" href="{{ asset('css/team-departments.css') }}?v=20261117-4">
 @php
     $teamBannerUrl = $teamBannerUrl
         ?? \App\Support\MediaUrl::storageVersioned($settings?->team_banner);

@@ -611,10 +611,10 @@
         height: 46px;
         padding: 0;
         place-items: center;
-        border: 2px solid rgba(255, 255, 255, .88);
+        border: 2px solid rgba(255, 255, 255, .78);
         border-radius: 50%;
-        background: rgba(43, 36, 193, .94);
-        box-shadow: 0 8px 24px rgba(20, 18, 90, .24);
+        background: rgba(43, 36, 193, .58);
+        box-shadow: 0 8px 24px rgba(20, 18, 90, .16);
         color: #fff;
         font-family: Arial, sans-serif;
         font-size: 1.35rem;
@@ -625,7 +625,7 @@
     }
 
     .structure-carousel__arrow:hover:not(:disabled) {
-        background: #1f199e;
+        background: rgba(31, 25, 158, .78);
         transform: translateY(-50%) scale(1.06);
     }
 

@@ -372,8 +372,8 @@
 .team-section .innovation-gallery__slide { flex:0 0 calc((100% - 16px)/2); aspect-ratio:4/3; min-width:0; margin:0; padding:0; overflow:hidden; border:0; border-radius:24px; background:#eef0ff; box-shadow:0 12px 30px rgba(43,36,193,.1); cursor:zoom-in; scroll-snap-align:none; }
 .team-section .innovation-gallery__slide:nth-child(odd) { scroll-snap-align:start; }
 .team-section .innovation-gallery__slide img { display:block; width:100%; height:100%; object-fit:contain; }
-.team-section .innovation-gallery__arrow { position:absolute; top:calc(50% - 34px); z-index:2; display:grid; width:46px; height:46px; padding:0; place-items:center; border:2px solid rgba(255,255,255,.88); border-radius:50%; background:rgba(43,36,193,.94); box-shadow:0 8px 24px rgba(20,18,90,.24); color:#fff; font:700 22px/1 Arial,sans-serif; cursor:pointer; transform:translateY(-50%); transition:opacity .2s ease,transform .2s ease,background-color .2s ease; }
-.team-section .innovation-gallery__arrow:hover:not(:disabled) { background:#1f199e; transform:translateY(-50%) scale(1.06); }
+.team-section .innovation-gallery__arrow { position:absolute; top:calc(50% - 34px); z-index:2; display:grid; width:46px; height:46px; padding:0; place-items:center; border:2px solid rgba(255,255,255,.78); border-radius:50%; background:rgba(43,36,193,.58); box-shadow:0 8px 24px rgba(20,18,90,.16); color:#fff; font:700 22px/1 Arial,sans-serif; cursor:pointer; transform:translateY(-50%); transition:opacity .2s ease,transform .2s ease,background-color .2s ease; }
+.team-section .innovation-gallery__arrow:hover:not(:disabled) { background:rgba(31,25,158,.78); transform:translateY(-50%) scale(1.06); }
 .team-section .innovation-gallery__arrow:disabled { opacity:.32; cursor:default; }
 .team-section .innovation-gallery__arrow--previous { left:14px; }
 .team-section .innovation-gallery__arrow--next { right:14px; }
