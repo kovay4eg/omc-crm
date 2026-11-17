@@ -16,7 +16,6 @@ class MobileCommunityMapTest extends TestCase
             ->assertSee('data-mobile-community-map', false)
             ->assertSee('data-mobile-community-map-title', false)
             ->assertSee('aria-label="Де ми були у 2026 році?"', false)
-            ->assertSee('data-sheen-text="Де ми були у 2026 році?"', false)
             ->assertSee('Де ми були у 2026 році?', false)
             ->assertSee('aria-labelledby="mobile-community-map-title"', false)
             ->assertSee('data-animation="points"', false)
@@ -113,10 +112,11 @@ class MobileCommunityMapTest extends TestCase
         $this->assertStringContainsString('var(--map-community-start-delay)', $styles);
         $this->assertStringContainsString('var(--map-sheen-duration)', $styles);
         $this->assertStringContainsString('var(--map-sheen-delay)', $styles);
-        $this->assertStringContainsString('.mobile-community-map__title::after', $styles);
-        $this->assertStringContainsString('content: attr(data-sheen-text);', $styles);
-        $this->assertStringContainsString('-webkit-text-fill-color: transparent;', $styles);
-        $this->assertDoesNotMatchRegularExpression('/\.mobile-community-map__title\s*\{[^}]*color:\s*transparent;/s', $styles);
+        $this->assertStringContainsString('-webkit-text-fill-color: currentColor;', $styles);
+        $this->assertStringNotContainsString('-webkit-text-fill-color: transparent;', $styles);
+        $this->assertStringNotContainsString('background-clip: text;', $styles);
+        $this->assertStringNotContainsString('.mobile-community-map__title::after', $styles);
+        $this->assertStringNotContainsString('data-sheen-text', $styles);
         $this->assertStringNotContainsString('mobile-community-map-title-enter', $styles);
         $this->assertStringNotContainsString('mobile-community-map-enter', $styles);
         $this->assertStringNotContainsString('.mobile-community-map.is-enhanced .mobile-community-map__motion', $styles);
@@ -127,10 +127,12 @@ class MobileCommunityMapTest extends TestCase
         $this->assertStringContainsString('mobile-community-label-idle 4.8s', $styles);
         $this->assertStringContainsString('@keyframes mobile-community-label-idle', $styles);
         $this->assertStringContainsString('mobile-community-map-sheen var(--map-sheen-duration)', $styles);
-        $this->assertStringContainsString('.mobile-community-map__title::after {', $styles);
         $this->assertStringContainsString('mobile-community-map-title-sheen var(--map-sheen-duration)', $styles);
-        $this->assertStringContainsString("?v=20261117-9", file_get_contents(resource_path('views/structure/mobile-community-map.blade.php')));
-        $this->assertStringNotContainsString("?v=20261117-8", file_get_contents(resource_path('views/structure/mobile-community-map.blade.php')));
+        $this->assertStringContainsString('color: var(--map-violet-active);', $styles);
+        $this->assertStringContainsString('text-shadow: 0 0 12px rgba(102, 112, 238, .32);', $styles);
+        $this->assertStringContainsString("?v=20261117-10", file_get_contents(resource_path('views/structure/mobile-community-map.blade.php')));
+        $this->assertStringNotContainsString("?v=20261117-9", file_get_contents(resource_path('views/structure/mobile-community-map.blade.php')));
+        $this->assertStringNotContainsString('data-sheen-text', file_get_contents(resource_path('views/structure/mobile-community-map.blade.php')));
         $this->assertStringContainsString("applyAnimationTiming(part, community.order)", $script);
         $this->assertStringNotContainsString('var(--label-order) *', $styles);
         $this->assertStringNotContainsString('data-map-animation-option', $script);

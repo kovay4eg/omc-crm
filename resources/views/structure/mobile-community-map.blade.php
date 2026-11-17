@@ -16,8 +16,8 @@
 @endphp
 
 @once
-    <link rel="stylesheet" href="{{ asset('css/mobile-community-map.css') }}?v=20261117-9">
-    <script src="{{ asset('js/mobile-community-map.js') }}?v=20261117-9" defer></script>
+    <link rel="stylesheet" href="{{ asset('css/mobile-community-map.css') }}?v=20261117-10">
+    <script src="{{ asset('js/mobile-community-map.js') }}?v=20261117-10" defer></script>
 @endonce
 
 <section
@@ -33,7 +33,6 @@
         class="mobile-community-map__title"
         aria-label="Де ми були у 2026 році?"
         data-mobile-community-map-title
-        data-sheen-text="Де ми були у 2026 році?"
     >
         Де ми були у 2026 році?
     </h3>

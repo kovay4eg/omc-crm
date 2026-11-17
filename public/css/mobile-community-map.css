@@ -10,44 +10,16 @@
 }
 
 .mobile-community-map__title {
-    position: relative;
     margin: 0 12px clamp(14px, 2vw, 24px);
     color: var(--map-blue-dark);
+    -webkit-text-fill-color: currentColor;
     font-size: clamp(1.25rem, 2.6vw, 2rem);
     font-weight: 900;
     line-height: 1.15;
     letter-spacing: -.025em;
+    text-shadow: 0 0 0 rgba(102, 112, 238, 0);
     text-align: center;
     text-wrap: balance;
-}
-
-@supports ((background-clip: text) or (-webkit-background-clip: text)) {
-    .mobile-community-map__title::after {
-        position: absolute;
-        z-index: 1;
-        inset: 0;
-        content: attr(data-sheen-text);
-        pointer-events: none;
-        opacity: 0;
-        color: transparent;
-        background-image: linear-gradient(
-            105deg,
-            transparent 0%,
-            transparent 42%,
-            rgba(141, 149, 244, .28) 47%,
-            rgba(255, 255, 255, .95) 51%,
-            var(--map-violet-active) 55%,
-            transparent 62%,
-            transparent 100%
-        );
-        background-repeat: no-repeat;
-        background-position: 105% 50%;
-        background-size: 260% 100%;
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        will-change: opacity, background-position;
-    }
 }
 
 .mobile-community-map__figure {
@@ -143,7 +115,7 @@
     opacity: 0;
 }
 
-.mobile-community-map.is-playing .mobile-community-map__title::after {
+.mobile-community-map.is-playing .mobile-community-map__title {
     animation: mobile-community-map-title-sheen var(--map-sheen-duration) ease-in-out
         var(--map-sheen-delay) infinite;
 }
@@ -207,20 +179,24 @@
         filter: none;
     }
 
-    .mobile-community-map__title::after,
     .mobile-community-map__stage::after {
         display: none;
+    }
+
+    .mobile-community-map__title {
+        animation: none !important;
+        color: var(--map-blue-dark);
+        -webkit-text-fill-color: currentColor;
+        text-shadow: none;
     }
 }
 
 @media (forced-colors: active) {
     .mobile-community-map__title {
+        animation: none !important;
         color: CanvasText;
-        -webkit-text-fill-color: CanvasText;
-    }
-
-    .mobile-community-map__title::after {
-        display: none;
+        -webkit-text-fill-color: currentColor;
+        text-shadow: none;
     }
 }
 
@@ -240,18 +216,18 @@
     0%,
     52%,
     100% {
-        opacity: 0;
-        background-position: 105% 50%;
+        color: var(--map-blue-dark);
+        text-shadow: 0 0 0 rgba(102, 112, 238, 0);
     }
 
     62% {
-        opacity: .92;
-        background-position: 50% 50%;
+        color: var(--map-violet-active);
+        text-shadow: 0 0 12px rgba(102, 112, 238, .32);
     }
 
     84% {
-        opacity: 0;
-        background-position: -20% 50%;
+        color: var(--map-blue);
+        text-shadow: 0 0 0 rgba(102, 112, 238, 0);
     }
 }
 
