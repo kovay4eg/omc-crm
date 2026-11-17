@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <x-public-touch-policy />
     <x-favicon />
     @php
         $homepageSmmTitle = $settings?->smm_title ?: 'Обласний молодіжний центр Полтавської обласної ради';

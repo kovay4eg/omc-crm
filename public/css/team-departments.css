@@ -352,7 +352,7 @@
 .team-section .employee-copy .employee-position { margin-bottom:16px; overflow-wrap:anywhere; }
 .team-section .employee-description { margin:0; color:#303030; font-size:18px; line-height:1.8; white-space:pre-line; overflow-wrap:anywhere; }
 .team-section .department-carousel { margin:26px 0 14px; }
-.team-section .department-carousel-stage { position:relative; height:clamp(240px,36vw,440px); overflow:hidden; touch-action:pan-y; }
+.team-section .department-carousel-stage { position:relative; height:clamp(240px,36vw,440px); overflow:hidden; touch-action:pan-y pinch-zoom; }
 .team-section .department-slide { position:absolute; top:50%; left:50%; width:48%; aspect-ratio:16/10; margin:0; padding:0; overflow:hidden; border:3px solid transparent; border-radius:26px; background:#eef0ff; transform:translate(-50%,-50%) translateX(calc(var(--slide-offset,0)*57%)) scale(var(--slide-scale,1)); opacity:var(--slide-opacity,1); z-index:var(--slide-z,3); transition:transform .55s ease,opacity .55s ease; }
 .team-section .department-slide[aria-current=true] { border-color:#131da4; }
 .team-section .department-slide img { display:block; width:100%; height:100%; object-fit:cover; }
@@ -365,7 +365,7 @@
 .team-section .carousel-pause { padding:8px 12px; border:1px solid rgba(19,29,164,.25); border-radius:18px; background:white; color:#131da4; font:600 14px 'Commissioner',sans-serif; }
 
 .team-section .innovation-gallery { position:relative; margin:26px 0 14px; }
-.team-section .innovation-gallery__viewport { overflow-x:auto; border-radius:26px; outline:none; scroll-behavior:smooth; scroll-snap-type:x mandatory; scrollbar-width:none; touch-action:pan-x pan-y; }
+.team-section .innovation-gallery__viewport { overflow-x:auto; border-radius:26px; outline:none; scroll-behavior:smooth; scroll-snap-type:x mandatory; scrollbar-width:none; touch-action:pan-x pan-y pinch-zoom; }
 .team-section .innovation-gallery__viewport::-webkit-scrollbar { display:none; }
 .team-section .innovation-gallery__viewport:focus-visible { outline:3px solid #131da4; outline-offset:5px; }
 .team-section .innovation-gallery__track { display:flex; gap:16px; }

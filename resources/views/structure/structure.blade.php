@@ -566,7 +566,7 @@
         scroll-behavior: smooth;
         scroll-snap-type: x mandatory;
         scrollbar-width: none;
-        touch-action: pan-x pan-y;
+        touch-action: pan-x pan-y pinch-zoom;
     }
 
     .structure-carousel__viewport::-webkit-scrollbar {
