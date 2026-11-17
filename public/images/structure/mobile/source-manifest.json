@@ -1,0 +1,34 @@
+{
+    "cover": {
+        "source": "IMG_2940.JPG",
+        "output": "mobile-cover.webp"
+    },
+    "gallery": [
+        { "source": "IMG_2986.JPG", "output": "mobile-01.webp" },
+        { "source": "IMG_2994.JPG", "output": "mobile-02.webp" },
+        { "source": "IMG_2985.JPG", "output": "mobile-03.webp" },
+        { "source": "IMG_2995.JPG", "output": "mobile-04.webp" },
+        { "source": "IMG_3003.JPG", "output": "mobile-05.webp" },
+        { "source": "IMG_3028.JPG", "output": "mobile-06.webp" },
+        { "source": "IMG_3016.JPG", "output": "mobile-07.webp" },
+        { "source": "IMG_3018.JPG", "output": "mobile-08.webp" },
+        { "source": "IMG_2971.JPG", "output": "mobile-09.webp" },
+        { "source": "IMG_2942.JPG", "output": "mobile-10.webp" },
+        { "source": "IMG_2940.JPG", "output": "mobile-11.webp" },
+        { "source": "IMG_2959.JPG", "output": "mobile-12.webp" },
+        { "source": "IMG_2973.JPG", "output": "mobile-13.webp" },
+        { "source": "IMG_2928.JPG", "output": "mobile-14.webp" },
+        { "source": "IMG_2921.JPG", "output": "mobile-15.webp" },
+        { "source": "IMG_2925.JPG", "output": "mobile-16.webp" },
+        { "source": "IMG_2936.JPG", "output": "mobile-17.webp" },
+        { "source": "IMG_2960.JPG", "output": "mobile-18.webp" },
+        { "source": "IMG_2912.JPG", "output": "mobile-19.webp" },
+        { "source": "IMG_2830.JPG", "output": "mobile-20.webp" },
+        { "source": "IMG_2907.JPG", "output": "mobile-21.webp" },
+        { "source": "IMG_2829.JPG", "output": "mobile-22.webp" },
+        { "source": "IMG_2997.JPG", "output": "mobile-23.webp" },
+        { "source": "IMG_3101.JPG", "output": "mobile-24.webp" },
+        { "source": "IMG_3099.JPG", "output": "mobile-25.webp" },
+        { "source": "IMG_2978.JPG", "output": "mobile-26.webp" }
+    ]
+}

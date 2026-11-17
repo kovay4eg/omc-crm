@@ -14,49 +14,71 @@
             'іновацій та супроводу проєктів',
             'іновацій та супроводу проектів',
         ], true);
+        $isYouthDevelopmentNationalConsciousnessDepartment =
+            $cleanName === 'розвитку молоді та національної свідомості';
         $normalizedCleanName = str_replace(["'", 'ʼ', '`'], '’', $cleanName);
         $isNonformalEducationCareerDepartment = in_array($normalizedCleanName, [
             'неформальної освіти та розвитку кар’єри',
             'неформальної освіти і розвитку кар’єри',
             'неформальної освіти та кар’єрного розвитку',
         ], true);
-        $fixedDepartmentGallery = $isInnovationProjectsDepartment
+        $fixedDepartmentGallery = $isYouthDevelopmentNationalConsciousnessDepartment
             ? [
-                'slug' => 'innovation-projects',
-                'directory' => 'innovation-projects',
+                'slug' => 'youth-development-national-consciousness',
+                'directory' => 'youth-development-national-consciousness',
                 'photos' => [
-                    'innovation-projects-01.webp', 'innovation-projects-02.webp',
-                    'innovation-projects-03.webp', 'innovation-projects-04.webp',
-                    'innovation-projects-05.webp', 'innovation-projects-06.webp',
-                    'innovation-projects-07.webp', 'innovation-projects-08.webp',
-                    'innovation-projects-09.webp', 'innovation-projects-10.webp',
-                    'innovation-projects-11.webp', 'innovation-projects-12.webp',
-                    'innovation-projects-13.webp', 'innovation-projects-14.webp',
-                    'innovation-projects-15.webp', 'innovation-projects-16.webp',
-                    'innovation-projects-17.webp', 'innovation-projects-18.webp',
-                    'innovation-projects-19.webp', 'innovation-projects-20.webp',
-                    'innovation-projects-21.webp', 'innovation-projects-22.webp',
-                    'innovation-projects-23.webp', 'innovation-projects-24.webp',
+                    'youth-development-national-consciousness-01.webp',
+                    'youth-development-national-consciousness-02.webp',
+                    'youth-development-national-consciousness-03.webp',
+                    'youth-development-national-consciousness-04.webp',
+                    'youth-development-national-consciousness-05.webp',
+                    'youth-development-national-consciousness-06.webp',
+                    'youth-development-national-consciousness-07.webp',
+                    'youth-development-national-consciousness-08.webp',
+                    'youth-development-national-consciousness-09.webp',
+                    'youth-development-national-consciousness-10.webp',
+                    'youth-development-national-consciousness-11.webp',
+                    'youth-development-national-consciousness-12.webp',
+                    'youth-development-national-consciousness-13.webp',
                 ],
             ]
-            : ($isNonformalEducationCareerDepartment
+            : ($isInnovationProjectsDepartment
                 ? [
-                    'slug' => 'nonformal-education-career',
-                    'directory' => 'nonformal-education-career',
+                    'slug' => 'innovation-projects',
+                    'directory' => 'innovation-projects',
                     'photos' => [
-                        'nonformal-education-career-01.webp', 'nonformal-education-career-02.webp',
-                        'nonformal-education-career-03.webp', 'nonformal-education-career-04.webp',
-                        'nonformal-education-career-05.webp', 'nonformal-education-career-06.webp',
-                        'nonformal-education-career-07.webp', 'nonformal-education-career-08.webp',
-                        'nonformal-education-career-09.webp', 'nonformal-education-career-10.webp',
-                        'nonformal-education-career-11.webp', 'nonformal-education-career-12.webp',
-                        'nonformal-education-career-13.webp', 'nonformal-education-career-14.webp',
-                        'nonformal-education-career-15.webp', 'nonformal-education-career-16.webp',
-                        'nonformal-education-career-17.webp', 'nonformal-education-career-18.webp',
-                        'nonformal-education-career-19.webp', 'nonformal-education-career-20.webp',
+                        'innovation-projects-01.webp', 'innovation-projects-02.webp',
+                        'innovation-projects-03.webp', 'innovation-projects-04.webp',
+                        'innovation-projects-05.webp', 'innovation-projects-06.webp',
+                        'innovation-projects-07.webp', 'innovation-projects-08.webp',
+                        'innovation-projects-09.webp', 'innovation-projects-10.webp',
+                        'innovation-projects-11.webp', 'innovation-projects-12.webp',
+                        'innovation-projects-13.webp', 'innovation-projects-14.webp',
+                        'innovation-projects-15.webp', 'innovation-projects-16.webp',
+                        'innovation-projects-17.webp', 'innovation-projects-18.webp',
+                        'innovation-projects-19.webp', 'innovation-projects-20.webp',
+                        'innovation-projects-21.webp', 'innovation-projects-22.webp',
+                        'innovation-projects-23.webp', 'innovation-projects-24.webp',
                     ],
                 ]
-                : null);
+                : ($isNonformalEducationCareerDepartment
+                    ? [
+                        'slug' => 'nonformal-education-career',
+                        'directory' => 'nonformal-education-career',
+                        'photos' => [
+                            'nonformal-education-career-01.webp', 'nonformal-education-career-02.webp',
+                            'nonformal-education-career-03.webp', 'nonformal-education-career-04.webp',
+                            'nonformal-education-career-05.webp', 'nonformal-education-career-06.webp',
+                            'nonformal-education-career-07.webp', 'nonformal-education-career-08.webp',
+                            'nonformal-education-career-09.webp', 'nonformal-education-career-10.webp',
+                            'nonformal-education-career-11.webp', 'nonformal-education-career-12.webp',
+                            'nonformal-education-career-13.webp', 'nonformal-education-career-14.webp',
+                            'nonformal-education-career-15.webp', 'nonformal-education-career-16.webp',
+                            'nonformal-education-career-17.webp', 'nonformal-education-career-18.webp',
+                            'nonformal-education-career-19.webp', 'nonformal-education-career-20.webp',
+                        ],
+                    ]
+                    : null));
         $sliderPhotos = $fixedDepartmentGallery !== null
             ? collect($fixedDepartmentGallery['photos'])
             : collect(array_values($department->slider_photos ?? []))

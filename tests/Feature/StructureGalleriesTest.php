@@ -9,7 +9,7 @@ class StructureGalleriesTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_hub_and_career_cards_and_galleries_use_the_supplied_local_photos(): void
+    public function test_structure_cards_and_galleries_use_the_supplied_local_photos(): void
     {
         $response = $this->get('/');
         $response->assertOk();
@@ -17,17 +17,19 @@ class StructureGalleriesTest extends TestCase
         $html = $response->getContent();
 
         $response->assertSee('images/structure/hub/hub-cover.webp', false);
+        $response->assertSee('images/structure/mobile/mobile-cover.webp', false);
         $response->assertSee('images/structure/career/career-cover.webp', false);
         $response->assertSee('data-gallery-key="hub"', false);
+        $response->assertSee('data-gallery-key="mobile"', false);
         $response->assertSee('data-gallery-key="career"', false);
 
-        $this->assertSame(3, substr_count($html, 'class="structure-carousel mb-5"'));
-        $this->assertSame(38, substr_count($html, 'class="structure-carousel__slide"'));
-        $this->assertSame(2, substr_count($html, 'class="red-block"'));
+        $this->assertSame(4, substr_count($html, 'class="structure-carousel mb-5"'));
+        $this->assertSame(64, substr_count($html, 'class="structure-carousel__slide"'));
+        $this->assertSame(0, substr_count($html, 'class="red-block"'));
         $this->assertSame(
-            1,
+            0,
             substr_count($html, 'https://images.unsplash.com/photo-1522071820081-009f0129c71c'),
-            'Локальні обкладинки мають замінити stock URL для Хабу й Кар’єрного центру; один URL лишається для мобільної роботи.',
+            'Усі картки структури мають використовувати локальні обкладинки.',
         );
 
         $mobileStart = strpos($html, 'id="mobile-view"');
@@ -41,17 +43,64 @@ class StructureGalleriesTest extends TestCase
         $mobileMarkup = substr($html, $mobileStart, $careerStart - $mobileStart);
         $careerMarkup = substr($html, $careerStart, $bookingStart - $careerStart);
 
-        $this->assertStringNotContainsString('data-structure-carousel', $mobileMarkup);
-        $this->assertSame(2, substr_count($mobileMarkup, 'class="red-block"'));
+        $this->assertStringContainsString('data-gallery-key="mobile"', $mobileMarkup);
+        $this->assertSame(26, substr_count($mobileMarkup, 'class="structure-carousel__slide"'));
+        $this->assertStringNotContainsString('class="red-block"', $mobileMarkup);
+        $response->assertSeeInOrder(
+            array_map(
+                static fn (int $number): string => sprintf('images/structure/mobile/mobile-%02d.webp', $number),
+                range(1, 26),
+            ),
+            false,
+        );
         $this->assertStringContainsString('data-gallery-key="career"', $careerMarkup);
         $this->assertStringNotContainsString('class="red-block"', $careerMarkup);
 
         $this->assertGalleryAssets('hub', 16);
+        $this->assertGalleryAssets('mobile', 26);
         $this->assertGalleryAssets('career', 12);
     }
 
     public function test_source_manifests_preserve_the_approved_photo_order(): void
     {
+        $this->assertSame(
+            [
+                'cover' => [
+                    'source' => 'IMG_2940.JPG',
+                    'output' => 'mobile-cover.webp',
+                ],
+                'gallery' => $this->manifestEntries('mobile', [
+                    'IMG_2986.JPG',
+                    'IMG_2994.JPG',
+                    'IMG_2985.JPG',
+                    'IMG_2995.JPG',
+                    'IMG_3003.JPG',
+                    'IMG_3028.JPG',
+                    'IMG_3016.JPG',
+                    'IMG_3018.JPG',
+                    'IMG_2971.JPG',
+                    'IMG_2942.JPG',
+                    'IMG_2940.JPG',
+                    'IMG_2959.JPG',
+                    'IMG_2973.JPG',
+                    'IMG_2928.JPG',
+                    'IMG_2921.JPG',
+                    'IMG_2925.JPG',
+                    'IMG_2936.JPG',
+                    'IMG_2960.JPG',
+                    'IMG_2912.JPG',
+                    'IMG_2830.JPG',
+                    'IMG_2907.JPG',
+                    'IMG_2829.JPG',
+                    'IMG_2997.JPG',
+                    'IMG_3101.JPG',
+                    'IMG_3099.JPG',
+                    'IMG_2978.JPG',
+                ]),
+            ],
+            $this->readManifest('mobile'),
+        );
+
         $this->assertSame(
             [
                 'cover' => [
@@ -118,15 +167,23 @@ class StructureGalleriesTest extends TestCase
             $this->assertFileExists($path);
             $this->assertFourByThree($path);
         }
+
+        $this->assertCount(
+            $count,
+            glob(public_path("images/structure/{$gallery}/{$gallery}-[0-9][0-9].webp")),
+        );
     }
 
     private function assertFourByThree(string $path): void
     {
-        [$width, $height] = getimagesize($path);
+        [$width, $height, $type] = getimagesize($path);
         $divisor = $this->greatestCommonDivisor($width, $height);
 
         $this->assertSame(4, (int) round($width / $divisor));
         $this->assertSame(3, (int) round($height / $divisor));
+        $this->assertSame(1600, $width);
+        $this->assertSame(1200, $height);
+        $this->assertSame(IMAGETYPE_WEBP, $type);
     }
 
     /**

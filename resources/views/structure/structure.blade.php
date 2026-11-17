@@ -41,6 +41,34 @@
         ['file' => 'contenta-09.webp', 'alt' => 'Загальний вигляд аудіовізуальної студії «Контента»'],
         ['file' => 'contenta-10.webp', 'alt' => 'Інтер’єр студії з мікрофонами та місцями для гостей'],
     ];
+    $mobileGallery = [
+        ['file' => 'mobile-01.webp', 'alt' => 'Учасниця презентує ідею під час молодіжного тренінгу'],
+        ['file' => 'mobile-02.webp', 'alt' => 'Спільне фото учасників молодіжного тренінгу'],
+        ['file' => 'mobile-03.webp', 'alt' => 'Учасник презентує напрацювання команди перед групою'],
+        ['file' => 'mobile-04.webp', 'alt' => 'Молодь працює у великому колі під час тренінгу'],
+        ['file' => 'mobile-05.webp', 'alt' => 'Учасниця долучається до інтерактивної вправи'],
+        ['file' => 'mobile-06.webp', 'alt' => 'Учасник презентує результати роботи команди біля фліпчарта'],
+        ['file' => 'mobile-07.webp', 'alt' => 'Учасниця слухає презентацію командних напрацювань'],
+        ['file' => 'mobile-08.webp', 'alt' => 'Учасниці разом оформлюють результати групової роботи'],
+        ['file' => 'mobile-09.webp', 'alt' => 'Молодь обговорює завдання в малій групі'],
+        ['file' => 'mobile-10.webp', 'alt' => 'Учасники спільно виконують командне завдання'],
+        ['file' => 'mobile-11.webp', 'alt' => 'Учасник презентує створений командою плакат'],
+        ['file' => 'mobile-12.webp', 'alt' => 'Учасниці обговорюють картки під час групової вправи'],
+        ['file' => 'mobile-13.webp', 'alt' => 'Команда молоді об’єднує руки під час вправи'],
+        ['file' => 'mobile-14.webp', 'alt' => 'Спільне фото учасників молодіжної зустрічі'],
+        ['file' => 'mobile-15.webp', 'alt' => 'Молодь працює над завданням у навчальній залі'],
+        ['file' => 'mobile-16.webp', 'alt' => 'Учасниці презентують плакат із результатами групової роботи'],
+        ['file' => 'mobile-17.webp', 'alt' => 'Учасники разом створюють великий плакат під час тренінгу'],
+        ['file' => 'mobile-18.webp', 'alt' => 'Молодь працює з картками під час групової вправи'],
+        ['file' => 'mobile-19.webp', 'alt' => 'Учасники обговорюють ідеї в малій групі'],
+        ['file' => 'mobile-20.webp', 'alt' => 'Молодь спілкується під час командної вправи'],
+        ['file' => 'mobile-21.webp', 'alt' => 'Учасники записують ідеї на великому аркуші'],
+        ['file' => 'mobile-22.webp', 'alt' => 'Учасниці слухають обговорення під час тренінгу'],
+        ['file' => 'mobile-23.webp', 'alt' => 'Молодь обмінюється думками в дискусійному колі'],
+        ['file' => 'mobile-24.webp', 'alt' => 'Учасниці презентують ідею працевлаштування біля фліпчарта'],
+        ['file' => 'mobile-25.webp', 'alt' => 'Учасниці представляють план молодіжної ініціативи'],
+        ['file' => 'mobile-26.webp', 'alt' => 'Учасниці презентують напрацювання про комунікацію'],
+    ];
     $careerGallery = [
         ['file' => 'career-01.webp', 'alt' => 'Фахівчиня Кар’єрного центру з матеріалами для консультацій'],
         ['file' => 'career-02.webp', 'alt' => 'Індивідуальна консультація в Кар’єрному центрі'],
@@ -143,7 +171,14 @@
             <div class="col-12 col-sm-6 col-lg-3">
                 <div class="meeting-card h-100" role="button" tabindex="0" aria-controls="mobile-view" aria-expanded="false" onclick="switchView('mobile-view', 'МОБІЛЬНА РОБОТА', this)" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchView('mobile-view', 'МОБІЛЬНА РОБОТА', this); }">
                     <div class="card-img-box">
-                        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80" alt="Мобільна молодіжна робота">
+                        <img
+                            src="{{ asset('images/structure/mobile/mobile-cover.webp') }}"
+                            width="1600"
+                            height="1200"
+                            loading="lazy"
+                            decoding="async"
+                            alt="Мобільна молодіжна робота"
+                        >
                     </div>
 
                     <div class="card-content d-flex justify-content-between align-items-end">
@@ -247,6 +282,8 @@
                     <button class="btn-close-view" type="button" onclick="resetView(true)" aria-label="Закрити інформацію про простір"></button>
                 </div>
 
+                @include('structure.mobile-community-map')
+
                 <div class="row mb-5">
                     <div class="col-12 col-lg-10">
                         <p class="lead-text mb-3">
@@ -255,17 +292,11 @@
                     </div>
                 </div>
 
-                <div class="photo-grid mb-5">
-                    <div class="row g-3">
-                        <div class="col-12 col-md-6">
-                            <div class="red-block" style="height: 240px;"></div>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <div class="red-block" style="height: 240px;"></div>
-                        </div>
-                    </div>
-                </div>
+                @include('structure.gallery', [
+                    'galleryKey' => 'mobile',
+                    'galleryLabel' => 'Фотогалерея мобільної молодіжної роботи',
+                    'photos' => $mobileGallery,
+                ])
             </div>
         </div>
 
@@ -1234,6 +1265,10 @@
 
         requestAnimationFrame(() => {
             targetView.classList.add('active');
+            targetView.dispatchEvent(new CustomEvent('structure:view-opened', {
+                bubbles: true,
+                detail: { viewId: targetId },
+            }));
             structureCarousels
                 .find(carousel => targetView.contains(carousel.root))
                 ?.refresh();
