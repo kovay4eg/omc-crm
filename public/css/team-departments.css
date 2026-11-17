@@ -334,7 +334,7 @@
 .team-section .dept-title { min-width:0; overflow-wrap:anywhere; }
 .team-section .dept-icon { flex:0 0 34px; }
 .team-section .dept-row .arrow { flex:0 0 32px; margin-left:20px; }
-.team-section .dept-row:focus-visible,.team-section .department-toggle:focus-visible,.team-section .department-carousel button:focus-visible { outline:3px solid #131da4; outline-offset:5px; }
+.team-section .dept-row:focus-visible,.team-section .department-toggle:focus-visible,.team-section .department-carousel button:focus-visible,.team-section .innovation-gallery button:focus-visible { outline:3px solid #131da4; outline-offset:5px; }
 .team-section .department-panel { padding:32px 0 24px; }
 .team-section .department-photo { margin:0 0 24px; overflow:hidden; border-radius:32px; background:#eef0ff; }
 .team-section .department-photo img { display:block; width:100%; height:auto; }
@@ -365,6 +365,40 @@
 .team-section .carousel-dot::after { content:''; display:block; width:9px; height:9px; border-radius:50%; background:#d7daed; }
 .team-section .carousel-dot[aria-current=true]::after { background:#131da4; }
 .team-section .carousel-pause { padding:8px 12px; border:1px solid rgba(19,29,164,.25); border-radius:18px; background:white; color:#131da4; font:600 14px 'Commissioner',sans-serif; }
+
+.team-section .innovation-gallery { position:relative; margin:26px 0 14px; }
+.team-section .innovation-gallery__viewport { overflow-x:auto; border-radius:26px; outline:none; scroll-behavior:smooth; scroll-snap-type:x mandatory; scrollbar-width:none; touch-action:pan-x pan-y; }
+.team-section .innovation-gallery__viewport::-webkit-scrollbar { display:none; }
+.team-section .innovation-gallery__viewport:focus-visible { outline:3px solid #131da4; outline-offset:5px; }
+.team-section .innovation-gallery__track { display:flex; gap:16px; }
+.team-section .innovation-gallery__slide { flex:0 0 calc((100% - 16px)/2); aspect-ratio:4/3; min-width:0; margin:0; padding:0; overflow:hidden; border:0; border-radius:24px; background:#eef0ff; box-shadow:0 12px 30px rgba(43,36,193,.1); cursor:zoom-in; scroll-snap-align:none; }
+.team-section .innovation-gallery__slide:nth-child(odd) { scroll-snap-align:start; }
+.team-section .innovation-gallery__slide img { display:block; width:100%; height:100%; object-fit:contain; }
+.team-section .innovation-gallery__arrow { position:absolute; top:calc(50% - 34px); z-index:2; display:grid; width:46px; height:46px; padding:0; place-items:center; border:2px solid rgba(255,255,255,.88); border-radius:50%; background:rgba(43,36,193,.94); box-shadow:0 8px 24px rgba(20,18,90,.24); color:#fff; font:700 22px/1 Arial,sans-serif; cursor:pointer; transform:translateY(-50%); transition:opacity .2s ease,transform .2s ease,background-color .2s ease; }
+.team-section .innovation-gallery__arrow:hover:not(:disabled) { background:#1f199e; transform:translateY(-50%) scale(1.06); }
+.team-section .innovation-gallery__arrow:disabled { opacity:.32; cursor:default; }
+.team-section .innovation-gallery__arrow--previous { left:14px; }
+.team-section .innovation-gallery__arrow--next { right:14px; }
+.team-section .innovation-gallery__meta { display:flex; min-height:44px; align-items:center; justify-content:center; gap:18px; padding-top:14px; }
+.team-section .innovation-gallery__dots { display:flex; max-width:min(100%,520px); align-items:center; gap:8px; overflow-x:auto; padding:8px 4px; scrollbar-width:none; }
+.team-section .innovation-gallery__dots::-webkit-scrollbar { display:none; }
+.team-section .innovation-gallery__dot { flex:0 0 auto; width:10px; height:10px; padding:0; border:0; border-radius:999px; background:#d7daed; transition:width .2s ease,background-color .2s ease; }
+.team-section .innovation-gallery__dot[aria-current=true] { width:28px; background:#131da4; }
+.team-section .innovation-gallery__counter { min-width:72px; margin:0; color:#131da4; font:700 14px/1.2 'Commissioner',sans-serif; text-align:center; }
+
+body.innovation-lightbox-open { overflow:hidden; }
+.team-section .innovation-lightbox { position:fixed; inset:0; z-index:10050; width:100vw; max-width:none; height:100dvh; max-height:none; margin:0; padding:clamp(18px,4vw,56px); border:0; background:rgba(6,8,28,.94); backdrop-filter:blur(10px); }
+.team-section .innovation-lightbox[open] { display:grid; grid-template-columns:minmax(48px,72px) minmax(0,1fr) minmax(48px,72px); align-items:center; gap:14px; }
+.team-section .innovation-lightbox:not([open]) { display:none; }
+.team-section .innovation-lightbox__figure { display:flex; min-width:0; height:100%; max-height:calc(100vh - 112px); align-items:center; justify-content:center; flex-direction:column; gap:14px; margin:0; }
+.team-section .innovation-lightbox__figure img { display:block; width:100%; height:100%; min-height:0; object-fit:contain; }
+.team-section .innovation-lightbox__counter { margin:0; color:#fff; font:700 15px/1.2 'Commissioner',sans-serif; }
+.team-section .innovation-lightbox__close,.team-section .innovation-lightbox__arrow { display:grid; width:48px; height:48px; padding:0; place-items:center; border:1px solid rgba(255,255,255,.42); border-radius:50%; background:rgba(255,255,255,.12); color:#fff; cursor:pointer; }
+.team-section .innovation-lightbox__close { position:absolute; top:18px; right:18px; font:300 34px/1 Arial,sans-serif; }
+.team-section .innovation-lightbox__arrow { font:700 24px/1 Arial,sans-serif; }
+.team-section .innovation-lightbox__arrow--previous { justify-self:start; }
+.team-section .innovation-lightbox__arrow--next { justify-self:end; }
+.team-section .innovation-lightbox__close:hover,.team-section .innovation-lightbox__arrow:hover { background:rgba(255,255,255,.22); }
 @media(max-width:768px) {
  .team-section .department-panel { padding-top:22px; }
  .team-section .department-photo { border-radius:24px; margin-bottom:12px; }
@@ -380,9 +414,19 @@
  .team-section .department-carousel-stage { height:clamp(220px,50vw,380px); }
  .team-section .department-slide { width:76%; border-radius:20px; }
  .team-section .department-carousel-controls { gap:10px; }
+ .team-section .innovation-gallery__slide { flex-basis:100%; border-radius:20px; scroll-snap-align:start; }
+ .team-section .innovation-gallery__arrow { top:calc(50% - 32px); width:42px; height:42px; }
+ .team-section .innovation-gallery__arrow--previous { left:8px; }
+ .team-section .innovation-gallery__arrow--next { right:8px; }
+ .team-section .innovation-gallery__meta { gap:10px; }
+ .team-section .innovation-gallery__dots { max-width:calc(100% - 82px); }
+ .team-section .innovation-lightbox { grid-template-columns:44px minmax(0,1fr) 44px; gap:6px; padding:64px 10px 24px; }
+ .team-section .innovation-lightbox__figure { max-height:calc(100vh - 100px); }
+ .team-section .innovation-lightbox__close,.team-section .innovation-lightbox__arrow { width:42px; height:42px; }
 }
 @media(prefers-reduced-motion:reduce) {
- .team-section .department-slide,.team-section .employee-card,.team-section .employee-photo img,.team-section .dept-icon img,.team-section .arrow { transition:none; }
+ .team-section .department-slide,.team-section .innovation-gallery__slide,.team-section .innovation-gallery__dot,.team-section .innovation-gallery__arrow,.team-section .employee-card,.team-section .employee-photo img,.team-section .dept-icon img,.team-section .arrow { transition:none; }
+ .team-section .innovation-gallery__viewport { scroll-behavior:auto; }
  .team-section .employee-card:hover .employee-photo img { transform:none; }
  .team-section[data-team-initialized="true"] .employee-photo.is-photo-loading::after { animation:none; }
 }
@@ -396,3 +440,7 @@ html[data-omc-a11y-theme='dark'] .team-section .carousel-dot::after,
 html[data-omc-a11y-theme='light'] .team-section .carousel-dot::after { background:currentColor; opacity:.45; }
 html[data-omc-a11y-theme='dark'] .team-section .carousel-dot[aria-current=true]::after,
 html[data-omc-a11y-theme='light'] .team-section .carousel-dot[aria-current=true]::after { opacity:1; outline:2px solid currentColor; outline-offset:3px; }
+html[data-omc-a11y-theme='dark'] .team-section .innovation-gallery__dot,
+html[data-omc-a11y-theme='light'] .team-section .innovation-gallery__dot { background:currentColor; opacity:.45; }
+html[data-omc-a11y-theme='dark'] .team-section .innovation-gallery__dot[aria-current=true],
+html[data-omc-a11y-theme='light'] .team-section .innovation-gallery__dot[aria-current=true] { opacity:1; }

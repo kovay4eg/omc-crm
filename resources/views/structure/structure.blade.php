@@ -11,6 +11,18 @@
         ['enabled' => $bookingSettings?->youtube_enabled, 'url' => $bookingSettings?->youtube_url, 'name' => 'YouTube', 'icon' => 'youtube.svg'],
         ['enabled' => $bookingSettings?->tiktok_enabled, 'url' => $bookingSettings?->tiktok_url, 'name' => 'TikTok', 'icon' => 'tiktok.svg'],
     ];
+    $contentaGallery = [
+        ['file' => 'contenta-01.webp', 'alt' => 'Запис інтерв’ю в аудіовізуальній студії «Контента»'],
+        ['file' => 'contenta-02.webp', 'alt' => 'Інтерв’ю за студійним столом у «Контенті»'],
+        ['file' => 'contenta-03.webp', 'alt' => 'Моніторинг багатокамерної зйомки в студії «Контента»'],
+        ['file' => 'contenta-04.webp', 'alt' => 'Операторка керує трансляцією та записом у студії'],
+        ['file' => 'contenta-05.webp', 'alt' => 'Камера під час запису розмови в «Контенті»'],
+        ['file' => 'contenta-06.webp', 'alt' => 'Музичний запис у просторі аудіовізуальної студії'],
+        ['file' => 'contenta-07.webp', 'alt' => 'Студійний мікрофон аудіовізуальної студії «Контента»'],
+        ['file' => 'contenta-08.webp', 'alt' => 'Камера та підготовлена зона для запису подкасту'],
+        ['file' => 'contenta-09.webp', 'alt' => 'Загальний вигляд аудіовізуальної студії «Контента»'],
+        ['file' => 'contenta-10.webp', 'alt' => 'Інтер’єр студії з мікрофонами та місцями для гостей'],
+    ];
 @endphp
 
 {{-- Головний контейнер секції "Де ми можемо зустрітися?" --}}
@@ -65,7 +77,14 @@
             <div class="col-12 col-sm-6 col-lg-3">
                 <div class="meeting-card h-100" role="button" tabindex="0" aria-controls="studio-view" aria-expanded="false" onclick="switchView('studio-view', 'КОНТЕНТА', this)" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchView('studio-view', 'КОНТЕНТА', this); }">
                     <div class="card-img-box">
-                        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80" alt="Аудіовізуальна студія">
+                        <img
+                            src="{{ asset('images/structure/contenta/contenta-cover.webp') }}"
+                            width="900"
+                            height="675"
+                            loading="lazy"
+                            decoding="async"
+                            alt="Аудіовізуальна студія «Контента»"
+                        >
                     </div>
 
                     <div class="card-content d-flex justify-content-between align-items-end">
@@ -173,15 +192,30 @@
                     </div>
                 </div>
 
-                <div class="photo-grid mb-5">
-                    <div class="row g-3">
-                        <div class="col-12 col-md-6">
-                            <div class="red-block" style="height: 300px;"></div>
+                <div class="contenta-carousel mb-5" data-contenta-carousel role="region" aria-roledescription="карусель" aria-label="Фотогалерея аудіовізуальної студії «Контента»">
+                    <div class="contenta-carousel__viewport" data-contenta-viewport tabindex="0">
+                        <div class="contenta-carousel__track">
+                            @foreach ($contentaGallery as $photo)
+                                <figure class="contenta-carousel__slide" data-contenta-slide aria-label="Фото {{ $loop->iteration }} з {{ $loop->count }}">
+                                    <img
+                                        src="{{ asset('images/structure/contenta/' . $photo['file']) }}"
+                                        width="1600"
+                                        height="1200"
+                                        loading="lazy"
+                                        decoding="async"
+                                        alt="{{ $photo['alt'] }}"
+                                    >
+                                </figure>
+                            @endforeach
                         </div>
+                    </div>
 
-                        <div class="col-12 col-md-6">
-                            <div class="red-block" style="height: 300px;"></div>
-                        </div>
+                    <button type="button" class="contenta-carousel__arrow contenta-carousel__arrow--previous" data-contenta-previous aria-label="Попередні фото">←</button>
+                    <button type="button" class="contenta-carousel__arrow contenta-carousel__arrow--next" data-contenta-next aria-label="Наступні фото">→</button>
+
+                    <div class="contenta-carousel__meta">
+                        <div class="contenta-carousel__dots" data-contenta-dots aria-label="Вибрати фото"></div>
+                        <p class="contenta-carousel__counter mb-0" data-contenta-counter aria-live="polite"></p>
                     </div>
                 </div>
             </div>
@@ -509,6 +543,142 @@
         border-radius: 24px;
     }
 
+    .contenta-carousel {
+        position: relative;
+    }
+
+    .contenta-carousel__viewport {
+        overflow-x: auto;
+        border-radius: 24px;
+        outline: none;
+        scroll-behavior: smooth;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        touch-action: pan-x pan-y;
+    }
+
+    .contenta-carousel__viewport::-webkit-scrollbar {
+        display: none;
+    }
+
+    .contenta-carousel__viewport:focus-visible {
+        outline: 3px solid #2B24C1;
+        outline-offset: 5px;
+    }
+
+    .contenta-carousel__track {
+        display: flex;
+        gap: 16px;
+    }
+
+    .contenta-carousel__slide {
+        position: relative;
+        flex: 0 0 calc((100% - 16px) / 2);
+        aspect-ratio: 4 / 3;
+        margin: 0;
+        overflow: hidden;
+        border-radius: 24px;
+        background: #EAE5F3;
+        box-shadow: 0 12px 30px rgba(43, 36, 193, .1);
+        scroll-snap-align: start;
+    }
+
+    .contenta-carousel__slide img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .contenta-carousel__arrow {
+        position: absolute;
+        top: calc(50% - 44px);
+        z-index: 2;
+        display: grid;
+        width: 46px;
+        height: 46px;
+        padding: 0;
+        place-items: center;
+        border: 2px solid rgba(255, 255, 255, .88);
+        border-radius: 50%;
+        background: rgba(43, 36, 193, .94);
+        box-shadow: 0 8px 24px rgba(20, 18, 90, .24);
+        color: #fff;
+        font-family: Arial, sans-serif;
+        font-size: 1.35rem;
+        line-height: 1;
+        cursor: pointer;
+        transform: translateY(-50%);
+        transition: opacity .2s ease, transform .2s ease, background-color .2s ease;
+    }
+
+    .contenta-carousel__arrow:hover:not(:disabled) {
+        background: #1f199e;
+        transform: translateY(-50%) scale(1.06);
+    }
+
+    .contenta-carousel__arrow:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 3px;
+    }
+
+    .contenta-carousel__arrow:disabled {
+        opacity: .32;
+        cursor: default;
+    }
+
+    .contenta-carousel__arrow--previous {
+        left: 14px;
+    }
+
+    .contenta-carousel__arrow--next {
+        right: 14px;
+    }
+
+    .contenta-carousel__meta {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 32px;
+        padding-top: 16px;
+    }
+
+    .contenta-carousel__dots {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .contenta-carousel__dot {
+        width: 9px;
+        height: 9px;
+        padding: 0;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(43, 36, 193, .25);
+        cursor: pointer;
+        transition: width .2s ease, background-color .2s ease;
+    }
+
+    .contenta-carousel__dot[aria-current="true"] {
+        width: 28px;
+        background: #2B24C1;
+    }
+
+    .contenta-carousel__dot:focus-visible {
+        outline: 2px solid #2B24C1;
+        outline-offset: 3px;
+    }
+
+    .contenta-carousel__counter {
+        flex: 0 0 auto;
+        color: #2B24C1;
+        font-size: .78rem;
+        font-weight: 800;
+    }
+
     .btn-close-view {
         width: 28px;
         height: 28px;
@@ -689,7 +859,41 @@
         }
     }
 
+    @media (prefers-reduced-motion: reduce) {
+        .contenta-carousel__viewport {
+            scroll-behavior: auto;
+        }
+    }
+
     @media (max-width: 575.98px) {
+        .contenta-carousel__slide {
+            flex-basis: 100%;
+            border-radius: 18px;
+        }
+
+        .contenta-carousel__viewport {
+            border-radius: 18px;
+        }
+
+        .contenta-carousel__arrow {
+            top: calc(50% - 40px);
+            width: 40px;
+            height: 40px;
+            font-size: 1.15rem;
+        }
+
+        .contenta-carousel__arrow--previous {
+            left: 9px;
+        }
+
+        .contenta-carousel__arrow--next {
+            right: 9px;
+        }
+
+        .contenta-carousel__meta {
+            padding-top: 12px;
+        }
+
         .card-number-art {
             height: clamp(48px, 18vw, 68px);
         }
@@ -734,6 +938,148 @@
 
 <script>
     let watermarkAnimationFrame = null;
+    let contentaCarousel = null;
+
+    function initializeContentaCarousel() {
+        const root = document.querySelector('[data-contenta-carousel]');
+
+        if (!root) {
+            return null;
+        }
+
+        const viewport = root.querySelector('[data-contenta-viewport]');
+        const slides = Array.from(root.querySelectorAll('[data-contenta-slide]'));
+        const previousButton = root.querySelector('[data-contenta-previous]');
+        const nextButton = root.querySelector('[data-contenta-next]');
+        const dotsContainer = root.querySelector('[data-contenta-dots]');
+        const counter = root.querySelector('[data-contenta-counter]');
+        let activeIndex = 0;
+        let scrollFrame = null;
+        let resizeFrame = null;
+
+        const getVisibleCount = () => window.matchMedia('(max-width: 575.98px)').matches ? 1 : 2;
+        const getMaximumIndex = () => Math.max(0, slides.length - getVisibleCount());
+        const clampIndex = index => Math.min(Math.max(index, 0), getMaximumIndex());
+
+        function updateControls() {
+            activeIndex = clampIndex(activeIndex);
+            const visibleCount = getVisibleCount();
+            const lastVisible = Math.min(slides.length, activeIndex + visibleCount);
+            const dots = dotsContainer.querySelectorAll('.contenta-carousel__dot');
+
+            previousButton.disabled = activeIndex === 0;
+            nextButton.disabled = activeIndex === getMaximumIndex();
+
+            dots.forEach((dot, index) => {
+                dot.setAttribute('aria-current', index === activeIndex ? 'true' : 'false');
+            });
+
+            slides.forEach((slide, index) => {
+                const isVisible = index >= activeIndex && index < lastVisible;
+                slide.setAttribute('aria-hidden', isVisible ? 'false' : 'true');
+            });
+
+            counter.textContent = visibleCount === 1
+                ? `Фото ${activeIndex + 1} з ${slides.length}`
+                : `Фото ${activeIndex + 1}–${lastVisible} з ${slides.length}`;
+        }
+
+        function buildDots() {
+            dotsContainer.replaceChildren();
+
+            for (let index = 0; index <= getMaximumIndex(); index += 1) {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'contenta-carousel__dot';
+                dot.setAttribute('aria-label', `Показати фото ${index + 1}`);
+                dot.addEventListener('click', () => scrollToIndex(index));
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function scrollToIndex(index, behavior = 'smooth') {
+            activeIndex = clampIndex(index);
+            const targetSlide = slides[activeIndex];
+
+            if (!targetSlide) {
+                return;
+            }
+
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            viewport.scrollTo({
+                left: targetSlide.offsetLeft,
+                behavior: reduceMotion ? 'auto' : behavior,
+            });
+            updateControls();
+        }
+
+        function syncIndexFromScroll() {
+            scrollFrame = null;
+
+            if (!slides.length) {
+                return;
+            }
+
+            let nearestIndex = 0;
+            let nearestDistance = Number.POSITIVE_INFINITY;
+
+            slides.forEach((slide, index) => {
+                const distance = Math.abs(slide.offsetLeft - viewport.scrollLeft);
+
+                if (distance < nearestDistance) {
+                    nearestDistance = distance;
+                    nearestIndex = index;
+                }
+            });
+
+            activeIndex = clampIndex(nearestIndex);
+            updateControls();
+        }
+
+        function refresh() {
+            activeIndex = clampIndex(activeIndex);
+            buildDots();
+            scrollToIndex(activeIndex, 'auto');
+        }
+
+        previousButton.addEventListener('click', () => scrollToIndex(activeIndex - 1));
+        nextButton.addEventListener('click', () => scrollToIndex(activeIndex + 1));
+
+        viewport.addEventListener('keydown', event => {
+            if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                scrollToIndex(activeIndex - 1);
+            }
+
+            if (event.key === 'ArrowRight') {
+                event.preventDefault();
+                scrollToIndex(activeIndex + 1);
+            }
+        });
+
+        viewport.addEventListener('scroll', () => {
+            if (scrollFrame !== null) {
+                window.cancelAnimationFrame(scrollFrame);
+            }
+
+            scrollFrame = window.requestAnimationFrame(syncIndexFromScroll);
+        }, { passive: true });
+
+        window.addEventListener('resize', () => {
+            if (resizeFrame !== null) {
+                window.cancelAnimationFrame(resizeFrame);
+            }
+
+            resizeFrame = window.requestAnimationFrame(() => {
+                resizeFrame = null;
+                refresh();
+            });
+        });
+
+        refresh();
+
+        return { refresh };
+    }
 
     function updateWatermarkPosition() {
         const watermark = document.getElementById('bgWatermark');
@@ -864,6 +1210,7 @@
 
         requestAnimationFrame(() => {
             targetView.classList.add('active');
+            contentaCarousel?.refresh();
             scrollToOpenedView(targetView);
         });
 
@@ -928,6 +1275,7 @@
         'DOMContentLoaded',
         () => {
             scheduleWatermarkPosition();
+            contentaCarousel = initializeContentaCarousel();
         }
     );
 </script>

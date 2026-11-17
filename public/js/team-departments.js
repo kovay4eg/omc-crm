@@ -161,6 +161,143 @@
         show(0); sync();
     });
 
+    root.querySelectorAll('[data-innovation-projects-carousel]').forEach(element => {
+        const viewport = element.querySelector('[data-innovation-viewport]');
+        const slides = [...element.querySelectorAll('[data-innovation-slide]')];
+        const previous = element.querySelector('[data-innovation-previous]');
+        const next = element.querySelector('[data-innovation-next]');
+        const dotsContainer = element.querySelector('[data-innovation-dots]');
+        const counter = element.querySelector('[data-innovation-counter]');
+        const lightbox = element.querySelector('[data-innovation-lightbox]');
+        const lightboxImage = element.querySelector('[data-innovation-lightbox-image]');
+        const lightboxCounter = element.querySelector('[data-innovation-lightbox-counter]');
+        const lightboxClose = element.querySelector('[data-innovation-lightbox-close]');
+        const lightboxPrevious = element.querySelector('[data-innovation-lightbox-previous]');
+        const lightboxNext = element.querySelector('[data-innovation-lightbox-next]');
+        let page = 0, lightboxIndex = 0, visibleCount = 2, scheduled = false, lastFocus = null;
+
+        if (!viewport || !slides.length) return;
+
+        const getVisibleCount = () => window.matchMedia('(max-width: 768px)').matches ? 1 : 2;
+        const getPageCount = () => Math.max(1, Math.ceil(slides.length / visibleCount));
+        const getPageOffset = targetPage => slides[Math.min(slides.length - 1, targetPage * visibleCount)]?.offsetLeft ?? 0;
+        const nearestPage = () => {
+            let bestPage = 0, bestDistance = Number.POSITIVE_INFINITY;
+            for (let candidate = 0; candidate < getPageCount(); candidate += 1) {
+                const distance = Math.abs(viewport.scrollLeft - getPageOffset(candidate));
+                if (distance < bestDistance) { bestDistance = distance; bestPage = candidate; }
+            }
+            return bestPage;
+        };
+        const goToPage = targetPage => {
+            page = Math.max(0, Math.min(targetPage, getPageCount() - 1));
+            viewport.scrollTo({left:getPageOffset(page), behavior:motion.matches ? 'auto' : 'smooth'});
+            scheduleUpdate();
+        };
+        const renderDots = () => {
+            if (!dotsContainer) return;
+            dotsContainer.replaceChildren();
+            for (let dotIndex = 0; dotIndex < getPageCount(); dotIndex += 1) {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'innovation-gallery__dot';
+                dot.setAttribute('aria-label', `Перейти до групи фото ${dotIndex + 1}`);
+                dot.addEventListener('click', () => goToPage(dotIndex));
+                dotsContainer.append(dot);
+            }
+        };
+        const update = () => {
+            scheduled = false;
+            const nextVisibleCount = getVisibleCount();
+            if (visibleCount !== nextVisibleCount) {
+                const preservedIndex = page * visibleCount;
+                visibleCount = nextVisibleCount;
+                page = Math.min(Math.floor(preservedIndex / visibleCount), getPageCount() - 1);
+                renderDots();
+                viewport.scrollLeft = getPageOffset(page);
+            } else {
+                page = nearestPage();
+            }
+            const dots = dotsContainer ? [...dotsContainer.children] : [];
+            dots.forEach((dot, dotIndex) => dot.setAttribute('aria-current', String(dotIndex === page)));
+            const activeDot = dots[page];
+            if (activeDot && dotsContainer && dotsContainer.scrollWidth > dotsContainer.clientWidth) {
+                const left = activeDot.offsetLeft - ((dotsContainer.clientWidth - activeDot.clientWidth) / 2);
+                dotsContainer.scrollTo({left, behavior:motion.matches ? 'auto' : 'smooth'});
+            }
+            if (previous) previous.disabled = page <= 0;
+            if (next) next.disabled = page >= getPageCount() - 1;
+            if (counter) {
+                const first = page * visibleCount + 1;
+                const last = Math.min(slides.length, first + visibleCount - 1);
+                counter.textContent = first === last ? `${first} / ${slides.length}` : `${first}–${last} / ${slides.length}`;
+            }
+        };
+        const scheduleUpdate = () => {
+            if (scheduled) return;
+            scheduled = true;
+            window.requestAnimationFrame(update);
+        };
+        const renderLightbox = () => {
+            const image = slides[lightboxIndex]?.querySelector('img');
+            if (!image || !lightboxImage) return;
+            lightboxImage.src = image.currentSrc || image.src;
+            lightboxImage.alt = image.alt;
+            if (lightboxCounter) lightboxCounter.textContent = `${lightboxIndex + 1} / ${slides.length}`;
+        };
+        const openLightbox = targetIndex => {
+            if (!lightbox || lightbox.open) return;
+            lightboxIndex = targetIndex;
+            lastFocus = document.activeElement;
+            renderLightbox();
+            lightbox.showModal();
+            document.body.classList.add('innovation-lightbox-open');
+            lightboxClose?.focus();
+        };
+        const closeLightbox = () => {
+            if (!lightbox || !lightbox.open) return;
+            lightbox.close();
+        };
+        const cleanupLightbox = () => {
+            document.body.classList.remove('innovation-lightbox-open');
+            if (lightboxImage) { lightboxImage.src = ''; lightboxImage.alt = ''; }
+            lastFocus?.focus?.();
+        };
+        const moveLightbox = direction => {
+            lightboxIndex = (lightboxIndex + direction + slides.length) % slides.length;
+            renderLightbox();
+        };
+
+        previous?.addEventListener('click', () => goToPage(page - 1));
+        next?.addEventListener('click', () => goToPage(page + 1));
+        slides.forEach((slide, slideIndex) => slide.addEventListener('click', () => openLightbox(slideIndex)));
+        viewport.addEventListener('scroll', scheduleUpdate, {passive:true});
+        viewport.addEventListener('keydown', event => {
+            if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+            event.preventDefault();
+            goToPage(page + (event.key === 'ArrowRight' ? 1 : -1));
+        });
+        window.addEventListener('resize', scheduleUpdate, {passive:true});
+        lightboxClose?.addEventListener('click', closeLightbox);
+        lightboxPrevious?.addEventListener('click', () => moveLightbox(-1));
+        lightboxNext?.addEventListener('click', () => moveLightbox(1));
+        lightbox?.addEventListener('click', event => { if (event.target === lightbox) closeLightbox(); });
+        lightbox?.addEventListener('close', cleanupLightbox);
+        document.addEventListener('keydown', event => {
+            if (!lightbox || !lightbox.open) return;
+            if (event.key === 'ArrowLeft') moveLightbox(-1);
+            else if (event.key === 'ArrowRight') moveLightbox(1);
+        });
+
+        visibleCount = getVisibleCount();
+        renderDots();
+        update();
+        carousels.set(element, {
+            sync:scheduleUpdate,
+            reset:() => { page = 0; viewport.scrollLeft = 0; closeLightbox(); scheduleUpdate(); },
+        });
+    });
+
     root.addEventListener('click', event => {
         const department = event.target.closest('[data-department-toggle]');
         if (department && root.contains(department)) {
