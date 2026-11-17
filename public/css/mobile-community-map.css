@@ -3,14 +3,14 @@
     --map-blue-dark: #131da4;
     --map-violet: #8d95f4;
     --map-violet-active: #6670ee;
-    --map-reveal-delay: .88s;
-    --map-community-start-delay: 1.66s;
+    --map-community-start-delay: .55s;
     --map-sheen-duration: 4.2s;
     --map-sheen-delay: 2.1s;
     max-width: 1180px;
 }
 
 .mobile-community-map__title {
+    position: relative;
     margin: 0 12px clamp(14px, 2vw, 24px);
     color: var(--map-blue-dark);
     font-size: clamp(1.25rem, 2.6vw, 2rem);
@@ -19,26 +19,34 @@
     letter-spacing: -.025em;
     text-align: center;
     text-wrap: balance;
-    transform-origin: 50% 100%;
-    will-change: transform, filter, opacity, background-position;
 }
 
 @supports ((background-clip: text) or (-webkit-background-clip: text)) {
-    .mobile-community-map__title {
+    .mobile-community-map__title::after {
+        position: absolute;
+        z-index: 1;
+        inset: 0;
+        content: attr(data-sheen-text);
+        pointer-events: none;
+        opacity: 0;
         color: transparent;
         background-image: linear-gradient(
             105deg,
-            var(--map-blue-dark) 0%,
-            var(--map-blue) 32%,
-            var(--map-violet-active) 47%,
-            var(--map-blue) 62%,
-            var(--map-blue-dark) 100%
+            transparent 0%,
+            transparent 42%,
+            rgba(141, 149, 244, .28) 47%,
+            rgba(255, 255, 255, .95) 51%,
+            var(--map-violet-active) 55%,
+            transparent 62%,
+            transparent 100%
         );
         background-repeat: no-repeat;
         background-position: 105% 50%;
         background-size: 260% 100%;
         -webkit-background-clip: text;
         background-clip: text;
+        -webkit-text-fill-color: transparent;
+        will-change: opacity, background-position;
     }
 }
 
@@ -129,24 +137,15 @@
     will-change: clip-path, opacity;
 }
 
-.mobile-community-map.is-enhanced .mobile-community-map__title,
-.mobile-community-map.is-enhanced .mobile-community-map__motion,
 .mobile-community-map.is-enhanced .mobile-community-map__point,
 .mobile-community-map.is-enhanced .mobile-community-map__ray,
 .mobile-community-map.is-enhanced .mobile-community-map__label-part {
     opacity: 0;
 }
 
-.mobile-community-map.is-playing .mobile-community-map__title {
-    animation:
-        mobile-community-map-title-enter .72s cubic-bezier(.22, 1, .36, 1) .08s both,
-        mobile-community-map-title-sheen var(--map-sheen-duration) ease-in-out
-            var(--map-sheen-delay) infinite;
-}
-
-.mobile-community-map.is-playing .mobile-community-map__motion {
-    animation: mobile-community-map-enter .72s cubic-bezier(.22, 1, .36, 1)
-        var(--map-reveal-delay) both;
+.mobile-community-map.is-playing .mobile-community-map__title::after {
+    animation: mobile-community-map-title-sheen var(--map-sheen-duration) ease-in-out
+        var(--map-sheen-delay) infinite;
 }
 
 .mobile-community-map.is-playing .mobile-community-map__stage::after {
@@ -200,8 +199,6 @@
         animation-iteration-count: 1 !important;
     }
 
-    .mobile-community-map.is-enhanced .mobile-community-map__title,
-    .mobile-community-map.is-enhanced .mobile-community-map__motion,
     .mobile-community-map.is-enhanced .mobile-community-map__point,
     .mobile-community-map.is-enhanced .mobile-community-map__ray,
     .mobile-community-map.is-enhanced .mobile-community-map__label-part {
@@ -210,11 +207,7 @@
         filter: none;
     }
 
-    .mobile-community-map__title {
-        color: var(--map-blue-dark);
-        background: none;
-    }
-
+    .mobile-community-map__title::after,
     .mobile-community-map__stage::after {
         display: none;
     }
@@ -223,8 +216,11 @@
 @media (forced-colors: active) {
     .mobile-community-map__title {
         color: CanvasText;
-        background: none;
         -webkit-text-fill-color: CanvasText;
+    }
+
+    .mobile-community-map__title::after {
+        display: none;
     }
 }
 
@@ -240,44 +236,21 @@
     }
 }
 
-@keyframes mobile-community-map-enter {
-    from {
-        opacity: 0;
-        transform: scale(.985) translateY(8px);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-@keyframes mobile-community-map-title-enter {
-    from {
-        opacity: 0;
-        transform: translateY(10px) scale(.985);
-        filter: blur(4px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        filter: blur(0);
-    }
-}
-
 @keyframes mobile-community-map-title-sheen {
     0%,
     52%,
     100% {
+        opacity: 0;
         background-position: 105% 50%;
     }
 
     62% {
+        opacity: .92;
         background-position: 50% 50%;
     }
 
     84% {
+        opacity: 0;
         background-position: -20% 50%;
     }
 }
