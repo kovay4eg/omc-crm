@@ -16,8 +16,8 @@
 @endphp
 
 @once
-    <link rel="stylesheet" href="{{ asset('css/mobile-community-map.css') }}?v=20261117-7">
-    <script src="{{ asset('js/mobile-community-map.js') }}?v=20261117-7" defer></script>
+    <link rel="stylesheet" href="{{ asset('css/mobile-community-map.css') }}?v=20261117-8">
+    <script src="{{ asset('js/mobile-community-map.js') }}?v=20261117-8" defer></script>
 @endonce
 
 <section
@@ -26,8 +26,16 @@
     data-animation="points"
     data-map-source="images/structure/mobile/community-map.svg"
     data-local-preview="{{ app()->environment(['local', 'testing']) ? 'true' : 'false' }}"
-    aria-label="Карта громад мобільної молодіжної роботи"
+    aria-labelledby="mobile-community-map-title"
 >
+    <h3
+        id="mobile-community-map-title"
+        class="mobile-community-map__title"
+        data-mobile-community-map-title
+    >
+        Де ми були у 2026 році?
+    </h3>
+
     <figure class="mobile-community-map__figure mb-0">
         <div
             class="mobile-community-map__stage"

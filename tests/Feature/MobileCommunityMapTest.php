@@ -14,6 +14,9 @@ class MobileCommunityMapTest extends TestCase
         $html = $this->get('/')
             ->assertOk()
             ->assertSee('data-mobile-community-map', false)
+            ->assertSee('data-mobile-community-map-title', false)
+            ->assertSee('Де ми були у 2026 році?', false)
+            ->assertSee('aria-labelledby="mobile-community-map-title"', false)
             ->assertSee('data-animation="points"', false)
             ->assertSee('images/structure/mobile/community-map.svg', false)
             ->getContent();
@@ -26,12 +29,17 @@ class MobileCommunityMapTest extends TestCase
 
         $mobileMarkup = substr($html, $mobileStart, $careerStart - $mobileStart);
         $mapPosition = strpos($mobileMarkup, 'data-mobile-community-map');
+        $titlePosition = strpos($mobileMarkup, 'data-mobile-community-map-title');
+        $stagePosition = strpos($mobileMarkup, 'data-mobile-community-map-stage');
         $descriptionPosition = strpos($mobileMarkup, 'Команда Полтавського обласного молодіжного центру');
         $photosPosition = strpos($mobileMarkup, 'data-gallery-key="mobile"');
 
         $this->assertNotFalse($mapPosition);
+        $this->assertNotFalse($titlePosition);
+        $this->assertNotFalse($stagePosition);
         $this->assertNotFalse($descriptionPosition);
         $this->assertNotFalse($photosPosition);
+        $this->assertLessThan($stagePosition, $titlePosition);
         $this->assertLessThan($descriptionPosition, $mapPosition);
         $this->assertLessThan($photosPosition, $descriptionPosition);
         $this->assertSame(26, substr_count($mobileMarkup, 'class="structure-carousel__slide"'));
@@ -97,12 +105,24 @@ class MobileCommunityMapTest extends TestCase
         $this->assertStringContainsString('@media (prefers-reduced-motion: reduce)', $styles);
         $this->assertStringContainsString('mobile-community-map__ray', $styles);
         $this->assertStringContainsString('@keyframes mobile-community-ray-reveal', $styles);
+        $this->assertStringContainsString('@keyframes mobile-community-map-title-enter', $styles);
+        $this->assertStringContainsString('@keyframes mobile-community-map-title-sheen', $styles);
+        $this->assertStringContainsString('--map-community-start-delay: 1.66s;', $styles);
+        $this->assertStringContainsString('--map-sheen-duration: 4.2s;', $styles);
+        $this->assertStringContainsString('var(--map-community-start-delay)', $styles);
+        $this->assertStringContainsString('var(--map-sheen-duration)', $styles);
+        $this->assertStringContainsString('var(--map-sheen-delay)', $styles);
+        $this->assertStringContainsString('.mobile-community-map.is-enhanced .mobile-community-map__title', $styles);
+        $this->assertStringContainsString('.mobile-community-map.is-enhanced .mobile-community-map__point', $styles);
         $this->assertStringContainsString("ray.classList.add('mobile-community-map__ray')", $script);
         $this->assertStringContainsString("ray.style.setProperty('--ray-clip-start'", $script);
         $this->assertStringContainsString('mobile-community-point-idle 4.8s', $styles);
         $this->assertStringContainsString('mobile-community-label-idle 4.8s', $styles);
         $this->assertStringContainsString('@keyframes mobile-community-label-idle', $styles);
-        $this->assertStringContainsString('mobile-community-map-sheen 7s', $styles);
+        $this->assertStringContainsString('mobile-community-map-sheen var(--map-sheen-duration)', $styles);
+        $this->assertStringContainsString('mobile-community-map-title-sheen var(--map-sheen-duration)', $styles);
+        $this->assertStringContainsString("?v=20261117-8", file_get_contents(resource_path('views/structure/mobile-community-map.blade.php')));
+        $this->assertStringNotContainsString("?v=20261117-7", file_get_contents(resource_path('views/structure/mobile-community-map.blade.php')));
         $this->assertStringContainsString("applyAnimationTiming(part, community.order)", $script);
         $this->assertStringNotContainsString('var(--label-order) *', $styles);
         $this->assertStringNotContainsString('data-map-animation-option', $script);

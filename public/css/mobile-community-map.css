@@ -3,7 +3,43 @@
     --map-blue-dark: #131da4;
     --map-violet: #8d95f4;
     --map-violet-active: #6670ee;
+    --map-reveal-delay: .88s;
+    --map-community-start-delay: 1.66s;
+    --map-sheen-duration: 4.2s;
+    --map-sheen-delay: 2.1s;
     max-width: 1180px;
+}
+
+.mobile-community-map__title {
+    margin: 0 12px clamp(14px, 2vw, 24px);
+    color: var(--map-blue-dark);
+    font-size: clamp(1.25rem, 2.6vw, 2rem);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -.025em;
+    text-align: center;
+    text-wrap: balance;
+    transform-origin: 50% 100%;
+    will-change: transform, filter, opacity, background-position;
+}
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+    .mobile-community-map__title {
+        color: transparent;
+        background-image: linear-gradient(
+            105deg,
+            var(--map-blue-dark) 0%,
+            var(--map-blue) 32%,
+            var(--map-violet-active) 47%,
+            var(--map-blue) 62%,
+            var(--map-blue-dark) 100%
+        );
+        background-repeat: no-repeat;
+        background-position: 105% 50%;
+        background-size: 260% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+    }
 }
 
 .mobile-community-map__figure {
@@ -93,39 +129,50 @@
     will-change: clip-path, opacity;
 }
 
+.mobile-community-map.is-enhanced .mobile-community-map__title,
 .mobile-community-map.is-enhanced .mobile-community-map__motion,
+.mobile-community-map.is-enhanced .mobile-community-map__point,
 .mobile-community-map.is-enhanced .mobile-community-map__ray,
 .mobile-community-map.is-enhanced .mobile-community-map__label-part {
     opacity: 0;
 }
 
+.mobile-community-map.is-playing .mobile-community-map__title {
+    animation:
+        mobile-community-map-title-enter .72s cubic-bezier(.22, 1, .36, 1) .08s both,
+        mobile-community-map-title-sheen var(--map-sheen-duration) ease-in-out
+            var(--map-sheen-delay) infinite;
+}
+
 .mobile-community-map.is-playing .mobile-community-map__motion {
-    animation: mobile-community-map-enter .72s cubic-bezier(.22, 1, .36, 1) both;
+    animation: mobile-community-map-enter .72s cubic-bezier(.22, 1, .36, 1)
+        var(--map-reveal-delay) both;
 }
 
 .mobile-community-map.is-playing .mobile-community-map__stage::after {
-    animation: mobile-community-map-sheen 7s ease-in-out .9s infinite;
+    animation: mobile-community-map-sheen var(--map-sheen-duration) ease-in-out
+        var(--map-sheen-delay) infinite;
 }
 
 .mobile-community-map.is-playing[data-animation="points"] .mobile-community-map__label-part {
     animation:
         mobile-community-label-pop .54s cubic-bezier(.2, 1.35, .45, 1)
-            calc(.78s + var(--label-delay-points, 0s)) both,
+            calc(var(--map-community-start-delay) + .26s + var(--label-delay-points, 0s)) both,
         mobile-community-label-idle 4.8s ease-in-out
-            calc(1.45s + var(--label-delay-points, 0s)) infinite;
+            calc(var(--map-community-start-delay) + .92s + var(--label-delay-points, 0s)) infinite;
 }
 
 .mobile-community-map.is-playing[data-animation="points"] .mobile-community-map__ray {
     animation: mobile-community-ray-reveal .44s cubic-bezier(.22, 1, .36, 1)
-        calc(.52s + var(--label-delay-points, 0s)) both;
+        calc(var(--map-community-start-delay) + .08s + var(--label-delay-points, 0s)) both;
 }
 
 .mobile-community-map.is-playing[data-animation="points"] .mobile-community-map__point {
     animation:
         mobile-community-point-intro .9s cubic-bezier(.22, 1, .36, 1)
-            calc(.18s + var(--label-delay-points, 0s)) both,
+            calc(var(--map-community-start-delay) + var(--label-delay-points, 0s)) both,
         mobile-community-point-idle 4.8s ease-in-out
-            calc(2.35s + var(--point-points-idle-delay, 0s)) infinite;
+            calc(var(--map-community-start-delay) + 1.15s + var(--point-points-idle-delay, 0s)) infinite;
 }
 
 .mobile-community-map.is-paused-offscreen *,
@@ -153,15 +200,31 @@
         animation-iteration-count: 1 !important;
     }
 
+    .mobile-community-map.is-enhanced .mobile-community-map__title,
     .mobile-community-map.is-enhanced .mobile-community-map__motion,
+    .mobile-community-map.is-enhanced .mobile-community-map__point,
     .mobile-community-map.is-enhanced .mobile-community-map__ray,
     .mobile-community-map.is-enhanced .mobile-community-map__label-part {
         opacity: 1;
         transform: none;
+        filter: none;
+    }
+
+    .mobile-community-map__title {
+        color: var(--map-blue-dark);
+        background: none;
     }
 
     .mobile-community-map__stage::after {
         display: none;
+    }
+}
+
+@media (forced-colors: active) {
+    .mobile-community-map__title {
+        color: CanvasText;
+        background: none;
+        -webkit-text-fill-color: CanvasText;
     }
 }
 
@@ -186,6 +249,36 @@
     to {
         opacity: 1;
         transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes mobile-community-map-title-enter {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(.985);
+        filter: blur(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes mobile-community-map-title-sheen {
+    0%,
+    52%,
+    100% {
+        background-position: 105% 50%;
+    }
+
+    62% {
+        background-position: 50% 50%;
+    }
+
+    84% {
+        background-position: -20% 50%;
     }
 }
 
@@ -216,16 +309,19 @@
 
 @keyframes mobile-community-point-intro {
     0% {
+        opacity: 0;
         transform: scale(1);
         filter: drop-shadow(0 0 0 rgba(27, 42, 229, 0));
     }
 
     48% {
+        opacity: 1;
         transform: scale(1.85);
         filter: drop-shadow(0 0 12px rgba(27, 42, 229, .6));
     }
 
     100% {
+        opacity: 1;
         transform: scale(1);
         filter: drop-shadow(0 0 0 rgba(27, 42, 229, 0));
     }
