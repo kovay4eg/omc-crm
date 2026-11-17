@@ -58,5 +58,5 @@
 
     @include('team.departments')
 </div>
-<script src="{{ asset('js/team-departments.js') }}?v=20261117-2" defer></script>
+<script src="{{ asset('js/team-departments.js') }}?v=20261117-3" defer></script>
 </section>

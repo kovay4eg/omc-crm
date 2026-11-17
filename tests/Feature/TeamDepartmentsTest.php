@@ -348,6 +348,9 @@ class TeamDepartmentsTest extends TestCase
         $this->assertStringContainsString("const shouldExpand = section.getAttribute('aria-expanded') !== 'true';", $script);
         $this->assertStringContainsString("section.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');", $script);
         $this->assertStringContainsString("document.getElementById(section.getAttribute('aria-controls')).hidden = !shouldExpand;", $script);
+        $this->assertStringContainsString('const releasePointerFocus = (event, element) =>', $script);
+        $this->assertStringContainsString('if (event.detail > 0) element.blur();', $script);
+        $this->assertSame(2, substr_count($script, 'releasePointerFocus(event, '));
     }
 
     public function test_public_department_omits_cover_photo_but_keeps_its_gallery(): void

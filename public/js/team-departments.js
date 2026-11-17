@@ -34,6 +34,10 @@
         });
     };
 
+    const releasePointerFocus = (event, element) => {
+        if (event.detail > 0) element.blur();
+    };
+
     const setPhotoReady = image => {
         const frame = image.closest('[data-team-photo-frame]');
         if (!frame) return;
@@ -318,6 +322,7 @@
             });
             if (!wasExpanded) warmDepartment(department, 'high');
             carousels.forEach(carousel => carousel.reset());
+            releasePointerFocus(event, department);
             return;
         }
         const section = event.target.closest('[data-department-section]');
@@ -326,6 +331,7 @@
             section.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');
             document.getElementById(section.getAttribute('aria-controls')).hidden = !shouldExpand;
             if (shouldExpand) carousels.forEach(carousel => carousel.sync());
+            releasePointerFocus(event, section);
         }
     });
 
