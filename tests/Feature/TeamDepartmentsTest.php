@@ -338,6 +338,36 @@ class TeamDepartmentsTest extends TestCase
         $this->assertStringContainsString('preserveViewportAnchor(department, () => {', $script);
     }
 
+    public function test_department_accordions_can_close_on_a_second_click(): void
+    {
+        $script = file_get_contents(public_path('js/team-departments.js'));
+
+        $this->assertStringNotContainsString("if (department.getAttribute('aria-expanded') === 'true') return;", $script);
+        $this->assertStringContainsString("const wasExpanded = department.getAttribute('aria-expanded') === 'true';", $script);
+        $this->assertStringContainsString('if (!wasExpanded) {', $script);
+        $this->assertStringContainsString("const shouldExpand = section.getAttribute('aria-expanded') !== 'true';", $script);
+        $this->assertStringContainsString("section.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');", $script);
+        $this->assertStringContainsString("document.getElementById(section.getAttribute('aria-controls')).hidden = !shouldExpand;", $script);
+    }
+
+    public function test_public_department_omits_cover_photo_but_keeps_its_gallery(): void
+    {
+        $department = Department::create([
+            'name' => 'Відділ розвитку молоді',
+            'photo' => 'team/departments/cover.webp',
+            'slider_enabled' => true,
+            'slider_photos' => ['team/departments/slide.webp'],
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertDontSee('class="department-photo"', false)
+            ->assertDontSee('Фото відділу:', false)
+            ->assertDontSee(route('departments.photo', $department), false)
+            ->assertSee('data-team-carousel', false)
+            ->assertSee("team/departments/{$department->id}/slides/0", false);
+    }
+
     public function test_frontend_uses_administration_specific_sections_without_affecting_departments(): void
     {
         $department = Department::create([

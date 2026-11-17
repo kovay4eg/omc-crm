@@ -301,7 +301,7 @@
     root.addEventListener('click', event => {
         const department = event.target.closest('[data-department-toggle]');
         if (department && root.contains(department)) {
-            if (department.getAttribute('aria-expanded') === 'true') return;
+            const wasExpanded = department.getAttribute('aria-expanded') === 'true';
             preserveViewportAnchor(department, () => {
                 root.querySelectorAll('[data-department-toggle]').forEach(button => {
                     button.setAttribute('aria-expanded', 'false');
@@ -310,19 +310,22 @@
                 root.querySelectorAll('[data-department-panel]').forEach(panel => { panel.hidden = true; });
                 root.querySelectorAll('[data-department-section]').forEach(button => { button.setAttribute('aria-expanded', 'false'); });
                 root.querySelectorAll('[data-department-content]').forEach(panel => { panel.hidden = true; });
-                department.setAttribute('aria-expanded', 'true');
-                department.classList.add('active');
-                document.getElementById(department.getAttribute('aria-controls')).hidden = false;
+                if (!wasExpanded) {
+                    department.setAttribute('aria-expanded', 'true');
+                    department.classList.add('active');
+                    document.getElementById(department.getAttribute('aria-controls')).hidden = false;
+                }
             });
-            warmDepartment(department, 'high');
+            if (!wasExpanded) warmDepartment(department, 'high');
             carousels.forEach(carousel => carousel.reset());
             return;
         }
         const section = event.target.closest('[data-department-section]');
-        if (section && root.contains(section) && section.getAttribute('aria-expanded') !== 'true') {
-            section.setAttribute('aria-expanded', 'true');
-            document.getElementById(section.getAttribute('aria-controls')).hidden = false;
-            carousels.forEach(carousel => carousel.sync());
+        if (section && root.contains(section)) {
+            const shouldExpand = section.getAttribute('aria-expanded') !== 'true';
+            section.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');
+            document.getElementById(section.getAttribute('aria-controls')).hidden = !shouldExpand;
+            if (shouldExpand) carousels.forEach(carousel => carousel.sync());
         }
     });
 

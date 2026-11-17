@@ -11,6 +11,24 @@
         ['enabled' => $bookingSettings?->youtube_enabled, 'url' => $bookingSettings?->youtube_url, 'name' => 'YouTube', 'icon' => 'youtube.svg'],
         ['enabled' => $bookingSettings?->tiktok_enabled, 'url' => $bookingSettings?->tiktok_url, 'name' => 'TikTok', 'icon' => 'tiktok.svg'],
     ];
+    $hubGallery = [
+        ['file' => 'hub-01.webp', 'alt' => 'Вхідна зона та рецепція Молодіжного хабу'],
+        ['file' => 'hub-02.webp', 'alt' => 'Бібліотечна зона Молодіжного хабу зі столами для роботи'],
+        ['file' => 'hub-03.webp', 'alt' => 'Відкрита зона для читання та самостійної роботи в Молодіжному хабі'],
+        ['file' => 'hub-04.webp', 'alt' => 'Книжкові полиці та робочі місця Молодіжного хабу'],
+        ['file' => 'hub-05.webp', 'alt' => 'Загальний вигляд бібліотечного простору Молодіжного хабу'],
+        ['file' => 'hub-06.webp', 'alt' => 'Столи для навчання біля книжкових полиць Молодіжного хабу'],
+        ['file' => 'hub-07.webp', 'alt' => 'Зала Молодіжного хабу, підготовлена до події'],
+        ['file' => 'hub-08.webp', 'alt' => 'Простора зала Молодіжного хабу з місцями для учасників'],
+        ['file' => 'hub-09.webp', 'alt' => 'Зона для групової роботи та подій у Молодіжному хабі'],
+        ['file' => 'hub-10.webp', 'alt' => 'Кухонна зона Молодіжного хабу зі столами для спілкування'],
+        ['file' => 'hub-11.webp', 'alt' => 'Місце для зустрічей поруч із кухонною зоною Молодіжного хабу'],
+        ['file' => 'hub-12.webp', 'alt' => 'Кухонна та обідня зони Молодіжного хабу'],
+        ['file' => 'hub-13.webp', 'alt' => 'Кінопростір Молодіжного хабу з кріслами-мішками'],
+        ['file' => 'hub-14.webp', 'alt' => 'Полиця з настільними іграми та інформаційна стіна Молодіжного хабу'],
+        ['file' => 'hub-15.webp', 'alt' => 'Добірка настільних ігор у Молодіжному хабі'],
+        ['file' => 'hub-16.webp', 'alt' => 'Настільні ігри для відвідувачів Молодіжного хабу'],
+    ];
     $contentaGallery = [
         ['file' => 'contenta-01.webp', 'alt' => 'Запис інтерв’ю в аудіовізуальній студії «Контента»'],
         ['file' => 'contenta-02.webp', 'alt' => 'Інтерв’ю за студійним столом у «Контенті»'],
@@ -22,6 +40,20 @@
         ['file' => 'contenta-08.webp', 'alt' => 'Камера та підготовлена зона для запису подкасту'],
         ['file' => 'contenta-09.webp', 'alt' => 'Загальний вигляд аудіовізуальної студії «Контента»'],
         ['file' => 'contenta-10.webp', 'alt' => 'Інтер’єр студії з мікрофонами та місцями для гостей'],
+    ];
+    $careerGallery = [
+        ['file' => 'career-01.webp', 'alt' => 'Фахівчиня Кар’єрного центру з матеріалами для консультацій'],
+        ['file' => 'career-02.webp', 'alt' => 'Індивідуальна консультація в Кар’єрному центрі'],
+        ['file' => 'career-03.webp', 'alt' => 'Профорієнтаційна настільна гра під час консультації'],
+        ['file' => 'career-04.webp', 'alt' => 'Учасниця обирає картку під час профорієнтаційної вправи'],
+        ['file' => 'career-05.webp', 'alt' => 'Робота з картками на індивідуальній кар’єрній консультації'],
+        ['file' => 'career-06.webp', 'alt' => 'Кар’єрна консультантка працює з учасницею за столом'],
+        ['file' => 'career-07.webp', 'alt' => 'Групове заняття Кар’єрного центру в Молодіжному хабі'],
+        ['file' => 'career-08.webp', 'alt' => 'Учасники виконують письмову вправу на кар’єрному занятті'],
+        ['file' => 'career-09.webp', 'alt' => 'Учасниці працюють за ноутбуками під час заняття Кар’єрного центру'],
+        ['file' => 'career-10.webp', 'alt' => 'Командна робота молоді на тренінгу Кар’єрного центру'],
+        ['file' => 'career-11.webp', 'alt' => 'Менторка допомагає учасниці виконати завдання за ноутбуком'],
+        ['file' => 'career-12.webp', 'alt' => 'Молодь виконує практичне завдання під час кар’єрного тренінгу'],
     ];
 @endphp
 
@@ -57,7 +89,14 @@
             <div class="col-12 col-sm-6 col-lg-3">
                 <div class="meeting-card h-100" role="button" tabindex="0" aria-controls="hub-view" aria-expanded="false" onclick="switchView('hub-view', 'МОЛОДІЖНИЙ ХАБ', this)" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchView('hub-view', 'МОЛОДІЖНИЙ ХАБ', this); }">
                     <div class="card-img-box">
-                        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80" alt="Молодіжний хаб">
+                        <img
+                            src="{{ asset('images/structure/hub/hub-cover.webp') }}"
+                            width="1600"
+                            height="1200"
+                            loading="lazy"
+                            decoding="async"
+                            alt="Молодіжний хаб"
+                        >
                     </div>
 
                     <div class="card-content d-flex justify-content-between align-items-end">
@@ -124,7 +163,14 @@
             <div class="col-12 col-sm-6 col-lg-3">
                 <div class="meeting-card h-100" role="button" tabindex="0" aria-controls="career-view" aria-expanded="false" onclick="switchView('career-view', 'КАР’ЄРНИЙ ЦЕНТР', this)" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchView('career-view', 'КАР’ЄРНИЙ ЦЕНТР', this); }">
                     <div class="card-img-box">
-                        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80" alt="Кар'єрний центр">
+                        <img
+                            src="{{ asset('images/structure/career/career-cover.webp') }}"
+                            width="1600"
+                            height="1200"
+                            loading="lazy"
+                            decoding="async"
+                            alt="Кар’єрний центр"
+                        >
                     </div>
 
                     <div class="card-content d-flex justify-content-between align-items-end">
@@ -161,18 +207,11 @@
                     </div>
                 </div>
 
-                <div class="photo-grid mb-5">
-                    <div class="row g-3 mb-3">
-                        <div class="col-12 col-md-8">
-                            <div class="red-block" style="height: 420px;"></div>
-                        </div>
-
-                        <div class="col-12 col-md-4 d-flex flex-column gap-3">
-                            <div class="red-block flex-grow-1" style="min-height: 200px;"></div>
-                            <div class="red-block flex-grow-1" style="min-height: 200px;"></div>
-                        </div>
-                    </div>
-                </div>
+                @include('structure.gallery', [
+                    'galleryKey' => 'hub',
+                    'galleryLabel' => 'Фотогалерея Молодіжного хабу',
+                    'photos' => $hubGallery,
+                ])
             </div>
         </div>
 
@@ -192,32 +231,11 @@
                     </div>
                 </div>
 
-                <div class="contenta-carousel mb-5" data-contenta-carousel role="region" aria-roledescription="карусель" aria-label="Фотогалерея аудіовізуальної студії «Контента»">
-                    <div class="contenta-carousel__viewport" data-contenta-viewport tabindex="0">
-                        <div class="contenta-carousel__track">
-                            @foreach ($contentaGallery as $photo)
-                                <figure class="contenta-carousel__slide" data-contenta-slide aria-label="Фото {{ $loop->iteration }} з {{ $loop->count }}">
-                                    <img
-                                        src="{{ asset('images/structure/contenta/' . $photo['file']) }}"
-                                        width="1600"
-                                        height="1200"
-                                        loading="lazy"
-                                        decoding="async"
-                                        alt="{{ $photo['alt'] }}"
-                                    >
-                                </figure>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <button type="button" class="contenta-carousel__arrow contenta-carousel__arrow--previous" data-contenta-previous aria-label="Попередні фото">←</button>
-                    <button type="button" class="contenta-carousel__arrow contenta-carousel__arrow--next" data-contenta-next aria-label="Наступні фото">→</button>
-
-                    <div class="contenta-carousel__meta">
-                        <div class="contenta-carousel__dots" data-contenta-dots aria-label="Вибрати фото"></div>
-                        <p class="contenta-carousel__counter mb-0" data-contenta-counter aria-live="polite"></p>
-                    </div>
-                </div>
+                @include('structure.gallery', [
+                    'galleryKey' => 'contenta',
+                    'galleryLabel' => 'Фотогалерея аудіовізуальної студії «Контента»',
+                    'photos' => $contentaGallery,
+                ])
             </div>
         </div>
 
@@ -271,17 +289,11 @@
                     </div>
                 </div>
 
-                <div class="photo-grid mb-5">
-                    <div class="row g-3">
-                        <div class="col-12 col-md-6">
-                            <div class="red-block" style="height: 240px;"></div>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <div class="red-block" style="height: 240px;"></div>
-                        </div>
-                    </div>
-                </div>
+                @include('structure.gallery', [
+                    'galleryKey' => 'career',
+                    'galleryLabel' => 'Фотогалерея Кар’єрного центру',
+                    'photos' => $careerGallery,
+                ])
             </div>
         </div>
 
@@ -543,11 +555,11 @@
         border-radius: 24px;
     }
 
-    .contenta-carousel {
+    .structure-carousel {
         position: relative;
     }
 
-    .contenta-carousel__viewport {
+    .structure-carousel__viewport {
         overflow-x: auto;
         border-radius: 24px;
         outline: none;
@@ -557,21 +569,21 @@
         touch-action: pan-x pan-y;
     }
 
-    .contenta-carousel__viewport::-webkit-scrollbar {
+    .structure-carousel__viewport::-webkit-scrollbar {
         display: none;
     }
 
-    .contenta-carousel__viewport:focus-visible {
+    .structure-carousel__viewport:focus-visible {
         outline: 3px solid #2B24C1;
         outline-offset: 5px;
     }
 
-    .contenta-carousel__track {
+    .structure-carousel__track {
         display: flex;
         gap: 16px;
     }
 
-    .contenta-carousel__slide {
+    .structure-carousel__slide {
         position: relative;
         flex: 0 0 calc((100% - 16px) / 2);
         aspect-ratio: 4 / 3;
@@ -583,14 +595,14 @@
         scroll-snap-align: start;
     }
 
-    .contenta-carousel__slide img {
+    .structure-carousel__slide img {
         display: block;
         width: 100%;
         height: 100%;
         object-fit: contain;
     }
 
-    .contenta-carousel__arrow {
+    .structure-carousel__arrow {
         position: absolute;
         top: calc(50% - 44px);
         z-index: 2;
@@ -612,30 +624,30 @@
         transition: opacity .2s ease, transform .2s ease, background-color .2s ease;
     }
 
-    .contenta-carousel__arrow:hover:not(:disabled) {
+    .structure-carousel__arrow:hover:not(:disabled) {
         background: #1f199e;
         transform: translateY(-50%) scale(1.06);
     }
 
-    .contenta-carousel__arrow:focus-visible {
+    .structure-carousel__arrow:focus-visible {
         outline: 3px solid #fff;
         outline-offset: 3px;
     }
 
-    .contenta-carousel__arrow:disabled {
+    .structure-carousel__arrow:disabled {
         opacity: .32;
         cursor: default;
     }
 
-    .contenta-carousel__arrow--previous {
+    .structure-carousel__arrow--previous {
         left: 14px;
     }
 
-    .contenta-carousel__arrow--next {
+    .structure-carousel__arrow--next {
         right: 14px;
     }
 
-    .contenta-carousel__meta {
+    .structure-carousel__meta {
         display: flex;
         gap: 16px;
         align-items: center;
@@ -644,14 +656,14 @@
         padding-top: 16px;
     }
 
-    .contenta-carousel__dots {
+    .structure-carousel__dots {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
         align-items: center;
     }
 
-    .contenta-carousel__dot {
+    .structure-carousel__dot {
         width: 9px;
         height: 9px;
         padding: 0;
@@ -662,17 +674,17 @@
         transition: width .2s ease, background-color .2s ease;
     }
 
-    .contenta-carousel__dot[aria-current="true"] {
+    .structure-carousel__dot[aria-current="true"] {
         width: 28px;
         background: #2B24C1;
     }
 
-    .contenta-carousel__dot:focus-visible {
+    .structure-carousel__dot:focus-visible {
         outline: 2px solid #2B24C1;
         outline-offset: 3px;
     }
 
-    .contenta-carousel__counter {
+    .structure-carousel__counter {
         flex: 0 0 auto;
         color: #2B24C1;
         font-size: .78rem;
@@ -860,37 +872,37 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .contenta-carousel__viewport {
+        .structure-carousel__viewport {
             scroll-behavior: auto;
         }
     }
 
     @media (max-width: 575.98px) {
-        .contenta-carousel__slide {
+        .structure-carousel__slide {
             flex-basis: 100%;
             border-radius: 18px;
         }
 
-        .contenta-carousel__viewport {
+        .structure-carousel__viewport {
             border-radius: 18px;
         }
 
-        .contenta-carousel__arrow {
+        .structure-carousel__arrow {
             top: calc(50% - 40px);
             width: 40px;
             height: 40px;
             font-size: 1.15rem;
         }
 
-        .contenta-carousel__arrow--previous {
+        .structure-carousel__arrow--previous {
             left: 9px;
         }
 
-        .contenta-carousel__arrow--next {
+        .structure-carousel__arrow--next {
             right: 9px;
         }
 
-        .contenta-carousel__meta {
+        .structure-carousel__meta {
             padding-top: 12px;
         }
 
@@ -938,21 +950,27 @@
 
 <script>
     let watermarkAnimationFrame = null;
-    let contentaCarousel = null;
+    let structureCarousels = [];
 
-    function initializeContentaCarousel() {
-        const root = document.querySelector('[data-contenta-carousel]');
+    function initializeStructureCarousel(root) {
+        const viewport = root.querySelector('[data-structure-viewport]');
+        const slides = Array.from(root.querySelectorAll('[data-structure-slide]'));
+        const previousButton = root.querySelector('[data-structure-previous]');
+        const nextButton = root.querySelector('[data-structure-next]');
+        const dotsContainer = root.querySelector('[data-structure-dots]');
+        const counter = root.querySelector('[data-structure-counter]');
 
-        if (!root) {
+        if (
+            !viewport
+            || !slides.length
+            || !previousButton
+            || !nextButton
+            || !dotsContainer
+            || !counter
+        ) {
             return null;
         }
 
-        const viewport = root.querySelector('[data-contenta-viewport]');
-        const slides = Array.from(root.querySelectorAll('[data-contenta-slide]'));
-        const previousButton = root.querySelector('[data-contenta-previous]');
-        const nextButton = root.querySelector('[data-contenta-next]');
-        const dotsContainer = root.querySelector('[data-contenta-dots]');
-        const counter = root.querySelector('[data-contenta-counter]');
         let activeIndex = 0;
         let scrollFrame = null;
         let resizeFrame = null;
@@ -965,7 +983,7 @@
             activeIndex = clampIndex(activeIndex);
             const visibleCount = getVisibleCount();
             const lastVisible = Math.min(slides.length, activeIndex + visibleCount);
-            const dots = dotsContainer.querySelectorAll('.contenta-carousel__dot');
+            const dots = dotsContainer.querySelectorAll('.structure-carousel__dot');
 
             previousButton.disabled = activeIndex === 0;
             nextButton.disabled = activeIndex === getMaximumIndex();
@@ -990,7 +1008,7 @@
             for (let index = 0; index <= getMaximumIndex(); index += 1) {
                 const dot = document.createElement('button');
                 dot.type = 'button';
-                dot.className = 'contenta-carousel__dot';
+                dot.className = 'structure-carousel__dot';
                 dot.setAttribute('aria-label', `Показати фото ${index + 1}`);
                 dot.addEventListener('click', () => scrollToIndex(index));
                 dotsContainer.appendChild(dot);
@@ -1078,7 +1096,13 @@
 
         refresh();
 
-        return { refresh };
+        return { root, refresh };
+    }
+
+    function initializeStructureCarousels() {
+        return Array.from(document.querySelectorAll('[data-structure-carousel]'))
+            .map(initializeStructureCarousel)
+            .filter(Boolean);
     }
 
     function updateWatermarkPosition() {
@@ -1210,7 +1234,9 @@
 
         requestAnimationFrame(() => {
             targetView.classList.add('active');
-            contentaCarousel?.refresh();
+            structureCarousels
+                .find(carousel => targetView.contains(carousel.root))
+                ?.refresh();
             scrollToOpenedView(targetView);
         });
 
@@ -1275,7 +1301,7 @@
         'DOMContentLoaded',
         () => {
             scheduleWatermarkPosition();
-            contentaCarousel = initializeContentaCarousel();
+            structureCarousels = initializeStructureCarousels();
         }
     );
 </script>

@@ -1,0 +1,24 @@
+{
+    "cover": {
+        "source": "IMG_2438.JPG",
+        "output": "hub-cover.webp"
+    },
+    "gallery": [
+        { "source": "IMG_2442.JPG", "output": "hub-01.webp" },
+        { "source": "IMG_2471.JPG", "output": "hub-02.webp" },
+        { "source": "IMG_2467.JPG", "output": "hub-03.webp" },
+        { "source": "IMG_2472.JPG", "output": "hub-04.webp" },
+        { "source": "IMG_2464.JPG", "output": "hub-05.webp" },
+        { "source": "IMG_2463.JPG", "output": "hub-06.webp" },
+        { "source": "IMG_2477.JPG", "output": "hub-07.webp" },
+        { "source": "IMG_2475.JPG", "output": "hub-08.webp" },
+        { "source": "IMG_2473.JPG", "output": "hub-09.webp" },
+        { "source": "IMG_2457.JPG", "output": "hub-10.webp" },
+        { "source": "IMG_2455.JPG", "output": "hub-11.webp" },
+        { "source": "IMG_2459.JPG", "output": "hub-12.webp" },
+        { "source": "IMG_2479.JPG", "output": "hub-13.webp" },
+        { "source": "IMG_2446.JPG", "output": "hub-14.webp" },
+        { "source": "IMG_2452.JPG", "output": "hub-15.webp" },
+        { "source": "IMG_2451.JPG", "output": "hub-16.webp" }
+    ]
+}

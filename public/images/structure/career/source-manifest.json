@@ -1,0 +1,20 @@
+{
+    "cover": {
+        "source": "IMG_2594.JPG",
+        "output": "career-cover.webp"
+    },
+    "gallery": [
+        { "source": "IMG_2518.JPG", "output": "career-01.webp" },
+        { "source": "IMG_2516.JPG", "output": "career-02.webp" },
+        { "source": "IMG_2497.JPG", "output": "career-03.webp" },
+        { "source": "IMG_2495.JPG", "output": "career-04.webp" },
+        { "source": "IMG_2513.JPG", "output": "career-05.webp" },
+        { "source": "IMG_2486.JPG", "output": "career-06.webp" },
+        { "source": "IMG_2586.JPG", "output": "career-07.webp" },
+        { "source": "IMG_2588.JPG", "output": "career-08.webp" },
+        { "source": "IMG_2589.JPG", "output": "career-09.webp" },
+        { "source": "IMG_2590.JPG", "output": "career-10.webp" },
+        { "source": "IMG_2591.JPG", "output": "career-11.webp" },
+        { "source": "IMG_2594.JPG", "output": "career-12.webp" }
+    ]
+}

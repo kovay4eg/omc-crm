@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{{ asset('css/team-departments.css') }}?v=20261117">
+<link rel="stylesheet" href="{{ asset('css/team-departments.css') }}?v=20261117-2">
 @php
     $teamBannerUrl = $teamBannerUrl
         ?? \App\Support\MediaUrl::storageVersioned($settings?->team_banner);
@@ -58,5 +58,5 @@
 
     @include('team.departments')
 </div>
-<script src="{{ asset('js/team-departments.js') }}?v=20261117" defer></script>
+<script src="{{ asset('js/team-departments.js') }}?v=20261117-2" defer></script>
 </section>

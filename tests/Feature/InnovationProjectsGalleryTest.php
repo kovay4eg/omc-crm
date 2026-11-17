@@ -10,7 +10,7 @@ class InnovationProjectsGalleryTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_innovation_projects_department_uses_its_own_cover_and_ordered_gallery(): void
+    public function test_innovation_projects_department_uses_ordered_gallery_without_department_cover(): void
     {
         Department::create([
             'name' => 'Відділ інновацій та супроводу проєктів',
@@ -25,10 +25,7 @@ class InnovationProjectsGalleryTest extends TestCase
         $response->assertSee('data-innovation-lightbox', false);
         $response->assertSee('data-innovation-lightbox-previous', false);
         $response->assertSee('data-innovation-lightbox-next', false);
-        $response->assertSee(
-            'images/team/departments/innovation-projects/innovation-projects-cover.webp',
-            false,
-        );
+        $response->assertDontSee('innovation-projects-cover.webp', false);
         $this->assertSame(
             24,
             substr_count($response->getContent(), 'class="innovation-gallery__slide"'),
@@ -53,10 +50,6 @@ class InnovationProjectsGalleryTest extends TestCase
 
         $response->assertSeeInOrder($orderedPaths, false);
 
-        $coverPath = public_path('images/team/departments/innovation-projects/innovation-projects-cover.webp');
-        $fourthSlidePath = public_path('images/team/departments/innovation-projects/innovation-projects-04.webp');
-        $this->assertFileExists($coverPath);
-        $this->assertSame(hash_file('sha256', $fourthSlidePath), hash_file('sha256', $coverPath));
         $this->assertCount(
             24,
             glob(public_path('images/team/departments/innovation-projects/innovation-projects-[0-9][0-9].webp')),
@@ -74,10 +67,7 @@ class InnovationProjectsGalleryTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('data-gallery="innovation-projects"', false);
-        $response->assertSee(
-            'images/team/departments/innovation-projects/innovation-projects-cover.webp',
-            false,
-        );
+        $response->assertDontSee('innovation-projects-cover.webp', false);
         $this->assertSame(
             24,
             substr_count($response->getContent(), 'class="innovation-gallery__slide"'),

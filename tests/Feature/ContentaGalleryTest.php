@@ -15,11 +15,8 @@ class ContentaGalleryTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('images/structure/contenta/contenta-cover.webp', false);
-        $response->assertSee('data-contenta-carousel', false);
-        $this->assertSame(
-            10,
-            substr_count($response->getContent(), 'class="contenta-carousel__slide"'),
-        );
+        $response->assertSee('data-structure-carousel', false);
+        $response->assertSee('data-gallery-key="contenta"', false);
 
         foreach (range(1, 10) as $number) {
             $file = sprintf('contenta-%02d.webp', $number);

@@ -336,8 +336,6 @@
 .team-section .dept-row .arrow { flex:0 0 32px; margin-left:20px; }
 .team-section .dept-row:focus-visible,.team-section .department-toggle:focus-visible,.team-section .department-carousel button:focus-visible,.team-section .innovation-gallery button:focus-visible { outline:3px solid #131da4; outline-offset:5px; }
 .team-section .department-panel { padding:32px 0 24px; }
-.team-section .department-photo { margin:0 0 24px; overflow:hidden; border-radius:32px; background:#eef0ff; }
-.team-section .department-photo img { display:block; width:100%; height:auto; }
 .team-section .department-toggle { display:flex; width:100%; align-items:center; justify-content:space-between; gap:24px; padding:25px 0; border:0; border-bottom:1px solid rgba(43,36,193,.12); background:transparent; color:#131da4; text-align:left; font:800 20px/1.5 'Commissioner',sans-serif; text-transform:uppercase; }
 .team-section .department-toggle .icon-arrow-custom { flex:0 0 32px; width:32px; height:32px; background:url('../images/icons/arrow-inactive.svg') center/contain no-repeat; }
 .team-section .department-toggle[aria-expanded=true] .icon-arrow-custom { background-image:url('../images/icons/arrow-active.svg'); }
@@ -401,7 +399,6 @@ body.innovation-lightbox-open { overflow:hidden; }
 .team-section .innovation-lightbox__close:hover,.team-section .innovation-lightbox__arrow:hover { background:rgba(255,255,255,.22); }
 @media(max-width:768px) {
  .team-section .department-panel { padding-top:22px; }
- .team-section .department-photo { border-radius:24px; margin-bottom:12px; }
  .team-section .department-toggle { font-size:15px; padding:21px 0; }
  .team-section .department-description { font-size:16px; }
  .team-section .department-employees { gap:18px; }

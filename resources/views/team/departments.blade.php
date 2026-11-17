@@ -1,6 +1,10 @@
 @foreach($departments as $department)
     @php
-        $cleanName = trim(preg_replace('/^відділ\s+/iu', '', mb_strtolower($department->name)));
+        $cleanName = trim(preg_replace(
+            '/\s+/u',
+            ' ',
+            preg_replace('/^відділ\s+/iu', '', mb_strtolower($department->name)),
+        ));
         $isAdministration = $department->isAdministration();
         $title = $isAdministration
             ? 'АДМІНІСТРАЦІЯ' : 'ВІДДІЛ '.mb_strtoupper($cleanName);
@@ -10,30 +14,54 @@
             'іновацій та супроводу проєктів',
             'іновацій та супроводу проектів',
         ], true);
-        $innovationProjectsGallery = collect($isInnovationProjectsDepartment ? [
-            'innovation-projects-01.webp', 'innovation-projects-02.webp',
-            'innovation-projects-03.webp', 'innovation-projects-04.webp',
-            'innovation-projects-05.webp', 'innovation-projects-06.webp',
-            'innovation-projects-07.webp', 'innovation-projects-08.webp',
-            'innovation-projects-09.webp', 'innovation-projects-10.webp',
-            'innovation-projects-11.webp', 'innovation-projects-12.webp',
-            'innovation-projects-13.webp', 'innovation-projects-14.webp',
-            'innovation-projects-15.webp', 'innovation-projects-16.webp',
-            'innovation-projects-17.webp', 'innovation-projects-18.webp',
-            'innovation-projects-19.webp', 'innovation-projects-20.webp',
-            'innovation-projects-21.webp', 'innovation-projects-22.webp',
-            'innovation-projects-23.webp', 'innovation-projects-24.webp',
-        ] : []);
-        $sliderPhotos = $isInnovationProjectsDepartment
-            ? $innovationProjectsGallery
+        $normalizedCleanName = str_replace(["'", 'ʼ', '`'], '’', $cleanName);
+        $isNonformalEducationCareerDepartment = in_array($normalizedCleanName, [
+            'неформальної освіти та розвитку кар’єри',
+            'неформальної освіти і розвитку кар’єри',
+            'неформальної освіти та кар’єрного розвитку',
+        ], true);
+        $fixedDepartmentGallery = $isInnovationProjectsDepartment
+            ? [
+                'slug' => 'innovation-projects',
+                'directory' => 'innovation-projects',
+                'photos' => [
+                    'innovation-projects-01.webp', 'innovation-projects-02.webp',
+                    'innovation-projects-03.webp', 'innovation-projects-04.webp',
+                    'innovation-projects-05.webp', 'innovation-projects-06.webp',
+                    'innovation-projects-07.webp', 'innovation-projects-08.webp',
+                    'innovation-projects-09.webp', 'innovation-projects-10.webp',
+                    'innovation-projects-11.webp', 'innovation-projects-12.webp',
+                    'innovation-projects-13.webp', 'innovation-projects-14.webp',
+                    'innovation-projects-15.webp', 'innovation-projects-16.webp',
+                    'innovation-projects-17.webp', 'innovation-projects-18.webp',
+                    'innovation-projects-19.webp', 'innovation-projects-20.webp',
+                    'innovation-projects-21.webp', 'innovation-projects-22.webp',
+                    'innovation-projects-23.webp', 'innovation-projects-24.webp',
+                ],
+            ]
+            : ($isNonformalEducationCareerDepartment
+                ? [
+                    'slug' => 'nonformal-education-career',
+                    'directory' => 'nonformal-education-career',
+                    'photos' => [
+                        'nonformal-education-career-01.webp', 'nonformal-education-career-02.webp',
+                        'nonformal-education-career-03.webp', 'nonformal-education-career-04.webp',
+                        'nonformal-education-career-05.webp', 'nonformal-education-career-06.webp',
+                        'nonformal-education-career-07.webp', 'nonformal-education-career-08.webp',
+                        'nonformal-education-career-09.webp', 'nonformal-education-career-10.webp',
+                        'nonformal-education-career-11.webp', 'nonformal-education-career-12.webp',
+                        'nonformal-education-career-13.webp', 'nonformal-education-career-14.webp',
+                        'nonformal-education-career-15.webp', 'nonformal-education-career-16.webp',
+                        'nonformal-education-career-17.webp', 'nonformal-education-career-18.webp',
+                        'nonformal-education-career-19.webp', 'nonformal-education-career-20.webp',
+                    ],
+                ]
+                : null);
+        $sliderPhotos = $fixedDepartmentGallery !== null
+            ? collect($fixedDepartmentGallery['photos'])
             : collect(array_values($department->slider_photos ?? []))
                 ->filter(fn ($photo) => is_string($photo) && filled($photo));
-        $departmentPhotoUrl = $isInnovationProjectsDepartment
-            ? asset('images/team/departments/innovation-projects/innovation-projects-cover.webp')
-            : (filled($department->photo)
-                ? route('departments.photo', ['department' => $department, 'v' => substr(sha1($department->photo), 0, 12)])
-                : null);
-        $showSlider = $isInnovationProjectsDepartment
+        $showSlider = $fixedDepartmentGallery !== null
             ? $sliderPhotos->isNotEmpty()
             : $department->slider_enabled && $sliderPhotos->isNotEmpty();
     @endphp
@@ -47,13 +75,6 @@
     </button>
     <div class="department-panel" id="department-{{ $department->id }}" data-department-panel hidden
         role="region" aria-labelledby="department-toggle-{{ $department->id }}">
-        @if($departmentPhotoUrl)
-            <figure class="department-photo">
-                <img src="{{ $departmentPhotoUrl }}" alt="Фото відділу: {{ $department->name }}" loading="lazy" decoding="async"
-                    @if($isInnovationProjectsDepartment) width="1200" height="900" @endif>
-            </figure>
-        @endif
-
         @unless($isAdministration)
             <button type="button" class="department-toggle" data-department-section aria-expanded="false"
                 aria-controls="department-description-{{ $department->id }}" id="department-description-toggle-{{ $department->id }}">
@@ -65,15 +86,16 @@
                     <div class="department-description"><p>{{ $department->description }}</p></div>
                 @endif
                 @if($showSlider)
-                    @if($isInnovationProjectsDepartment)
-                        <div class="innovation-gallery" data-innovation-projects-carousel data-gallery="innovation-projects"
+                    @if($fixedDepartmentGallery !== null)
+                        <div class="innovation-gallery" data-innovation-projects-carousel data-department-photo-carousel
+                            data-gallery="{{ $fixedDepartmentGallery['slug'] }}"
                             role="region" aria-roledescription="карусель"
                             aria-label="Фотографії роботи: {{ $department->name }}">
                             <div class="innovation-gallery__viewport" data-innovation-viewport tabindex="0">
                                 <div class="innovation-gallery__track">
                                     @foreach($sliderPhotos as $photoIndex => $photo)
                                         @php
-                                            $slideUrl = asset('images/team/departments/innovation-projects/'.$photo);
+                                            $slideUrl = asset('images/team/departments/'.$fixedDepartmentGallery['directory'].'/'.$photo);
                                         @endphp
                                         <button type="button" class="innovation-gallery__slide" data-innovation-slide
                                             data-innovation-index="{{ $photoIndex }}"
