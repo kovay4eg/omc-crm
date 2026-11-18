@@ -1,14 +1,21 @@
 @php
 
 use App\Models\Statute;
+use App\Support\MediaUrl;
+use App\Support\StatutePreview;
 
 $statute = Statute::latest()->first();
 
-$pdfUrl = null;
+$originalPdfUrl = null;
+$previewPdfUrl = null;
+$hasNormalizedPreview = false;
 
 if ($statute && !empty($statute->file)) {
 
-    $pdfUrl = \App\Support\MediaUrl::storage($statute->file);
+    $originalPdfUrl = MediaUrl::storageVersioned($statute->file);
+    $normalizedPreviewUrl = StatutePreview::url($statute->file);
+    $previewPdfUrl = $normalizedPreviewUrl ?? $originalPdfUrl;
+    $hasNormalizedPreview = !empty($normalizedPreviewUrl);
 
 }
 
@@ -176,6 +183,31 @@ if ($statute && !empty($statute->file)) {
 .statut-open-btn:hover{
     background:#0d1688;
     transform:scale(1.04);
+}
+
+.statut-original-download{
+    display:flex;
+    justify-content:center;
+    margin-top:22px;
+}
+
+.statut-original-download a{
+    color:#131DA4;
+    font-size:16px;
+    font-weight:700;
+    text-decoration:underline;
+    text-underline-offset:4px;
+}
+
+.statut-original-download a:hover{
+    color:#0d1688;
+}
+
+@media (hover:none), (pointer:coarse){
+    .statut-open-btn{
+        opacity:1;
+        transform:translateY(0);
+    }
 }
 
 /* =========================
@@ -365,7 +397,7 @@ if ($statute && !empty($statute->file)) {
 
     <div class="statut-pdf-wrapper">
 
-        @if(!empty($pdfUrl))
+        @if(!empty($previewPdfUrl))
 
             {{-- DESKTOP PREVIEW --}}
 
@@ -388,7 +420,7 @@ if ($statute && !empty($statute->file)) {
                     <iframe
                         id="statutFrame"
                         class="statut-pdf-frame blurred"
-                        src="{{ $pdfUrl }}#view=FitH&toolbar=1&navpanes=0"
+                        src="{{ $previewPdfUrl }}#view=FitH&toolbar=1&navpanes=0"
                         title="Статут"
                     ></iframe>
 
@@ -415,11 +447,12 @@ if ($statute && !empty($statute->file)) {
                     </p>
 
                     <a
-                        href="{{ $pdfUrl }}"
+                        href="{{ $previewPdfUrl }}"
                         target="_blank"
+                        rel="noopener"
                         class="statut-mobile-btn"
                     >
-                        Відкрити PDF
+                        Переглянути PDF
                     </a>
 
                 </div>
@@ -448,6 +481,14 @@ if ($statute && !empty($statute->file)) {
         @endif
 
     </div>
+
+    @if($hasNormalizedPreview && !empty($originalPdfUrl))
+        <div class="statut-original-download">
+            <a href="{{ $originalPdfUrl }}" target="_blank" rel="noopener" download>
+                Завантажити оригінал PDF
+            </a>
+        </div>
+    @endif
 
 </div>
 
