@@ -33,6 +33,46 @@ class HolidayAppearanceTest extends TestCase
             'vyshyvanka' => ['2027-05-20 12:00:00', 'vyshyvanka'],
             'independence' => ['2027-08-24 12:00:00', 'independence'],
             'youth day' => ['2027-08-12 12:00:00', 'youth'],
+            'saint nicholas day' => ['2027-12-06 12:00:00', 'st-nicholas'],
+            'valentines day' => ['2027-02-14 12:00:00', 'valentines'],
+            'first day of spring' => ['2027-03-01 12:00:00', 'first-day-spring'],
+            'first day of summer' => ['2027-06-01 12:00:00', 'first-day-summer'],
+            'first day of autumn' => ['2027-09-01 12:00:00', 'first-day-autumn'],
+            'first day of winter' => ['2027-12-01 12:00:00', 'first-day-winter'],
+        ];
+    }
+
+    #[DataProvider('fixedHolidayBoundaries')]
+    public function test_fixed_holiday_logos_switch_on_and_off_at_midnight_in_kyiv(
+        string $moment,
+        ?string $expectedTheme,
+    ): void {
+        $theme = HolidayTheme::current(CarbonImmutable::parse($moment, 'Europe/Kyiv'));
+
+        $this->assertSame($expectedTheme, $theme['key'] ?? null);
+    }
+
+    public static function fixedHolidayBoundaries(): array
+    {
+        return [
+            'valentines before' => ['2027-02-13 23:59:59', null],
+            'valentines starts' => ['2027-02-14 00:00:00', 'valentines'],
+            'valentines ends' => ['2027-02-15 00:00:00', null],
+            'spring before' => ['2027-02-28 23:59:59', null],
+            'spring starts' => ['2027-03-01 00:00:00', 'first-day-spring'],
+            'spring ends' => ['2027-03-02 00:00:00', null],
+            'summer before' => ['2027-05-31 23:59:59', null],
+            'summer starts' => ['2027-06-01 00:00:00', 'first-day-summer'],
+            'summer ends' => ['2027-06-02 00:00:00', null],
+            'autumn before' => ['2027-08-31 23:59:59', null],
+            'autumn starts' => ['2027-09-01 00:00:00', 'first-day-autumn'],
+            'autumn ends' => ['2027-09-02 00:00:00', null],
+            'winter before' => ['2027-11-30 23:59:59', null],
+            'winter starts' => ['2027-12-01 00:00:00', 'first-day-winter'],
+            'winter ends' => ['2027-12-02 00:00:00', null],
+            'saint nicholas before' => ['2027-12-05 23:59:59', null],
+            'saint nicholas starts' => ['2027-12-06 00:00:00', 'st-nicholas'],
+            'saint nicholas ends' => ['2027-12-07 00:00:00', null],
         ];
     }
 
@@ -80,7 +120,20 @@ class HolidayAppearanceTest extends TestCase
     {
         $response = $this->get('/holiday-logo-preview')->assertOk();
 
-        foreach (['new-year', 'christmas', 'easter', 'vyshyvanka', 'independence', 'youth'] as $theme) {
+        foreach ([
+            'new-year',
+            'christmas',
+            'easter',
+            'vyshyvanka',
+            'independence',
+            'youth',
+            'st-nicholas',
+            'valentines',
+            'first-day-spring',
+            'first-day-summer',
+            'first-day-autumn',
+            'first-day-winter',
+        ] as $theme) {
             $response->assertSee("images/holiday/logos/{$theme}.svg", false);
             $response->assertSee("holiday-preview={$theme}", false);
             $response->assertSee('logo-version=', false);
@@ -88,7 +141,7 @@ class HolidayAppearanceTest extends TestCase
     }
 
     #[DataProvider('holidayPreviewThemes')]
-    public function test_each_holiday_preview_uses_its_own_svg(string $theme): void
+    public function test_each_holiday_preview_uses_its_own_svg(string $theme, string $source): void
     {
         $response = $this->get("/?holiday-preview={$theme}")
             ->assertOk()
@@ -99,7 +152,7 @@ class HolidayAppearanceTest extends TestCase
 
         $this->assertIsString($markup);
         $this->assertStringContainsString("data-holiday-logo=\"{$theme}\"", $markup);
-        $this->assertStringContainsString('data-source="approved-reference-board"', $markup);
+        $this->assertStringContainsString("data-source=\"{$source}\"", $markup);
         $this->assertMatchesRegularExpression('/<svg\b[^>]*\bviewBox="[^"]+"/i', $markup);
         $this->assertMatchesRegularExpression('/<(?:path|polygon|rect)\b/i', $markup);
 
@@ -111,12 +164,18 @@ class HolidayAppearanceTest extends TestCase
     public static function holidayPreviewThemes(): array
     {
         return [
-            'new year' => ['new-year'],
-            'christmas' => ['christmas'],
-            'easter' => ['easter'],
-            'vyshyvanka' => ['vyshyvanka'],
-            'independence' => ['independence'],
-            'youth' => ['youth'],
+            'new year' => ['new-year', 'approved-reference-board'],
+            'christmas' => ['christmas', 'approved-reference-board'],
+            'easter' => ['easter', 'approved-reference-board'],
+            'vyshyvanka' => ['vyshyvanka', 'approved-reference-board'],
+            'independence' => ['independence', 'approved-reference-board'],
+            'youth' => ['youth', 'approved-reference-board'],
+            'saint nicholas' => ['st-nicholas', 'canonical-omc-vector'],
+            'valentines' => ['valentines', 'canonical-omc-vector'],
+            'first day of spring' => ['first-day-spring', 'canonical-omc-vector'],
+            'first day of summer' => ['first-day-summer', 'canonical-omc-vector'],
+            'first day of autumn' => ['first-day-autumn', 'canonical-omc-vector'],
+            'first day of winter' => ['first-day-winter', 'canonical-omc-vector'],
         ];
     }
 

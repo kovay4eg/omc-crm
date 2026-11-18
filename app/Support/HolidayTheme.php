@@ -19,6 +19,12 @@ final class HolidayTheme
             'vyshyvanka' => self::theme('vyshyvanka', 'Полтавський обласний молодіжний центр вітає вас із Днем вишиванки!'),
             'independence' => self::theme('independence', 'Полтавський обласний молодіжний центр вітає вас із Днем Державного Прапора та Днем Незалежності України!'),
             'youth' => self::theme('youth', 'Полтавський обласний молодіжний центр вітає вас із Днем молоді!'),
+            'st-nicholas' => self::theme('st-nicholas', 'Полтавський обласний молодіжний центр вітає вас із Днем Святого Миколая!'),
+            'valentines' => self::theme('valentines', 'Полтавський обласний молодіжний центр вітає вас із Днем святого Валентина!'),
+            'first-day-spring' => self::theme('first-day-spring', 'Полтавський обласний молодіжний центр вітає вас із першим днем весни!'),
+            'first-day-summer' => self::theme('first-day-summer', 'Полтавський обласний молодіжний центр вітає вас із першим днем літа!'),
+            'first-day-autumn' => self::theme('first-day-autumn', 'Полтавський обласний молодіжний центр вітає вас із першим днем осені!'),
+            'first-day-winter' => self::theme('first-day-winter', 'Полтавський обласний молодіжний центр вітає вас із першим днем зими!'),
             default => null,
         };
     }
@@ -41,6 +47,20 @@ final class HolidayTheme
 
         if ($monthDay >= '12-23' && $monthDay <= '12-27') {
             return self::preview('christmas');
+        }
+
+        $fixedTheme = match ($monthDay) {
+            '02-14' => 'valentines',
+            '03-01' => 'first-day-spring',
+            '06-01' => 'first-day-summer',
+            '09-01' => 'first-day-autumn',
+            '12-01' => 'first-day-winter',
+            '12-06' => 'st-nicholas',
+            default => null,
+        };
+
+        if ($fixedTheme) {
+            return self::preview($fixedTheme);
         }
 
         $easter = self::orthodoxEaster($date->year);

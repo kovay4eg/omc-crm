@@ -1,11 +1,17 @@
 @php
     $themes = [
         ['key' => 'new-year', 'name' => 'Новий рік'],
-        ['key' => 'christmas', 'name' => 'Різдво'],
+        ['key' => 'valentines', 'name' => 'День святого Валентина'],
+        ['key' => 'first-day-spring', 'name' => 'Перший день весни'],
         ['key' => 'easter', 'name' => 'Великдень'],
         ['key' => 'vyshyvanka', 'name' => 'День вишиванки'],
-        ['key' => 'independence', 'name' => 'День Незалежності'],
+        ['key' => 'first-day-summer', 'name' => 'Перший день літа'],
         ['key' => 'youth', 'name' => 'День молоді'],
+        ['key' => 'independence', 'name' => 'День Незалежності'],
+        ['key' => 'first-day-autumn', 'name' => 'Перший день осені'],
+        ['key' => 'first-day-winter', 'name' => 'Перший день зими'],
+        ['key' => 'st-nicholas', 'name' => 'День Святого Миколая'],
+        ['key' => 'christmas', 'name' => 'Різдво'],
     ];
 @endphp
 <!doctype html>

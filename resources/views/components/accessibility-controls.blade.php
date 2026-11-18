@@ -63,6 +63,14 @@
     html[data-omc-a11y-theme='light'] body img,
     html[data-omc-a11y-theme='dark'] body img { background-color: transparent !important; filter: grayscale(1) contrast(1.45) !important; }
 
+    /* Святкові логотипи мають прозоре тло й чорний текст. У темному режимі
+       локальна біла підкладка зберігає їхню читабельність, не змінюючи SVG. */
+    html[data-omc-a11y-theme='dark'] body .logo--holiday img {
+        padding: 3px;
+        border-radius: 10px;
+        background-color: #fff !important;
+    }
+
     /* Фонові слова — лише декор і в контрастному режимі заважають читанню. */
     html[data-omc-a11y-theme='light'] :is(#bgText, #bgTextSecondary, .team-hero-bg, .calendar-bg-text, .reports-bg-text, .statut-bg-text, .summary-watermark, .contacts-watermark, .events-watermark, .event-detail-watermark, .event-summaries-watermark, .bg-watermark-wrapper),
     html[data-omc-a11y-theme='dark'] :is(#bgText, #bgTextSecondary, .team-hero-bg, .calendar-bg-text, .reports-bg-text, .statut-bg-text, .summary-watermark, .contacts-watermark, .events-watermark, .event-detail-watermark, .event-summaries-watermark, .bg-watermark-wrapper) { display: none !important; }
