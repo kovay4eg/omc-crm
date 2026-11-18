@@ -54,6 +54,8 @@ class StructureGalleriesTest extends TestCase
             false,
         );
         $this->assertStringContainsString('data-gallery-key="career"', $careerMarkup);
+        $this->assertStringContainsString('Кар’єрний центр</strong> допомагає молоді', $careerMarkup);
+        $this->assertStringNotContainsString('Lorem ipsum', $careerMarkup);
         $this->assertStringNotContainsString('class="red-block"', $careerMarkup);
 
         $this->assertGalleryAssets('hub', 16);

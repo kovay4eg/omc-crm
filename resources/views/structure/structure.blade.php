@@ -313,10 +313,6 @@
                         <p class="lead-text mb-3">
                             <strong>Кар’єрний центр</strong> допомагає молоді визначати професійні цілі, розвивати навички та впевнено робити наступний крок у власній кар’єрі.
                         </p>
-
-                        <p class="sub-text text-muted">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer facilisis, mauris in tincidunt rhoncus, erat mi suscipit nisi, vitae sagittis turpis libero vitae erat. Curabitur vitae sem quis nibh pretium varius.
-                        </p>
                     </div>
                 </div>
 
