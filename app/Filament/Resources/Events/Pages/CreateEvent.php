@@ -4,12 +4,27 @@ namespace App\Filament\Resources\Events\Pages;
 
 use App\Filament\Resources\Events\EventResource;
 use App\Models\EventHistory;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 
 class CreateEvent extends CreateRecord
 {
     protected static string $resource = EventResource::class;
+
+    protected static bool $canCreateAnother = false;
+
+    protected function getCreateFormAction(): Action
+    {
+        return parent::getCreateFormAction()
+            ->submit(null)
+            ->action('create');
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResourceUrl('index');
+    }
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
