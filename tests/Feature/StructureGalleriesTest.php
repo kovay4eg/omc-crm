@@ -72,6 +72,7 @@ class StructureGalleriesTest extends TestCase
         $response->assertSee('Твоя продакшн-база для створення українського контенту, за який не соромно.', false);
         $response->assertSee('Не чекаємо, поки ти доїдеш до Полтави — самі вриваємося у твою громаду!', false);
         $response->assertSee('Допомагаємо розрулити головний квест «ким я хочу стати, коли виросту»', false);
+        $response->assertDontSee('Приміщення Хабу відремонтовано та облаштовано', false);
     }
 
     public function test_source_manifests_preserve_the_approved_photo_order(): void
