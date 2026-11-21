@@ -32,7 +32,7 @@ class MobileCommunityMapTest extends TestCase
         $mapPosition = strpos($mobileMarkup, 'data-mobile-community-map');
         $titlePosition = strpos($mobileMarkup, 'data-mobile-community-map-title');
         $stagePosition = strpos($mobileMarkup, 'data-mobile-community-map-stage');
-        $descriptionPosition = strpos($mobileMarkup, 'Команда Полтавського обласного молодіжного центру');
+        $descriptionPosition = strpos($mobileMarkup, 'Не чекаємо, поки ти доїдеш до Полтави');
         $photosPosition = strpos($mobileMarkup, 'data-gallery-key="mobile"');
 
         $this->assertNotFalse($mapPosition);
@@ -130,10 +130,10 @@ class MobileCommunityMapTest extends TestCase
         $this->assertStringContainsString('mobile-community-map-title-sheen var(--map-sheen-duration)', $styles);
         $this->assertStringContainsString('color: var(--map-violet-active);', $styles);
         $this->assertStringContainsString('text-shadow: 0 0 12px rgba(102, 112, 238, .32);', $styles);
-        $this->assertStringContainsString("?v=20261117-10", file_get_contents(resource_path('views/structure/mobile-community-map.blade.php')));
-        $this->assertStringNotContainsString("?v=20261117-9", file_get_contents(resource_path('views/structure/mobile-community-map.blade.php')));
+        $this->assertStringContainsString('?v=20261117-10', file_get_contents(resource_path('views/structure/mobile-community-map.blade.php')));
+        $this->assertStringNotContainsString('?v=20261117-9', file_get_contents(resource_path('views/structure/mobile-community-map.blade.php')));
         $this->assertStringNotContainsString('data-sheen-text', file_get_contents(resource_path('views/structure/mobile-community-map.blade.php')));
-        $this->assertStringContainsString("applyAnimationTiming(part, community.order)", $script);
+        $this->assertStringContainsString('applyAnimationTiming(part, community.order)', $script);
         $this->assertStringNotContainsString('var(--label-order) *', $styles);
         $this->assertStringNotContainsString('data-map-animation-option', $script);
         $this->assertStringNotContainsString('localStorage', $script);

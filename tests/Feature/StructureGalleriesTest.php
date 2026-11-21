@@ -54,13 +54,24 @@ class StructureGalleriesTest extends TestCase
             false,
         );
         $this->assertStringContainsString('data-gallery-key="career"', $careerMarkup);
-        $this->assertStringContainsString('Кар’єрний центр</strong> допомагає молоді', $careerMarkup);
+        $this->assertStringContainsString('Допомагаємо розрулити головний квест «ким я хочу стати, коли виросту»', $careerMarkup);
         $this->assertStringNotContainsString('Lorem ipsum', $careerMarkup);
         $this->assertStringNotContainsString('class="red-block"', $careerMarkup);
 
         $this->assertGalleryAssets('hub', 16);
         $this->assertGalleryAssets('mobile', 26);
         $this->assertGalleryAssets('career', 12);
+    }
+
+    public function test_structure_panels_show_the_approved_descriptions(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('Твоя точка збору в Полтаві, де можна все:', false);
+        $response->assertSee('Твоя продакшн-база для створення українського контенту, за який не соромно.', false);
+        $response->assertSee('Не чекаємо, поки ти доїдеш до Полтави — самі вриваємося у твою громаду!', false);
+        $response->assertSee('Допомагаємо розрулити головний квест «ким я хочу стати, коли виросту»', false);
     }
 
     public function test_source_manifests_preserve_the_approved_photo_order(): void
@@ -189,7 +200,7 @@ class StructureGalleriesTest extends TestCase
     }
 
     /**
-     * @param array<int, string> $sources
+     * @param  array<int, string>  $sources
      * @return array<int, array{source: string, output: string}>
      */
     private function manifestEntries(string $gallery, array $sources): array
